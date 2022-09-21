@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const orderModel = require("./orderModel");
 
 const userModel = require("./model/user");
+const orderModel = require("./model/order");
 
 const PORT = 3334;
 
