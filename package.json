@@ -12,10 +12,10 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.1",
-    "moment": "^2.29.4",
     "mongoose": "^6.6.1"
   },
   "devDependencies": {
+    "jest": "^29.0.3",
     "nodemon": "^2.0.20"
   }
 }
