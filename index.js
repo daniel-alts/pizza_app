@@ -16,7 +16,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/order", orderRouter);
-// app.use("/user", userRouter);
+app.use("/user", userRouter);
 
 mongoose.connect("mongodb://localhost:27017");
 
