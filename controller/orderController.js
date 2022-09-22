@@ -36,11 +36,7 @@ exports.create_order = (req, res) => {
   }, 0);
 
   orders
-    .create({
-      items: body.items,
-      created_at: moment().toDate(),
-      total_price,
-    })
+    .create({ order, total_price })
     .then((order) => {
       res.status(200).send({
         message: "Your Order has been created Successfully",
