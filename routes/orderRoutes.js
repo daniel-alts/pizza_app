@@ -30,7 +30,7 @@ router
       const body = req.body;
 
       const total_price = body.items.reduce((prev, curr) => {
-        prev += curr.price;
+        prev += curr.price * curr.quantity;
         return prev;
       }, 0);
 
