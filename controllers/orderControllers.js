@@ -1,8 +1,20 @@
-app.get('/', (req, res) => {
-	return res.json({ status: true });
-});
+const moment = require('moment');
+const orderModel = require('../Models/orderModel');
 
-app.post('/order', async (req, res) => {
+//  ! ---- Get All Orders
+exports.getOrders = async (req, res) => {
+	const orders = await orderModel.find();
+
+	return res.json({
+		status: true,
+		result: orders.length,
+		data: orders,
+	});
+};
+
+// ! ------ Create Order
+
+exports.createOrder = async (req, res) => {
 	const body = req.body;
 
 	const total_price = body.items.reduce((prev, curr) => {
@@ -17,26 +29,25 @@ app.post('/order', async (req, res) => {
 	});
 
 	return res.json({ status: true, order });
-});
+};
 
-app.get('/order/:orderId', async (req, res) => {
-	const { orderId } = req.params;
-	const order = await orderModel.findById(orderId);
+// ! ------ FIND Order
+
+exports.findOrder = async (req, res) => {
+	const order = await orderModel.findById(req.params.id);
 
 	if (!order) {
 		return res.status(404).json({ status: false, order: null });
 	}
 
 	return res.json({ status: true, order });
-});
+};
 
-app.get('/orders', async (req, res) => {
-	const orders = await orderModel.find();
+//
 
-	return res.json({ status: true, orders });
-});
+// ! ------ uPDATE Order
 
-app.patch('/order/:id', async (req, res) => {
+exports.updateOrder = async (req, res) => {
 	const { id } = req.params;
 	const { state } = req.body;
 
@@ -58,13 +69,17 @@ app.patch('/order/:id', async (req, res) => {
 
 	await order.save();
 
+	return res.json({
+		status: true,
+		result: order.length,
+		data: order,
+	});
+};
+
+// ! ------ DELETE Order
+
+exports.deleteOrder = async (req, res) => {
+	const order = await orderModel.deleteOne({ _id: req.params.id });
+
 	return res.json({ status: true, order });
-});
-
-app.delete('/order/:id', async (req, res) => {
-	const { id } = req.params;
-
-	const order = await orderModel.deleteOne({ _id: id });
-
-	return res.json({ status: true, order });
-});
+};
