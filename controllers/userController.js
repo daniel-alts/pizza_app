@@ -2,25 +2,29 @@ const User = require('../models/userModels')
 
 
 exports.auth = async(req, res, next) => {
-    const body = req.body
-    if (body.email && body.password){
-        const user = await User.find({email: body.email, password: body.password})
-        if (user){
-            next()
-        }
-        else{
-            res.status(400).json({
-                status: fail
-            })
-        }
-    }
-    else{
-        return res.status(400).json({
-            status: false,
-            message: 'Please provide email and password!'
-        })
-    }
-}
+    next()
+//     const body = req.body
+//     if (body.email && body.password){
+//         const user = await User.find({email: body.email})
+//         console.log(user)
+//         if (user){
+//             if (user[0].password === body.password) next();
+//         }
+//         else{
+//             res.status(400).json({
+//                 status: false,
+//                 message: 'Incorrect username || password!'
+//             })
+//         }
+//     }
+//     else{
+//         return res.status(400).json({
+//             status: false,
+//             message: 'Please provide email and password!'
+//         })
+//     }
+
+ }
 
 exports.createUser = async(req, res) =>{
     try{
