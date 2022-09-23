@@ -1,6 +1,5 @@
 const router = require('express').Router();
 const orderController = require('../controllers/orderControllers');
-console.log(orderController.getOrders);
 
 router
 	.route('/')
