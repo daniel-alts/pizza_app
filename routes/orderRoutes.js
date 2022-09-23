@@ -7,7 +7,7 @@ const orderRouter = express.Router();
 orderRouter
   .route("/")
   .post(orderController.createOrder)
-  .get(userController.auth, orderController.getAllOrder);
+  .get(orderController.getAllOrder);
 
 orderRouter
   .route("/:id")
