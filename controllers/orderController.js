@@ -69,7 +69,7 @@ exports.deleteOrder = async (req, res) => {
   }
 };
 
-exports.getOrderById = async () => {
+exports.getOrderById = async (req, res) => {
   try {
     const { id } = req.params;
     const order = await orderModel.findById(id);
