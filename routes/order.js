@@ -1,27 +1,34 @@
 const express = require("express")
-const orderRouter = express.Router()
 
+const Order = require("../models/order")
+const orderRouter = express.Router()
 // Create new order
 orderRouter.post('/', async (req, res) => {
-    const body = req.body;
+    const orderData = req.body.order;
 
-    const total_price = body.items.reduce((prev, curr) => {
-        prev += curr.price
-        return prev
-    }, 0);
+    try {
+        const order = await Order.create({ 
+            items: orderData.items,
+        })
 
-    const order = await orderModel.create({ 
-        items: body.items,
-        total_price
-    })
-    
-    return res.json({ status: true, order })
+        order.total_price = order.items.reduce((prev, curr) => {
+            prev += curr.price * curr.quantity
+            return prev
+        }, 0);
+        
+        await order.save()
+        console.log(order)
+        return res.json({ status: true, order })
+    } catch (err) {
+        console.log(err)
+        return res.status(400).send(err)
+    }
 })
 
 // Get order by id
 orderRouter.get('/:orderId', async (req, res) => {
     const { orderId } = req.params;
-    const order = await orderModel.findById(orderId)
+    const order = await Order.findById(orderId)
 
     if (!order) {
         return res.status(404).json({ status: false, order: null })
@@ -32,7 +39,7 @@ orderRouter.get('/:orderId', async (req, res) => {
 
 // Get all orders
 orderRouter.get('/', async (req, res) => {
-    const orders = await orderModel.find()
+    const orders = await Order.find()
 
     return res.json({ status: true, orders })
 })
@@ -40,9 +47,9 @@ orderRouter.get('/', async (req, res) => {
 // Update order of specific id
 orderRouter.patch('/:id', async (req, res) => {
     const { id } = req.params;
-    const { state } = req.body;
+    const { state } = req.body.order;
 
-    const order = await orderModel.findById(id)
+    const order = await Order.findById(id)
 
     if (!order) {
         return res.status(404).json({ status: false, order: null })
@@ -63,7 +70,7 @@ orderRouter.patch('/:id', async (req, res) => {
 orderRouter.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
-    const order = await orderModel.deleteOne({ _id: id})
+    const order = await Order.deleteOne({ _id: id})
 
     return res.json({ status: true, order })
 })

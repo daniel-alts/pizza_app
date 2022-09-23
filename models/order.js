@@ -10,9 +10,9 @@ const OrderSchema = new Schema({
   total_price: Number,
   items: [{
     name: String,
-    price: Number,
-    size: { type: String, enum: ['m', 's', 'l']},
-    quantity: Number,
+    price: {type: Number, required: true},
+    size: { type: String, enum: ['s', 'm', 'l'], default: 'm'},
+    quantity: {type: Number, default: 1, min: 1},
   }]
 });
 

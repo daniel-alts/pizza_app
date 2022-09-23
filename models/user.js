@@ -18,12 +18,9 @@ const userSchema = new Schema({
     },
     user_type: {
         type: String,
-        required: true,
         enum: ["user", "admin"],
         default: "user",
-    },
-    // Orders made by this user
-    orders: [String]
+    }
 });
 
 userSchema.virtual("fullName")
