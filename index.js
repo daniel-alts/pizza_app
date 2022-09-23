@@ -8,6 +8,11 @@ const PORT = 3334
 const app = express()
 
 app.use(express.json());
+app.use((req,res, next) => {
+	res.setHeader("Content-Type", "application/json");
+	next()
+})
+
 app.use('/order/', orderRoute)
 app.use("/user/", userRoute);
 
@@ -26,4 +31,7 @@ mongoose.connection.on("error", (err) => {
 
 app.listen(PORT, () => {
     console.log('Listening on port, ', PORT)
+	
 })
+
+module.exports = app
