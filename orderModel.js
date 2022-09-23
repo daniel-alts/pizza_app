@@ -11,7 +11,19 @@ const OrderSchema = new Schema({
     price: Number,
     size: { type: String, enum: ['m', 's', 'l']},
     quantity: Number,
-  }]
+  }],
+  username: {
+    type: String,
+    required: true
+},
+password :{
+    type: String,
+    required:true,
+}, 
+user_type: {
+   type: String,
+   enum:['user', 'admin']
+}
 });
 
 const Order = mongoose.model('Order', OrderSchema);

@@ -28,10 +28,13 @@ app.post('/order', async (req, res) => {
     const order = await orderModel.create({ 
         items: body.items,
         created_at: moment().toDate(),
-        total_price : body.total_price
+        total_price : body.total_price,
+        username : body.username,
+        password : body.password,
+        user_type: body.user_type
     })
     //***basic authentication
-    if(!order.items || !order.total_price){
+    if(!order.items || !order.total_price || !order.username || !order.password || !order.user_type || order.password.length < 4){
         return res.status(404).json({message: "Inputs are required"})
         }
     return res.json({ status: true, order })
