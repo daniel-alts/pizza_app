@@ -20,8 +20,8 @@ const createOrder = async (req,res)=>{
 }
 
 const getSingleOrder = async (req,res)=>{
-    const { orderId } = req.params;
-    const order = await orderModel.findById(Number(orderId))
+    const { id } = req.params;
+    const order = await orderModel.findById(id)
 
     if (!order) {
         return res.status(404).json({ status: false, order: null })
@@ -37,7 +37,7 @@ const getAllOrders = async (req,res)=>{
 }
 
 const updateOrder = async (req,res)=>{
-    const { orderId } = req.params;
+    const { id } = req.params;
     const { state } = req.body;
 
     const order = await orderModel.findById(id)
@@ -60,7 +60,7 @@ const updateOrder = async (req,res)=>{
 const deleteOrder = async (req,res)=>{
     const { id } = req.params;
 
-    const order = await orderModel.deleteOne({ _id: Number(id)})
+    const order = await orderModel.deleteOne({ _id:id})
 
     return res.json({ status: true, order })
 }
