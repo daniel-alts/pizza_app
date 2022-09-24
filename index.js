@@ -1,4 +1,5 @@
 const express = require("express");
+const morgan = require("morgan");
 
 const mongoose = require("mongoose");
 
@@ -8,17 +9,17 @@ const userRouter = require("./routes/userRoutes");
 const PORT = 3334;
 
 const app = express();
-
+app.use(morgan("dev"));
 app.use(express.json());
 
 app.get("/", (req, res) => {
   return res.json({ status: true });
 });
 
-app.use("/order", orderRouter);
-app.use("/user", userRouter);
+app.use("/orders", orderRouter);
+app.use("/users", userRouter);
 
-mongoose.connect("mongodb://localhost:27017");
+mongoose.connect("mongodb://127.0.0.1:27017");
 
 mongoose.connection.on("connected", () => {
   console.log("Connected to MongoDB Successfully");

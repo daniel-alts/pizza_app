@@ -1,22 +1,26 @@
-const userModel = require('./../models/userModel')
+const userModel = require("./../models/userModel");
 
-module.exports = (req, res, roles) => {
-  return new Promise((resolve, reject) => {
+module.exports = async (req, res, roles) => {
+  return new Promise(async (resolve, reject) => {
     if (!req.body || !req.body.password || !req.body.username) {
       reject("Username or password is invalid");
     }
-    const user = await userModel.find({username: req.body.username})
-    
-    if (!user) {
-      reject("Username or password is invalid");
+    const user = await userModel.find({ username: req.body.username });
+
+    // console.log(user[0].user_type);
+    if (!user.length) {
+      return reject("Username or password is invalid");
     }
-    if (!roles.includes(user.role)) {
-      reject("User does not have have access to this feature");
+    if (!roles.includes(user[0].user_type)) {
+      return reject("User does not have have access to this feature");
     }
-    if (req.body.password === user.password && roles.includes(user.role)) {
-      resolve("User found");
+    if (
+      req.body.password === user[0].password &&
+      roles.includes(user[0].user_type)
+    ) {
+      return resolve("User found");
     } else {
-      reject("Passwords do not match");
+      return reject("Passwords do not match");
     }
   });
 };

@@ -3,11 +3,12 @@ const router = express.Router();
 const orderModel = require("./../models/orderModel");
 const APIFeatures = require("./../utils/APIFeatures");
 const authOrder = require("../utils/authOrder.js");
+const moment = require("moment");
 router
   .route("/")
   .get(async (req, res) => {
     try {
-      await authOrder(req, res, ["admin"], orderModel);
+      await authOrder(req, res, ["admin"]);
       const features = new APIFeatures(orderModel.find(), req.query)
         .filter()
         .sort()
@@ -25,13 +26,13 @@ router
   })
   .post(async (req, res) => {
     try {
-      await authOrder(req, res, ["admin", "user"], orderModel);
+      await authOrder(req, res, ["admin", "user"]);
 
       const body = req.body;
 
       const total_price = body.items.reduce((prev, curr) => {
         prev += curr.price * curr.quantity;
-        return prev;
+        return parseInt(prev);
       }, 0);
 
       const order = await orderModel.create({
@@ -70,12 +71,12 @@ router
   })
   .patch(async (req, res) => {
     try {
-      await authOrder(req, res, ["admin", "user"], orderModel);
-      const { id } = req.params;
-      const { state } = req.body;
+      await authOrder(req, res, ["admin", "user"]);
+      const { orderId } = req.params;
+      const state = req.body.updateData.state;
 
-      const order = await orderModel.findById(id);
-
+      const order = await orderModel.findById(orderId);
+      console.log(order);
       if (!order) {
         return res.status(404).json({ status: false, order: null });
       }
@@ -99,11 +100,11 @@ router
     }
   })
   .delete(async (req, res) => {
-    await authOrder(req, res, ["admin"], orderModel);
+    await authOrder(req, res, ["admin"]);
     try {
-      const { id } = req.params;
+      const { orderId } = req.params;
 
-      const order = await orderModel.deleteOne({ _id: id });
+      const order = await orderModel.deleteOne({ _id: orderId });
 
       return res.json({ status: true, order });
     } catch (err) {

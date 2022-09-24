@@ -9,11 +9,13 @@ router
   .get(async (req, res) => {
     try {
       await authUser(req, res, ["admin"]);
+      console.log(req.query);
       const features = new APIFeatures(userModel.find(), req.query)
         .filter()
         .sort()
         .limitFields()
         .paginate();
+
       const users = await features.query;
       return res.status(200).json({ status: true, users });
     } catch (err) {
@@ -36,7 +38,7 @@ router
   });
 
 router
-  .route("./:id")
+  .route("/:id")
   .get(async (req, res) => {
     try {
       await authUser(req, res, ["admin", "user"]);
