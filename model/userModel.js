@@ -12,14 +12,15 @@ const userSchema = new mongoose.Schema({
     },
     password:{
         type:String,
-        required:[true, 'Please Provide Your password']
+        required:[true, 'Please Provide Your password'],
+        minlength:[6, "Your password should be a minimium of 6"]
     },
     user_type:{
         type:String,
         required:[true, 'Please Provide Your user type'],
-        enum:["admin","user"],
-        message:"please specify the user type if admin or user"
-    }
+        enum:["admin","user"]
+    },
+    createdAt:Date
 
 })
 
