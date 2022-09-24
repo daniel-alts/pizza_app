@@ -13,7 +13,7 @@ router
         .sort()
         .limitFields()
         .paginate();
-      const orders = await features;
+      const orders = await features.query;
 
       return res.json({ status: true, orders });
     } catch (err) {

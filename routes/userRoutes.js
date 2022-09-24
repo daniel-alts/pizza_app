@@ -14,7 +14,7 @@ router
         .sort()
         .limitFields()
         .paginate();
-      const users = await features;
+      const users = await features.query;
       return res.status(200).json({ status: true, users });
     } catch (err) {
       res.json({
