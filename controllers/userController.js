@@ -2,29 +2,28 @@ const User = require('../models/userModels')
 
 
 exports.auth = async(req, res, next) => {
-    next()
-//     const body = req.body
-//     if (body.email && body.password){
-//         const user = await User.find({email: body.email})
-//         console.log(user)
-//         if (user){
-//             if (user[0].password === body.password) next();
-//         }
-//         else{
-//             res.status(400).json({
-//                 status: false,
-//                 message: 'Incorrect username || password!'
-//             })
-//         }
-//     }
-//     else{
-//         return res.status(400).json({
-//             status: false,
-//             message: 'Please provide email and password!'
-//         })
-//     }
+    const {email, password} = req.body
 
- }
+
+    if (!email || !password){
+        return res.status(400).json({
+            status: false,
+            message: "please provide email and password!"
+        })
+    }
+    const user = await User.findOne({email: email})
+    if (!user){
+        return res.status(400).json({status: false, message: "Incorrect email or password!"})
+    }
+
+    if (user.password !== password){
+        return res
+          .status(400)
+          .json({ status: false, message: "Incorrect email or password!" });
+    }
+    next()
+
+}
 
 exports.createUser = async(req, res) =>{
     try{
@@ -40,5 +39,5 @@ exports.createUser = async(req, res) =>{
             message: err
 
         })
-    }
+}
 }
