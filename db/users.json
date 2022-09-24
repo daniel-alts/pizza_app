@@ -1,0 +1,26 @@
+[
+  {
+    "username": "Zeuhz Droid",
+    "password": "gridz09",
+    "user_type": "admin",
+    "email": "zeuhzdroid@yahoo.com"
+  },
+  {
+    "username": "Patrick Schaum",
+    "password": "cing67",
+    "user_type": "user",
+    "email": "paschaum@yahoo.com"
+  },
+  {
+    "username": "Elliot cain",
+    "password": "19cain99",
+    "user_type": "user",
+    "email": "cainelly@yahoo.com"
+  },
+  {
+    "username": "Brain kuit",
+    "password": "bot67inpro",
+    "user_type": "user",
+    "email": "brainkuit@yahoo.com"
+  }
+]
