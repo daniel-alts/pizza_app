@@ -32,17 +32,21 @@ const getSingleOrder = async (req,res)=>{
 
 const getAllOrders = async (req,res)=>{
     const {sort,state}= req.query
+
     const queryObject = {}
     if(state){
         queryObject.state=state
     }
 
-
     let orders = orderModel.find(queryObject)
     if(sort){
         orders = orders.sort(sort)
     }
-    orders = await orders
+    const page = Number(req.query.page) || 1
+    const limit = Number(req.query.limit) || 3
+    const skip = (page-1)*limit
+
+    orders = await orders.skip(skip).limit(limit)
     return res.json({ status: true, orders })
 }
 
