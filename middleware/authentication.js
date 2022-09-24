@@ -1,7 +1,12 @@
 const User = require('../model/userModel')
 
 const authenticate = async (req,res,next)=>{
-    const {username,password} = req.body
+    const {user} = req.body
+
+    if(!user){
+        return res.status(401).json({status:false, msg: 'Please provide your user Details'})}
+
+    const {username,password} = user
     if(!username || !password){
        return  res.status(401).json({ status: false, error:"Please fill in Your username and password"} )
     }

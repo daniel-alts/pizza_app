@@ -31,8 +31,18 @@ const getSingleOrder = async (req,res)=>{
 }
 
 const getAllOrders = async (req,res)=>{
-    const orders = await orderModel.find()
+    const {sort,state}= req.query
+    const queryObject = {}
+    if(state){
+        queryObject.state=state
+    }
 
+
+    let orders = orderModel.find(queryObject)
+    if(sort){
+        orders = orders.sort(sort)
+    }
+    orders = await orders
     return res.json({ status: true, orders })
 }
 
@@ -40,21 +50,17 @@ const updateOrder = async (req,res)=>{
     const { id } = req.params;
     const { state } = req.body;
 
-    const order = await orderModel.findById(id)
+   try {
+    const order = await orderModel.findOneAndUpdate({_id:id},{state:state},{new:true,runValidators:true})
 
     if (!order) {
         return res.status(404).json({ status: false, order: null })
     }
 
-    if (state < order.state) {
-        return res.status(422).json({ status: false, order: null, message: 'Invalid operation' })
-    }
-
-    order.state = state;
-
-    await order.save()
-
     return res.json({ status: true, order })
+   } catch (error) {
+    return res.status(500).json({ status: false, error: error.message} )
+   }
 }
 
 const deleteOrder = async (req,res)=>{
