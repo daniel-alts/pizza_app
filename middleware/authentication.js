@@ -11,9 +11,13 @@ const authenticate = async (req,res,next)=>{
     findUser.password = password
 
     try {
-        const user = await User.findOne(findUser)
+        const user = await User.findOne({username:username}) 
         if(!user){
-            return res.status(401).json({status: false, msg: "you are not registered yet go to /register and create an account"})
+            return res.status(404).json({status: false, msg: "you are not registered yet go to /register and create an account"})
+        }
+        const confirmEmailAndPassword = await User.findOne(findUser)
+        if(!confirmEmailAndPassword){
+            return res.status(401).json({status: false, msg: "your Password is incorrect"})
         }
     } catch (error) {
        return res.status(500).json({status: false, msg:"internal server error"})
