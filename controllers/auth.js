@@ -1,6 +1,7 @@
 const Users = require('../Models/userModels');
 const router = require('express').Router();
 const AppError = require('../utils/AppError');
+const ResponseHandler = require('../utils/responseHandler');
 
 // global user variable
 // !be careful
@@ -15,10 +16,8 @@ exports.Register = async (req, res, next) => {
 			email: req.body.email,
 			password: req.body.password,
 		});
-		res.status(201).json({
-			status: 'success',
-			data: user,
-		});
+
+		new ResponseHandler(res, user, 201);
 	} catch (error) {
 		return next(new AppError(error.message, 404));
 	}
@@ -34,10 +33,7 @@ exports.Login = async (req, res, next) => {
 			return next(new AppError(' Wrong Credentials', 403));
 		}
 
-		res.status(201).json({
-			status: 'success',
-			data: user,
-		});
+		new ResponseHandler(res, user, 200);
 	} catch (error) {
 		return next(new AppError(error.message, 401));
 	}
