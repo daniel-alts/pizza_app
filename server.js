@@ -13,7 +13,7 @@ mongoose
 // console.log(app);
 // const port = process.env.PORT || 9000;
 
-const newServer = new server(server2, 5555);
+// const newServer = new server(server2, 5555);
 const Gat = new server(app, 9000);
 Gat.listen();
-newServer.listen();
+// newServer.listen();
