@@ -1,6 +1,7 @@
 const express = require("express");
-const orderModel = require("../orderModel")
-const auth = require("../middlewares/auth")
+const moment = require('moment');
+const orderModel = require("../orderModel");
+const auth = require("../middlewares/auth");
 
 const ordersRouter = express.Router();
 
@@ -23,8 +24,7 @@ ordersRouter.post('/', auth, async (req, res) => {
         created_at: moment().toDate(),
         total_price
     })
-    
-    return res.json({ status: true, order })
+    return res.status(201).json({ status: true, order })
 })
 
 ordersRouter.get('/:orderId', auth, async (req, res) => {
@@ -71,10 +71,15 @@ ordersRouter.patch('/:id',auth, async (req, res) => {
 
 ordersRouter.delete('/:id', auth, async (req, res) => {
     const { id } = req.params;
-
-    const order = await orderModel.deleteOne({ _id: id})
-
-    return res.json({ status: true, order })
+    try{
+        const order = await orderModel.deleteOne({ _id: id})
+        if(!order.deletedCount){
+            throw new Error();
+        }
+        return res.json({ status: true, order })
+    }catch(err){
+        return res.status(404).json({ status: false, order: null })
+    }
 })
 
 

@@ -1,10 +1,11 @@
 const express = require("express");
-const userModel = require("../userModel")
+const userModel = require("../userModel");
+const auth = require("../middlewares/auth");
 
 const usersRouter = express.Router();
 
 // Get all users
-usersRouter.get("/", async(req, res) => {
+usersRouter.get("/", auth , async(req, res) => {
     const users = await userModel.find({})
         .then((users) => {
             res.status(200).send({users})
@@ -21,7 +22,7 @@ usersRouter.get("/", async(req, res) => {
 usersRouter.post("/", async(req, res) => {
     const body = req.body;
     const { username, password, user_type } = req.body;
-    if(!username && !password && !user_type){
+    if(!username || !password || !user_type){
         res.status(400).send({
                 statusCode: 400,
                 message: "Bad Request"
