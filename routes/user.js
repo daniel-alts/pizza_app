@@ -3,7 +3,7 @@ const userSchema = require("../models/userModel");
 
 const userRoute = express.Router();
 
-// Create user 
+// Create user
 userRoute.post("/", (req, res) => {
   const user = req.body;
 
