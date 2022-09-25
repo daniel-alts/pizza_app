@@ -11,40 +11,77 @@ app.get('/', (req, res) => {
   return res.json({ status: true })
 })
 
+/**
+ * Create a new order
+ */
 app.post('/order', async (req, res) => {
   const body = req.body
 
   const total_price = body.items.reduce((prev, curr) => {
-    prev += curr.price
-    return prev
+    return (prev += curr.quantity * curr.price)
   }, 0)
 
-  const order = await orderModel.create({
+  const orderObject = {
     items: body.items,
-    // created_at: moment().toDate(),
     total_price,
-  })
-
-  return res.json({ status: true, order })
-})
-
-app.get('/order/:orderId', async (req, res) => {
-  const { orderId } = req.params
-  const order = await orderModel.findById(orderId)
-
-  if (!order) {
-    return res.status(404).json({ status: false, order: null })
   }
 
-  return res.json({ status: true, order })
+  const order = new orderModel(orderObject)
+  order
+    .save()
+    .then((result) => {
+      return res.status(201).json({ status: true, result })
+    })
+    .catch((err) => {
+      res.status(500)
+      console.log('Error creating order', err.message)
+      return res.json({ error: 'Error creating order' })
+    })
 })
 
+/**
+ * Get order by id
+ */
+app.get('/order/:orderId', async (req, res) => {
+  const { orderId } = req.params
+  try {
+    const order = await orderModel.findById(orderId)
+    if (!order) {
+      return res.status(404).json({ status: false, order: null })
+    }
+    return res.json({ status: true, order })
+  } catch (err) {
+    console.log(err)
+  }
+})
+
+/**
+ * Get all orders
+ */
 app.get('/orders', async (req, res) => {
-  const orders = await orderModel.find()
+  const orders = await orderModel.find({})
 
   return res.json({ status: true, orders })
 })
 
+/**
+ * Get information about all orders
+ */
+app.get('/orders/info', async (req, res) => {
+  const orders = await orderModel.find({})
+  const resObj = {}
+  resObj.numberOfOrders = orders.length
+  resObj.states = orders.reduce((obj, x) => {
+    if (!obj[x.state]) obj[x.state] = 0
+    obj[x.state] ++
+    return obj
+  }, {})
+  return res.json({status: true, data: resObj})
+})
+
+/**
+ * Update order state
+ */
 app.patch('/order/:id', async (req, res) => {
   const { id } = req.params
   const { state } = req.body
@@ -66,12 +103,15 @@ app.patch('/order/:id', async (req, res) => {
   return res.json({ status: true, order })
 })
 
+
+/**
+ * Delete order 
+ */
 app.delete('/order/:id', async (req, res) => {
   const { id } = req.params
-
-  const order = await orderModel.deleteOne({ _id: id })
-
-  return res.json({ status: true, order })
+  const order = await orderModel.findOne({ _id: id })
+  const deleted = await order.remove()
+  return res.json({ status: true, deleted })
 })
 
 /**
