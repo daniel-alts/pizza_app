@@ -5,9 +5,11 @@ const AUTH = require('./routes/authRoutes');
 const morgan = require('morgan');
 const AppError = require('./utils/AppError');
 const errController = require('./controllers/errController');
+const reqController = require('./controllers/errController');
 const app = express();
 app.use(express.json());
-app.use(morgan('common'));
+// app.use(morgan('common'));
+app.use(morgan('dev'));
 
 app.use('/api/orders', ORDERROUTES);
 app.use('/api/', AUTH);

@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const OrderSchema = new Schema({
 	created_at: Date,
-	state: { type: Number, default: 1 },
+	state: { type: Number, default: 0 },
 	total_price: Number,
 	items: [
 		{
