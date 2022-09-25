@@ -11,7 +11,7 @@ exports.sortByTotalPrice = async (req, res, next) => {
 };
 
 exports.sortByState = async (req, res, next) => {
-	req.query.sort = 'state';
+	req.query.sort = 'state, total_price';
 	next();
 };
 
@@ -23,7 +23,9 @@ exports.getOrders = async (req, res) => {
 	let query = orderModel.find(queryObj);
 
 	if (req.query.sort) {
-		query = query.sort(req.query.sort);
+		const SORTBY = req.query.sort.split(',').join(' ');
+		console.log(SORTBY);
+		query = query.sort(SORTBY);
 	}
 	const orders = await query;
 	new ResponseHandler(res, orders, 200);
