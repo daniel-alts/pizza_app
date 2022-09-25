@@ -1,4 +1,3 @@
-const http = require('http');
 const express = require('express');
 const ORDERROUTES = require('./routes/orderRoutes');
 const AUTH = require('./routes/authRoutes');
@@ -24,4 +23,4 @@ app.all('*', (req, res, next) => {
 });
 
 app.use(errController);
-module.exports = { app, http };
+module.exports = { app };
