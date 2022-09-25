@@ -4,6 +4,7 @@ const ORDERROUTES = require('./routes/orderRoutes');
 const AUTH = require('./routes/authRoutes');
 const morgan = require('morgan');
 const AppError = require('./utils/AppError');
+const errController = require('./controllers/errController');
 const app = express();
 app.use(express.json());
 app.use(morgan('common'));
@@ -20,5 +21,5 @@ app.all('*', (req, res, next) => {
 	);
 });
 
-app.use = (err, req, res, next) => {};
+app.use(errController);
 module.exports = { app, http };
