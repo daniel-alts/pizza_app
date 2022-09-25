@@ -3,10 +3,36 @@ const orderModel = require('../Models/orderModel');
 const ResponseHandler = require('../utils/responseHandler');
 const AppError = require('../utils/AppError');
 
+// !sort by T Price
+exports.sortByTotalPrice = async (req, res, next) => {
+	req.query.sort = '-total_price';
+	// req.query.limit ='3'
+	next();
+};
+
+exports.sortByState = async (req, res, next) => {
+	req.query.sort = '-state';
+	console.log('object');
+	next();
+};
+
 //  ! ---- Get All Orders
 exports.getOrders = async (req, res) => {
-	const orders = await orderModel.find();
+	// Build query
+	// 1a) Filter query.
+	const queryObj = { ...req.query };
+	const excludedFields = ['page', 'sort', 'limit', 'fields'];
+	excludedFields.forEach((el) => delete queryObj[el]);
+	// console.log(req.query, queryObj);
 
+	let query = await orderModel.find(queryObj);
+
+	// 2) Sorting.
+	if (req.query.sort) {
+		query = query.sort(req.query.sort);
+	}
+
+	const orders = await query;
 	new ResponseHandler(res, orders, 200);
 };
 
