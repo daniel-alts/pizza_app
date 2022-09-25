@@ -11,27 +11,20 @@ exports.sortByTotalPrice = async (req, res, next) => {
 };
 
 exports.sortByState = async (req, res, next) => {
-	req.query.sort = '-state';
-	console.log('object');
+	req.query.sort = 'state';
 	next();
 };
 
 //  ! ---- Get All Orders
 exports.getOrders = async (req, res) => {
 	// Build query
-	// 1a) Filter query.
-	const queryObj = { ...req.query };
-	const excludedFields = ['page', 'sort', 'limit', 'fields'];
-	excludedFields.forEach((el) => delete queryObj[el]);
-	// console.log(req.query, queryObj);
+	let queryObj = { ...req.query };
 
-	let query = await orderModel.find(queryObj);
+	let query = orderModel.find(queryObj);
 
-	// 2) Sorting.
 	if (req.query.sort) {
 		query = query.sort(req.query.sort);
 	}
-
 	const orders = await query;
 	new ResponseHandler(res, orders, 200);
 };
