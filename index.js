@@ -12,6 +12,10 @@ const PORT = 3334;
 
 const app = express();
 
+app.set("view engine", "ejs")
+app.set("views", "./views")
+
+app.use("/public", express.static("public"))
 app.use(express.json());
 
 app.get("/", (req, res) => {

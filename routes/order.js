@@ -2,6 +2,7 @@ const express = require("express")
 
 const Order = require("../models/order")
 const orderRouter = express.Router()
+
 // Create new order
 orderRouter.post('/', async (req, res) => {
     const orderData = req.body.order;
@@ -39,9 +40,61 @@ orderRouter.get('/:orderId', async (req, res) => {
 
 // Get all orders
 orderRouter.get('/', async (req, res) => {
-    const orders = await Order.find()
+    const ORDER_PER_PAGE = 10
+    const queryParams = req.query
 
-    return res.json({ status: true, orders })
+    // Handle the query parameters
+    let 
+        sort = queryParams.sort,     // Sort by date or price; ascending or descending
+        state = +queryParams.state,  // Filter by state (1: pending, 2: preparing, 3: pickup, 4: delivered)
+        page = +queryParams.page     // Get current pagination
+
+    const sortQuery = {}
+    const filterQuery = {}
+
+    if (sort) {
+        // Handle sorts
+        sort.includes("date|asc") ? sortQuery["created_at"] = 1 : null
+        sort.includes("date|desc") ? sortQuery["created_at"] = -1 : null
+        sort.includes("price|asc") ? sortQuery["total_price"] = 1 : null
+        sort.includes("price|desc") ? sortQuery["total_price"] = -1 : null
+        
+    }
+
+    // Handle filter by state 
+    if ([1, 2, 3, 4].includes(state)) filterQuery.state = state
+
+    const orders = await Order.find(filterQuery).sort(sortQuery)
+    const ordersLength = orders.length
+
+    const start = ORDER_PER_PAGE * page
+    const end = ORDER_PER_PAGE * (page + 1)
+    const shortened_orders = orders.slice(start, end)
+
+    if (shortened_orders.length !== 0) {
+        const url = new URL("http://localhost:3334/order" + req.url)
+        
+        const context = {
+            pageNum: page + 1,
+            orders: shortened_orders,
+            start: start,
+            end: (end < ordersLength) ? end : ordersLength,
+            totalNum: ordersLength,
+            finished: false
+        }
+        url.searchParams.set("page", page - 1)
+        context.prevUrl = url.search
+        url.searchParams.set("page", page + 1)
+        context.nextUrl = url.search
+
+        return res.render("orders", context)
+    } else {
+        return res.render("orders", {
+            finished: true 
+        })
+    }
+
+    // return res.json({ status: true, orders })
 })
 
 // Update order of specific id

@@ -1,0 +1,4 @@
+1: pending
+2: preparing
+3: pickup
+4: delivered
