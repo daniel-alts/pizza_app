@@ -32,7 +32,6 @@ exports.authenticateHandler = async function (req, res, next) {
 };
 
 exports.adminAuthorizeHandler = function (req, res, next) {
-  console.log("HEY");
   const { userCredentials } = req.body;
   const { user_type } = userCredentials;
   if (user_type.toLowerCase() !== "admin") {
