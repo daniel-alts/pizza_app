@@ -1,15 +1,13 @@
 const moment = require('moment');
 const orderModel = require('../Models/orderModel');
+const ResponseHandler = require('../utils/responseHandler');
+const AppError = require('../utils/AppError');
 
 //  ! ---- Get All Orders
 exports.getOrders = async (req, res) => {
 	const orders = await orderModel.find();
 
-	return res.json({
-		status: true,
-		result: orders.length,
-		data: orders,
-	});
+	new ResponseHandler(res, orders, 200);
 };
 
 // ! ------ Create Order
@@ -28,7 +26,7 @@ exports.createOrder = async (req, res) => {
 		total_price,
 	});
 
-	return res.json({ status: true, order });
+	new ResponseHandler(res, order, 200);
 };
 
 // ! ------ FIND Order
@@ -40,7 +38,7 @@ exports.findOrder = async (req, res) => {
 		return res.status(404).json({ status: false, order: null });
 	}
 
-	return res.json({ status: true, order });
+	new ResponseHandler(res, order, 200);
 };
 
 //
@@ -58,22 +56,13 @@ exports.updateOrder = async (req, res) => {
 	}
 
 	if (state < order.state) {
-		return res.status(422).json({
-			status: false,
-			order: null,
-			message: 'Invalid operation',
-		});
+		return next(new AppError(' Invalid operation', 422));
 	}
 
 	order.state = state;
-
 	await order.save();
 
-	return res.json({
-		status: true,
-		result: order.length,
-		data: order,
-	});
+	new ResponseHandler(res, order, 200);
 };
 
 // ! ------ DELETE Order
@@ -81,5 +70,5 @@ exports.updateOrder = async (req, res) => {
 exports.deleteOrder = async (req, res) => {
 	const order = await orderModel.deleteOne({ _id: req.params.id });
 
-	return res.json({ status: true, order });
+	new ResponseHandler(res, order, 200);
 };
