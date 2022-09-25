@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
     },
     user_type:{
         type:String,
-        required:[true, 'Please Provide Your user type'],
+        required:[true, 'Please Provide Your user_type'],
         enum:["admin","user"]
     },
     createdAt:Date

@@ -17,7 +17,7 @@ app.use(express.json());
 
 
 // using the routers
-app.use(userRouter)
+app.use('/register',userRouter)
 app.use(authentication ,orderRouter)
 
 app.get('/', (req, res) => {
