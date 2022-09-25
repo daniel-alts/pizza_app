@@ -1,29 +1,38 @@
-const mongoose = require('mongoose');
-const { Schema } = mongoose;
+const Users = require('../Models/userModels');
+const AppError = require('../utils/AppError');
+const responseHandler = require('../utils/responseHandler');
 
-const UserSchema = new Schema(
-	{
-		username: {
-			type: String,
-			required: true,
-			unique: true,
-		},
-		email: {
-			type: String,
-			required: true,
-			unique: true,
-		},
-		password: {
-			type: String,
-			required: true,
-			unique: true,
-		},
-		profilePicture: {
-			type: String,
-			default: '',
-		},
-	},
-	{ timestamps: true },
-);
+// global user variable
+let user;
 
-module.exports = mongoose.model('User', UserSchema);
+exports.deleteUser = async (req, res, next) => {
+	try {
+		user = await Users.findByIdAndDelete(req.params.id);
+
+		new ResponseHandler(res, user, 200);
+	} catch (err) {
+		return next(new AppError(err.message, 404));
+	}
+};
+
+exports.updateUser = async (req, res) => {
+	try {
+		user = await Users.findByIdAndUpdate(req.params.id, req.body, {
+			new: true,
+			runValidators: true,
+		});
+		new ResponseHandler(res, user, 200);
+	} catch (err) {
+		return next(new AppError(err.message, 404));
+	}
+};
+
+exports.findUser = async (req, res) => {
+	try {
+		user = await Users.findById(req.params.id);
+
+		new ResponseHandler(res, user, 200);
+	} catch (error) {
+		return next(new AppError(err.message, 404));
+	}
+};
