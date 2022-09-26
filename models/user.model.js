@@ -1,11 +1,8 @@
 const mongoose = require('mongoose');
-
 const Schema = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
 
 const UserSchema = new Schema({
   id: ObjectId,
-  created_at: Date,
   username: {
     type: String,
     required: true,
@@ -19,6 +16,8 @@ const UserSchema = new Schema({
     type: String,
     enum: ['admin', 'user'],
   },
+}, {
+  timestamps: true
 });
 
 const User = mongoose.model('User', UserSchema);
