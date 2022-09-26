@@ -2,9 +2,33 @@ const orderModel = require("../models/orderModel");
 
 exports.getAllOrders = async function (req, res) {
   try {
-    const orders = await orderModel.find({});
+    const queryObj = { ...req.query };
+    const reservedKeys = ["sort", "page"];
+    reservedKeys.forEach((key) => delete queryObj[key]);
+
+    // Quering by URL query params
+    let ordersQuery = orderModel.find(queryObj);
+
+    // Sorting
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(",").join(" ");
+      ordersQuery.sort(sortBy);
+    } else {
+      ordersQuery.sort("-state");
+    }
+
+    // Pagination
+    const page = +req.query.page || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    ordersQuery.skip(skip).limit(limit);
+
+    const orders = await ordersQuery;
+
     return res.status(200).json({
       success: true,
+      page,
       results: orders.length,
       data: {
         orders,
