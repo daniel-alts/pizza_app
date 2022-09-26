@@ -1,11 +1,23 @@
 const express = require('express')
 const router = express.Router()
 const orderModel = require('../models/orderModel')
+const authenticate = require('../authenticate')
 
 /**
  * Get information about all orders
  */
-router.get('/info', async (req, res, next) => {
+router.get('/info', authenticate, async (req, res, next) => {
+  // check for authenticated user
+  const authenticatedUser = req.authenticatedUser;
+
+  if(!authenticatedUser) {
+    return res.status(403).send({message: 'Forbidden'});
+  }
+
+  if(authenticatedUser.role !== 'admin') {
+    return res.status(401).send({message: 'Unauthorised'});
+  }
+
   try {
     const orders = await orderModel.find({})
     const resObj = {}
@@ -24,7 +36,14 @@ router.get('/info', async (req, res, next) => {
 /**
  * Get all orders
  */
-router.get('/', async (req, res, next) => {
+router.get('/', authenticate, async (req, res, next) => {
+  // check for authenticated user
+  const authenticatedUser = req.authenticatedUser;
+
+  if(!authenticatedUser) {
+    return res.status(403).send({message: 'Forbidden'});
+  }
+
   try {
     const orders = await orderModel.find({})
 
@@ -37,7 +56,14 @@ router.get('/', async (req, res, next) => {
 /**
  * Get order by id
  */
-router.get('/:orderId', async (req, res, next) => {
+router.get('/:orderId', authenticate, async (req, res, next) => {
+  // check for authenticated user
+  const authenticatedUser = req.authenticatedUser;
+
+  if(!authenticatedUser) {
+    return res.status(403).send({message: 'Forbidden'});
+  }
+
   const { orderId } = req.params
   try {
     const order = await orderModel.findById(orderId)
@@ -53,7 +79,14 @@ router.get('/:orderId', async (req, res, next) => {
 /**
  * Create a new order
  */
-router.post('/', async (req, res) => {
+router.post('/', authenticate, async (req, res) => {
+  // check for authenticated user
+  const authenticatedUser = req.authenticatedUser;
+
+  if(!authenticatedUser) {
+    return res.status(403).send({message: 'Forbidden'});
+  }
+
   const body = req.body
 
   const total_price = body.items.reduce((prev, curr) => {
@@ -81,7 +114,18 @@ router.post('/', async (req, res) => {
 /**
  * Update order state
  */
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:id', authenticate, async (req, res, next) => {
+  // check for authenticated user
+  const authenticatedUser = req.authenticatedUser;
+
+  if(!authenticatedUser) {
+    return res.status(403).send({message: 'Forbidden'});
+  }
+
+  if(authenticatedUser.role !== 'admin') {
+    return res.status(401).send({message: 'Unauthorised'});
+  }
+
   const { id } = req.params
   const { state } = req.body
 
@@ -109,7 +153,18 @@ router.patch('/:id', async (req, res, next) => {
 /**
  * Delete order
  */
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', authenticate, async (req, res, next) => {
+  // check for authenticated user
+  const authenticatedUser = req.authenticatedUser;
+
+  if(!authenticatedUser) {
+    return res.status(403).send({message: 'Forbidden'});
+  }
+
+  if(authenticatedUser.role !== 'admin') {
+    return res.status(401).send({message: 'Unauthorised'});
+  }  
+  
   const { id } = req.params
   try {
     const order = await orderModel.findOne({ _id: id })
