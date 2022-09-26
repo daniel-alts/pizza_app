@@ -11,7 +11,9 @@ const app = express();
 app.use(express.json());
 
 app.use("/orders", orderRouter);
-// app.all("/orders", orderRouter);
+app.all("/", (req, res) => {
+	res.status(200).send("Welcome");
+});
 
 mongoose.connect(
 	"mongodb://localhost:27017/foodApp"
