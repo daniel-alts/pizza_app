@@ -3,9 +3,22 @@ const router = express.Router()
 const userModel = require('../models/userModel')
 
 /**
+ * Get all users
+ */
+router.route('/').get(async (req, res, next) => {
+  try {
+    const users = await userModel.find({}, { username: 1, user_type: 1 })
+
+    return res.json({ status: true, users })
+  } catch (err) {
+    return res.status(500).json({ status: false, data: err.message })
+  }
+})
+
+/**
  * Create a new user
  */
-router.route('/register').post((req, res, next) => {
+router.route('/register').post(async (req, res) => {
   try {
     const { username, password, user_type } = req.body
     const userObject = {
