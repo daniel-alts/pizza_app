@@ -6,14 +6,16 @@ const ObjectId = Schema.ObjectId;
 const OrderSchema = new Schema({
   id: ObjectId,
   created_at: Date,
+  // state can be pending, inprogess, delivered
   state: { type: Number, default: 1 },
-  total_price: Number,
   items: [{
     name: String,
     price: Number,
-    size: { type: String, enum: ['m', 's', 'l']},
     quantity: Number,
-  }]
+    // enums is literally fixed value..
+    size: { type: String, enum: ['m', 's', 'l']}
+  }],
+    total_price: Number
 });
 
 const Order = mongoose.model('Order', OrderSchema);
