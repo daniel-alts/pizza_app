@@ -3,8 +3,7 @@ const express = require("express");
 const session = require("express-session");
 const mongoose = require("mongoose");
 const userRoute = require("./routes/user.routes");
-const { orderRoute } = require("./routes/order.routes");
-const { authenticateUser } = require("./utils/authenticate.utils");
+const orderRoute = require("./routes/order.routes");
 
 const MONGODB_CONNECTION_URL = process.env.MONGODB_CONNECTION_URL;
 

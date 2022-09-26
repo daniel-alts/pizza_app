@@ -7,18 +7,17 @@ const {
 	updateOrder,
 	deleteOrder,
 } = require("../controllers/order.controller");
-const Role = require("../utils/roles.utils");
 
 const orderRoute = express.Router();
 
-orderRoute.post("/", authenticateUser, authorize(Role), createOrder);
+orderRoute.post("/", authenticateUser, authorize(["user"]), createOrder);
 
-orderRoute.get("/:orderId", authenticateUser, authorize(Role),  getOrderById);
+orderRoute.get("/:orderId", authenticateUser, authorize(["user"]),  getOrderById);
 
-orderRoute.get("/", authenticateUser, authorize(Role), getAllOrders);
+orderRoute.get("/", authenticateUser, authorize(["user"]), getAllOrders);
 
-orderRoute.patch("/:id", authenticateUser, authorize(Role.Admin), updateOrder);
+orderRoute.patch("/:id", authenticateUser, authorize(["admin"]), updateOrder);
 
-orderRoute.delete("/:id", authenticateUser, authorize(Role.Admin), deleteOrder);
+orderRoute.delete("/:id", authenticateUser, authorize(["admin"]), deleteOrder);
 
-module.exports = { orderRoute };
+module.exports = orderRoute;

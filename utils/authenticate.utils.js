@@ -11,10 +11,6 @@ function authenticateUser(req, res, next) {
 }
 
 function authorize(roles = []) {
-	if (typeof roles === "string") {
-		roles = [roles];
-	}
-
 	return [
 		(req, res, next) => {
 			if (roles.length && !roles.includes(req.session.user.user_type)) {

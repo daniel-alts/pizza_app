@@ -1,4 +1,5 @@
 const express = require("express");
+const { authorize } = require("../utils/authenticate.utils");
 const {
 	createUser,
 	loginUser,
@@ -18,6 +19,6 @@ userRoute.post("/login", loginUser);
 userRoute.post("/logout", logoutUser);
 
 // get all users
-userRoute.get("/", getAllUsers);
+userRoute.get("/", authorize(["admin"]), getAllUsers);
 
 module.exports = userRoute;
