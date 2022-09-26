@@ -8,8 +8,8 @@ const app = express()
 
 app.use(express.json())
 
-app.use('/orders', ordersRoute)
-app.use('/users', usersRoute)
+app.use('/api/orders', ordersRoute)
+app.use('/api/users', usersRoute)
 
 app.all('/', (req, res) => {
   return res.json({ status: true })
