@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const userModel = require('../models/userModel')
+const bcrypt = require('bcrypt')
 
 /**
  * Get all users
@@ -21,9 +22,10 @@ router.route('/').get(async (req, res, next) => {
 router.route('/register').post(async (req, res) => {
   try {
     const { username, password, user_type } = req.body
+    const hashedPassword = await bcrypt.hash(password, 10)
     const userObject = {
       username,
-      password,
+      password: hashedPassword,
     }
     if (user_type) userObject.user_type = user_type
     const user = new userModel(userObject)
