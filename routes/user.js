@@ -21,7 +21,7 @@ userRoute.post("/login", async (req, res) => {
 	const { username, password } = req.body;
 
 	const user = await userSchema.findOne({ username });
-	const isMatch = await bcrypt.compare(password, user.hashedPwd);
+	const isMatch = await bcrypt.compare(password, user.password);
 
 	if (isMatch == true) {
 		console.log("logged in!");
