@@ -2,8 +2,9 @@ require("dotenv").config();
 const express = require("express");
 const session = require("express-session");
 const mongoose = require("mongoose");
-const { userRoute } = require("./routes/user");
-const { orderRoute } = require("./routes/order");
+const userRoute = require("./routes/user.routes");
+const { orderRoute } = require("./routes/order.routes");
+const { authenticateUser } = require("./utils/authenticate.utils");
 
 const MONGODB_CONNECTION_URL = process.env.MONGODB_CONNECTION_URL;
 
@@ -21,9 +22,10 @@ app.use(
 	})
 );
 
+
 app.use("/user", userRoute);
 
-app.use("/order", orderRoute);
+app.use("/order",  orderRoute);
 
 app.get("/", (req, res) => {
 	return res.json({ status: true });

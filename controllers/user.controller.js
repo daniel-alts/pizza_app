@@ -1,11 +1,7 @@
-const express = require("express");
 const bcrypt = require("bcrypt");
-const userSchema = require("../models/userModel");
+const userSchema = require("../models/user.model");
 
-const userRoute = express.Router();
-
-// Register user
-userRoute.post("/register", async (req, res) => {
+async function createUser(req, res) {
 	const { username, password } = req.body;
 	const hashedPwd = await bcrypt.hash(password, 10);
 
@@ -14,10 +10,9 @@ userRoute.post("/register", async (req, res) => {
 	await user.save();
 
 	return res.status(201).send(user);
-});
+}
 
-// Login
-userRoute.post("/login", async (req, res) => {
+async function loginUser(req, res) {
 	const { username, password } = req.body;
 
 	const user = await userSchema.findOne({ username });
@@ -30,18 +25,16 @@ userRoute.post("/login", async (req, res) => {
 	} else {
 		return res.send("wrong ID or password");
 	}
-});
+}
 
-// Logout
-userRoute.post("/logout", (req, res) => {
+async function logoutUser(req, res) {
 	req.session.user = null;
 	return res.send("logged out");
-});
+}
 
-// get all users
-userRoute.get("/", async (req, res) => {
+async function getAllUsers(req, res) {
 	const users = await userSchema.find({});
 	return res.json({ data: users });
-});
+}
 
-module.exports = { userRoute };
+module.exports = { createUser, loginUser, logoutUser, getAllUsers };
