@@ -1,8 +1,8 @@
-const USERS = require("../model/userModel");
 
-const authtenticateUser =  async (req,res,next) =>{ 
-    try {
-        let Token = req.headers.authorization;
+
+const authtenticateUser =  async (req,res,next) =>{  
+     try {
+        const Token = req.headers.authorization.split(" ")[1]
 
             if (!Token) {
                 res.status(401).send("UnAuthorized user Pls register....");
@@ -15,6 +15,7 @@ const authtenticateUser =  async (req,res,next) =>{
         console.log(error.message);
         res.status(401).send(error.message)
     }
+    
 }
 
 module.exports = authtenticateUser
