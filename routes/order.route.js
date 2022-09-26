@@ -1,8 +1,9 @@
 const express = require('express');
 const orderRouter = express.Router();
 const Order = require('../models/order.model');
+const { validatePostOrder } = require('../middlewares/validator');
 
-orderRouter.post('/', async (req, res) => {
+orderRouter.post('/', validatePostOrder, async (req, res) => {
   const body = req.body;
 
   const total_price = body.items.reduce((prev, curr) => {
@@ -12,16 +13,16 @@ orderRouter.post('/', async (req, res) => {
 
   const order = await Order.create({
     items: body.items,
-    created_at: moment().toDate(),
-    total_price
+    total_price,
+    user: req.user.id
   })
 
   return res.json({ status: true, order })
 })
 
-orderRouter.get('/order/:orderId', async (req, res) => {
+orderRouter.get('/:orderId', async (req, res) => {
   const { orderId } = req.params;
-  const order = await Order.findById(orderId)
+  const order = await Order.findById(orderId).populate('user');
 
   if (!order) {
     return res.status(404).json({ status: false, order: null })
@@ -30,20 +31,24 @@ orderRouter.get('/order/:orderId', async (req, res) => {
   return res.json({ status: true, order })
 })
 
-orderRouter.get('/orders', async (req, res) => {
-  const orders = await Order.find()
+orderRouter.get('/', async (req, res) => {
+  const orders = await Order.find({ user: req.user.id }).populate('user');
 
   return res.json({ status: true, orders })
 })
 
-orderRouter.patch('/order/:id', async (req, res) => {
+orderRouter.patch('/:id', async (req, res) => {
   const { id } = req.params;
   const { state } = req.body;
 
   const order = await Order.findById(id)
 
   if (!order) {
-    return res.status(404).json({ status: false, order: null })
+    return res.status(404).json({ status: false, error: 'Order does not exist' })
+  }
+
+  if (req.user.id !== order.user.toString()) {
+    return res.status(403).json({ status: false, error: 'unauthorized' })
   }
 
   if (state < order.state) {
@@ -53,16 +58,27 @@ orderRouter.patch('/order/:id', async (req, res) => {
   order.state = state;
 
   await order.save()
+  const _order = order.populate('user')
 
-  return res.json({ status: true, order })
+  return res.json({ status: true, order: _order })
 })
 
-orderRouter.delete('/order/:id', async (req, res) => {
+orderRouter.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
-  const order = await Order.deleteOne({ _id: id })
+  const order = await Order.findById(id)
 
-  return res.json({ status: true, order })
+  if (!order) {
+    return res.status(404).json({ status: false, error: 'Order does not exist' })
+  }
+
+  if (req.user.id !== order.user.toString()) {
+    return res.status(403).json({ status: false, error: 'unauthorized' })
+  }
+
+  const _order = await Order.deleteOne({ _id: id })
+
+  return res.json({ status: true, order: _order })
 })
 
 module.exports = orderRouter;
