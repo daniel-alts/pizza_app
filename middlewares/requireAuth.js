@@ -13,10 +13,7 @@ const requireAuth = async (req, res, next) => {
     return res.status(401).json({ status: false, message: 'Unauthorized' });
   }
 
-  /*
-    value is a base64 encoded string
-    username:password
-  */
+  // value is a base64 encoded string format <username>:<password?
   const [username, password] = Buffer.from(value, 'base64')
     .toString().split(':');
 
