@@ -3,7 +3,7 @@ const express = require('express');
 const orderRoute = require('./routes/orderRoute')
 const userRoute = require('./routes/userRoute')
 
-const PORT = 3000;
+const PORT = 3334;
 const app = express()
 
 mongoConnect()
