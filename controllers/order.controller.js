@@ -37,7 +37,12 @@ async function getOrderById(req, res) {
 }
 
 async function getAllOrders(req, res) {
-	const orders = await orderModel.find();
+	const { page, count } = req.query;
+	const orders = await orderModel
+		.find()
+		.sort({ created_at: 1 })
+		.skip(page > 0 ? (page - 1) * count : 0)
+		.limit(count);
 
 	return res.json({ status: true, orders });
 }
