@@ -43,3 +43,33 @@ usersRouter.post("/", async(req, res) => {
 })
 
 module.exports = usersRouter
+
+// Update a user
+usersRouter.patch('/:id',auth, async (req, res) => {
+    const { id } = req.params;
+    const { password, user_type } = req.body;
+
+    const user = await userModel.findById(id)
+
+    if (!user) {
+        return res.status(404).json({ status: false, user: null })
+    }
+
+    if(password){
+        user.password = password;
+    }
+    if(user_type){  
+        user.user_type = user_type;
+    }
+    await user.save()
+    .then((user) => {
+        res.status(200).send({user});
+        return
+    })
+    .catch((error) => {
+        res.status(500).send({
+            statusCode: 500,
+            message: "Internal Server Error"
+        });
+    })
+})

@@ -44,7 +44,7 @@ ordersRouter.get('/', auth, async (req, res) => {
     order === "asc" ? order_index = 1 : order_index = -1
     page = parseInt(page);
     const MAX_ITEMS = 2
-    const orders = await orderModel.find().sort({created_at: order_index}).skip((page - 1) * MAX_ITEMS).limit(MAX_ITEMS);
+    const orders = await orderModel.find().sort({created_at: order_index, total_price: order_index}).skip((page - 1) * MAX_ITEMS).limit(MAX_ITEMS);
     return res.json({ status: true, orders })
 })
 
