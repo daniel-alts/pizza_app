@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const session = require("express-session");
 const mongoose = require("mongoose");
 const { userRoute } = require("./routes/user");
 const { orderRoute } = require("./routes/order");
@@ -12,6 +13,14 @@ const app = express();
 
 app.use(express.json());
 
+app.use(
+	session({
+		secret: "secret",
+		resave: false,
+		saveUninitialized: true,
+	})
+);
+
 app.use("/user", userRoute);
 
 app.use("/order", orderRoute);
@@ -19,7 +28,6 @@ app.use("/order", orderRoute);
 app.get("/", (req, res) => {
 	return res.json({ status: true });
 });
-
 
 mongoose.connect(MONGODB_CONNECTION_URL);
 

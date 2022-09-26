@@ -1,20 +1,47 @@
 const express = require("express");
+const bcrypt = require("bcrypt");
 const userSchema = require("../models/userModel");
 
 const userRoute = express.Router();
 
-// Create user
-userRoute.post("/", (req, res) => {
-  const user = req.body;
+// Register user
+userRoute.post("/register", async (req, res) => {
+	const { username, password } = req.body;
+	const hashedPwd = await bcrypt.hash(password, 10);
 
-  userSchema.create(user).then((user) => {
-    return res.status(201).json({
-      message: "User created successfully",
-      data: user,
-    });
-  }).catch((err) => {
-    return res.status(500).json(err.message);
-  });
+	const user = await userSchema.create({ username, password: hashedPwd });
+
+	await user.save();
+
+	return res.status(201).send(user);
+});
+
+// Login
+userRoute.post("/login", async (req, res) => {
+	const { username, password } = req.body;
+
+	const user = await userSchema.findOne({ username });
+	const isMatch = await bcrypt.compare(password, user.hashedPwd);
+
+	if (isMatch == true) {
+		console.log("logged in!");
+		req.session.user = user;
+		return res.send(user);
+	} else {
+		return res.send("wrong ID or password");
+	}
+});
+
+// Logout
+userRoute.post("/logout", (req, res) => {
+	req.session.user = null;
+	return res.send("logged out");
+});
+
+// get all users
+userRoute.get("/", async (req, res) => {
+	const users = await userSchema.find({});
+	return res.json({ data: users });
 });
 
 module.exports = { userRoute };

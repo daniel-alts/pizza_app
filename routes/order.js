@@ -9,11 +9,6 @@ orderRoute.post("/", (req, res) => {
 	authenticateUser(req, res, ["admin"])
 		.then(async (user) => {
 			try {
-        // console.log(`FROM ORDER: ${(user)}`);
-				// if (res.status >= 400) {
-				// 	return res;
-				// }
-
 				const body = req.body;
 
 				const total_price = body.items.reduce((prev, curr) => {
