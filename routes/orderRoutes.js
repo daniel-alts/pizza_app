@@ -6,13 +6,13 @@ const orderRouter = express.Router();
 
 orderRouter
   .route("/")
-  .post(orderController.createOrder)
-  .get(orderController.getAllOrder);
+  .post(userController.protect, orderController.createOrder)
+  .get(userController.protect, orderController.getAllOrder);
 
 orderRouter
   .route("/:id")
-  .get(orderController.getOrderById)
-  .delete(orderController.deleteOrder)
-  .patch(orderController.updateOrder);
+  .get(userController.protect, orderController.getOrderById)
+  .delete(userController.protect, orderController.deleteOrder)
+  .patch(userController.protect, orderController.updateOrder);
 
 module.exports = orderRouter;
