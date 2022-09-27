@@ -10,11 +10,11 @@ const {
 
 const orderRoute = express.Router();
 
-orderRoute.post("/", authenticateUser, authorize(["user"]), createOrder);
+orderRoute.post("/", authenticateUser, authorize(["user", "admin"]), createOrder);
 
-orderRoute.get("/:orderId", authenticateUser, authorize(["user"]),  getOrderById);
+orderRoute.get("/:orderId", authenticateUser, authorize(["user", "admin"]),  getOrderById);
 
-orderRoute.get("/", authenticateUser, authorize(["user"]), getAllOrders);
+orderRoute.get("/", authenticateUser, authorize(["user", "admin"]), getAllOrders);
 
 orderRoute.patch("/:id", authenticateUser, authorize(["admin"]), updateOrder);
 
