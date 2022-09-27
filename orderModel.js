@@ -13,12 +13,10 @@ const OrderSchema = new Schema({
     quantity: Number,
   }],
   username: {
-    type: String,
-    required: true
+    type: String
 },
 password :{
-    type: String,
-    required:true,
+    type: String
 }, 
 user_type: {
    type: String,

@@ -18,10 +18,10 @@ app.get('/', (req, res) => {
 app.post('/order', async (req, res) => {
     const body = req.body;
 
-    //const total_price = body.items.reduce((prev, curr) => {
-        //prev += curr.price
-       // return prev
-    //}, 0);
+    const total_price = body.items.reduce((prev, curr) => {
+        prev += curr.price
+       return prev
+    }, 0);
 
 
 //basic authentication 
