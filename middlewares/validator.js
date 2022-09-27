@@ -1,4 +1,4 @@
-const { compareAgainstSchema } = require("./utils")
+const { compareAgainstSchema } = require("../utils")
 const { TYPES } = require("../constants")
 
 const defaultOptions = {
