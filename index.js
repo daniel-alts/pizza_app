@@ -5,7 +5,7 @@ const userRoute =  require('./routes/userRoutes')
 const dotenv = require('dotenv')
 
 
-dotenv.config({ path: "./config.env" });
+dotenv.config({ path: './config.env'})
 
 const PORT = 5000
 
