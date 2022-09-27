@@ -11,7 +11,7 @@ const app = express()
 app.use(express.json());
 
 
-app.use("/books", UserRoute);
+app.use("/user", UserRoute);
 
 
 app.get('/', (req, res) => {
