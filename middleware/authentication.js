@@ -1,13 +1,13 @@
 const User = require('../model/userModel')
 
 const authenticate = async (req,res,next)=>{
-    const {user} = req.body
+    const auth = req.headers.authorization
 
-    if(!user){
-        return res.status(401).json({status:false, msg: 'Please provide your user Details'})
+    if(!auth){
+        return res.status(401).json({status:false, msg: 'Please provide your username and password in the authorization header'})
     }
 
-    const {username,password} = user
+    const [username,password] = auth.split(' ')
     if(!username || !password){
        return  res.status(401).json({ status: false, error:"Please fill in Your username and password"} )
     }
