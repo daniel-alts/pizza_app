@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const bcrypt = require('bcryptjs')
 
 const Schema = mongoose.Schema;
 
@@ -20,13 +21,22 @@ const userSchema = new Schema({
     type: String,
     required: [true, "Please provide a password!"],
     minlength: 8,
-  },
-  user_type: {
-    type: String,
-    default: "user",
-    enum: ["user", "admin"],
-  },
+  }
 });
+
+
+// A DOCUMENT MIDDLEWARE TO ENCRYPT USER PASSWORD BEFORE SAVING TO DB
+userSchema.pre('save', async function(next){
+  this.password = await bcrypt.hash(this.password, 10)
+  next()
+})
+
+
+// A METHOD TO COMPARE USER PASSWORD
+userSchema.methods.comparePassword = async(candidatePassword, userPassword) =>{
+  return await bcrypt.compare(candidatePassword, userPassword)
+}
+
 
 // CREATING USER MODEL
 const User = mongoose.model("User", userSchema);
