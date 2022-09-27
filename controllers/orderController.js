@@ -27,7 +27,7 @@ exports.createOrder = async (req, res) => {
 };
 
 
-
+// GETS ALL ORDER
 exports.getAllOrder = async (req, res) => {
   try {
 
@@ -35,9 +35,9 @@ exports.getAllOrder = async (req, res) => {
     const query = req.query
     const {page=1, limit=10} = req.query
     const orders = await orderModel.find(query)
-        .sort({total_price: 1, created_at: -1})
-        .limit(+limit)
-        .skip((page - 1) * limit)
+        .sort({total_price: 1, created_at: -1})     // SORTS RESULTS BY TOTAL PRICE <asc-des> AND CREATED_AT <asc-des>
+        .limit(+limit)         // APPLIES A LIMIT TO THE VALUE OF RESULT RETURNED TO USER
+        .skip((page - 1) * limit)       // APPLIES THE SKIP TO IT 
 
     res.status(200).json({ status: true, orders });
 
@@ -52,7 +52,7 @@ exports.getAllOrder = async (req, res) => {
 };
 
 
-
+// DELETES ORDER BY AN ID
 exports.deleteOrder = async (req, res) => {
   try {
     const { id } = req.params;
@@ -69,6 +69,8 @@ exports.deleteOrder = async (req, res) => {
   }
 };
 
+
+// GET ORDER BY A PARTICULAR ID
 exports.getOrderById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -87,6 +89,8 @@ exports.getOrderById = async (req, res) => {
   }
 };
 
+
+// UPDATE AN ORDER
 exports.updateOrder = async (req, res) => {
   const { id } = req.params;
   const { state } = req.body;

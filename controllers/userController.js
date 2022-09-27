@@ -53,7 +53,11 @@ exports.signUp = async(req, res) =>{
 
     try{
         // NEW USER OBJECT
-        const newUser = await User.create(req.body)
+        const newUser = await User.create({
+            username: req.body.username,
+            email: req.body.email,
+            password: req.body.password
+        })
 
         // USER TOKEN
         const token = signToken(newUser._id)
@@ -95,7 +99,7 @@ exports.login = async(req, res, next) => {
             status:false, message: 'Incorrect email or password!'
         })
     }
-    
+
     // ASSIGN TOKEN TO THE LOGGED IN USER
     const token = signToken(user._id)
     return res.status(200).json({
