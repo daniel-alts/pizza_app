@@ -1,36 +1,70 @@
 const express = require("express");
+const UserModel = require("../userModel")
 
 const userRoute = express.Router();
 
 //Get Route for all users
 userRoute.get("/", (req, res) => {
-  res.send("User Route")
+  UserModel.find({})
+    .then((users) => {
+      res.status(200).send(users)
+    }).catch((err) => {
+      console.log(err);
+      res.status(500).send(err.message)
+    })
 })
 
 //Get Route for specific users by id
 userRoute.get("/:id", (req, res) => {
-  res.send("User Route")
+  const id = req.params.id;
+
+  UserModel.findById(id)
+    .then((user) => {
+      res.status(200).send(user)
+    }).catch((err) => {
+      console.log(err);
+      res.status(400).send(err.message)
+    })
 })
 
 //Post Route
 userRoute.post("/", (req, res) => {
-  const body = req.body;
+  const newUser = req.body;
+  console.log(newUser);
 
-  res.send("User Added")
+  UserModel.create(newUser)
+    .then((user) => {
+      res.status(201).send("user successfully added to the database")
+    }).catch((err) => {
+      res.status(400).send(err.message)
+    })
 })
 
 
 //Put Route
 userRoute.put("/:id", (req, res) => {
   const id = req.params.id
-  res.send("User Updated")
+  const userUpdate = req.body;
+
+  UserModel.findByIdAndUpdate(id, userUpdate, {new: true})
+    .then((user) => {
+      res.status(201).send("user's details successfully updated")
+    }).catch((err) => {
+      res.status(400).send(err.message)
+    })
 })
 
 
 //Delete Route
 userRoute.delete("/:id", (req, res) => {
   const id = req.params.id
-  res.send("User Deleted")
+
+  UserModel.findByIdAndDelete(id)
+    .then(() => {
+      res.status(200).send("User deleted from the database")
+    }).catch((err) => {
+      res.status(400).send(err.message)
+    })
 })
 
 module.exports = userRoute;
