@@ -2,30 +2,20 @@ const orderModel = require('../models/orderModel');
 const moment = require('moment');
 
 const getAllOrders = async (req, res) => {
-    // try{
-    const {state, sort} = req.query
+    
+    const query = req.query
     const queryObject = {}
     
-    if(state){
-        queryObject.state = state
-    }
-
-    let orders = await orderModel.find(queryObject)
-
-    if(sort){
-        res.json(sort)
+    if(query.state){
+        queryObject.state = query.state
     }
 
     const page = +req.query.page || 1
-    const limit = +req.query.limit || 3
+    const limit = +req.query.limit || 4
     const skip = (page - 1) * limit
 
-    // orders = await orders.skip(skip).limit(limit)
-
+    orders = await orderModel.find(queryObject).skip(skip).limit(limit).sort({created_at: query.sortDate, total_price: query.sortPrice})
     return res.json({ status: true, orders, reached: true })
-    // } catch (error) {
-    //     res.status(500).send(error)
-    // }
 }
 
 const getOrder = async(req, res) => {
@@ -50,7 +40,8 @@ const addOrder = async(req, res) => {
             return prev
         }, 0);
     
-        const order = await orderModel.create({ 
+        const order = await orderModel.create({
+            ...body, 
             items: body.items,
             created_at: moment().toDate(),
             total_price
