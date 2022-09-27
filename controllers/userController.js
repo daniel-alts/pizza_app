@@ -4,11 +4,14 @@ const User = require('../models/userModels')
 
 
 
+// A SIMPLE FUNCTION THAT GENERATES TOKEN
 const signToken = id => {
     return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRES_IN})
 }
 
 
+
+// THE PROTECT MIDDLEWARE
 exports.protect = async(req, res, next) => {
     //GETTING TOKEN AND CHECKING IF ITS PASSED
     let token
@@ -44,7 +47,7 @@ exports.protect = async(req, res, next) => {
 }
 
 
-
+// A FUNCTION TO SIGNUP USERS
 exports.signUp = async(req, res) =>{
 
 
@@ -92,7 +95,7 @@ exports.login = async(req, res, next) => {
             status:false, message: 'Incorrect email or password!'
         })
     }
-    console.log('Hi')
+    
     // ASSIGN TOKEN TO THE LOGGED IN USER
     const token = signToken(user._id)
     return res.status(200).json({

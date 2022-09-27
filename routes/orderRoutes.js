@@ -4,6 +4,8 @@ const userController = require('../controllers/userController')
 
 const orderRouter = express.Router();
 
+
+// ORDER ROUTER FOR ALL ORDER CRUD OPERATIONS
 orderRouter
   .route("/")
   .post(userController.protect, orderController.createOrder)
@@ -15,4 +17,5 @@ orderRouter
   .delete(userController.protect, orderController.deleteOrder)
   .patch(userController.protect, orderController.updateOrder);
 
+  
 module.exports = orderRouter;
