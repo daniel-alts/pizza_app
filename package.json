@@ -2,9 +2,10 @@
   "name": "pizza_app",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "jest":"jest --detectOpenHandles",
     "start:dev": "nodemon index"
   },
   "keywords": [],
@@ -16,6 +17,8 @@
     "mongoose": "^6.6.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "jest": "^29.0.3",
+    "nodemon": "^2.0.20",
+    "supertest": "^6.2.4"
   }
 }
