@@ -1,21 +1,31 @@
-
+const Users = require("../model/userModel")
 
 const authtenticateUser =  async (req,res,next) =>{  
-     try {
-        const Token = req.headers.authorization.split(" ")[1]
-
-            if (!Token) {
-                res.status(401).send("UnAuthorized user Pls register....");
-            }
-
-            if (Token) {
-                next(); 
-            }  
-    } catch (error) {
-        console.log(error.message);
-        res.status(401).send(error.message)
-    }
+    let authheader = req.headers.authorization;
     
+ 
+    if (!authheader) {
+        res.setHeader('WWW-Authenticate', 'Basic');
+        res.status(401).send("You are not authenticated!")
+    }
+ 
+    let auth = new Buffer.from(authheader.split(' ')[1],
+    'base64').toString().split(':');
+    const userName = auth[0];
+    const password = auth[1];
+    
+    const Allusers = await Users.find()
+
+    const User =   Allusers.find((user)=>user.UserName === userName && user.Password ===password )
+    if (User) {
+        
+        next()
+    } 
+
+    else {
+        res.setHeader('WWW-Authenticate', 'Basic');
+        res.status(401).send("You are not authenticated!")
+    }
 }
 
 module.exports = authtenticateUser
