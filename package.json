@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "test": "jest --coverage",
     "start:dev": "nodemon server.js"
   },
   "keywords": [],
@@ -15,6 +16,8 @@
     "mongoose": "^6.6.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "jest": "^29.0.3",
+    "nodemon": "^2.0.20",
+    "supertest": "^6.2.4"
   }
 }
