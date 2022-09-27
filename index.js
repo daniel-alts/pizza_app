@@ -26,18 +26,30 @@ app.get("/", (req, res) => {
 app.use(
     "/order",
     async (req, res, next) => {
-        // Make sure user is authenticated
-        const user = req.body.user;
-        let authenticated = false;
-        let error;
-        await authenticate(user)
-            .then(() => (authenticated = true))
-            .catch((err) => (error = err));
-            
-        if (authenticated) next()
-        else {
-            if (error.message === "Incomplete query") res.status(400).send(error.toString())
-            else res.status(401).send(error.toString())
+        if (req.url.match(/\/*/) && req.method === "GET") {
+            /**
+             * Allow everyone to view orders without authentication
+             * because I can't modify the request object from browsers.
+             * 
+             * This route is best viewed on browser because I return html 
+             * with some stylings and thunder client can't view that properly
+             */
+            next()
+        } else {
+            // Make sure user is authenticated
+            const user = req.body.user;
+            let authenticated = false;
+            let error;
+            await authenticate(user)
+                .then(() => (authenticated = true))
+                .catch((err) => (error = err));
+                
+            if (authenticated) next()
+            else {
+                if (error.message === "Incomplete query") res.status(400).send(error.toString())
+                else res.status(401).send(error.toString())
+            }
+
         }
     },
     orderRouter
