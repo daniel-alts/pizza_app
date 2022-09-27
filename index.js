@@ -1,17 +1,12 @@
 const express = require('express');
-const moment = require('moment');
-
 const mongoose = require('mongoose');
-
 
 //IMPORT ROUTES
 const orderRoutes = require('./routes/orderRoutes');
 const userRoutes = require('./routes/userRoutes');
 
 
-// //IMPORT MODELS
-// const orderModel = require('./models/orderModel');
-// const userModel = require('./models/userModel');
+
 
 
 
@@ -21,6 +16,12 @@ const PORT = 3334
 const app = express()
 
 app.use(express.json());
+
+
+//ROUTES
+app.use('/order', orderRoutes);
+app.use('/user', userRoutes);
+
 
 
 app.get('/', (req, res) => {

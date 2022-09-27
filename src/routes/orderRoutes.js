@@ -1,9 +1,10 @@
 const express = require('express');
 const orderRoutes = express.Router();
+const moment = require('moment');
 
 
 
-orderRoutes.post('/order', async (req, res) => {
+orderRoutes.post('/', async (req, res) => {
     const body = req.body;
 
     const total_price = body.items.reduce((prev, curr) => {
@@ -20,7 +21,7 @@ orderRoutes.post('/order', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-orderRoutes.get('/order/:orderId', async (req, res) => {
+orderRoutes.get('/:orderId', async (req, res) => {
     const { orderId } = req.params;
     const order = await orderModel.findById(orderId)
 
@@ -31,13 +32,13 @@ orderRoutes.get('/order/:orderId', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-orderRoutes.get('/orders', async (req, res) => {
+orderRoutes.get('/', async (req, res) => {
     const orders = await orderModel.find()
 
     return res.json({ status: true, orders })
 })
 
-orderRoutes.patch('/order/:id', async (req, res) => {
+orderRoutes.patch('/:id', async (req, res) => {
     const { id } = req.params;
     const { state } = req.body;
 
@@ -58,7 +59,7 @@ orderRoutes.patch('/order/:id', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-orderRoutes.delete('/order/:id', async (req, res) => {
+orderRoutes.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
     const order = await orderModel.deleteOne({ _id: id})
