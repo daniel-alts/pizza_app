@@ -2,8 +2,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 const orderRoute = require('./routes/orderRoutes')
 const userRoute =  require('./routes/userRoutes')
+const dotenv = require('dotenv')
 
-const PORT = 3334
+
+dotenv.config({ path: "./config.env" });
+
+const PORT = 5000
 
 const app = express()
 
@@ -13,8 +17,8 @@ app.use((req,res, next) => {
 	next()
 })
 
-app.use('/order/', orderRoute)
-app.use("/user/", userRoute);
+app.use('/order', orderRoute)
+app.use("/user", userRoute);
 
 
 
