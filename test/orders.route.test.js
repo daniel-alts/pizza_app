@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
 const supertest = require("supertest");
+const dotenv = require("dotenv");
+
+dotenv.config({ path: "./config.env" });
 
 const app = require("./../index");
 const userModel = require("./../models/userModel");
@@ -8,14 +11,15 @@ const orderModel = require("./../models/orderModel");
 //  Runs before all the tests
 beforeAll((done) => {
   // for testing purposes, we use the test DB (stub)
-  const TEST_DB_URI = "mongodb://localhost:27017/pizza_app_test";
+  const TEST_DB_URI =
+    process.env.TEST_DB_URI || "mongodb://localhost:27017/pizza_app_test";
   mongoose.connect(TEST_DB_URI);
 
   mongoose.connection.on("connected", async () => {
     console.log("Connected to MongoDB Successfully");
     const defaultUser = {
-      username: "Bolaji",
-      password: "qwerty",
+      username: process.env.DEFAULT_USER || "Bolaji",
+      password: process.env.DEFAULT_PASS || "qwerty",
       user_type: "admin",
     };
     const defaultOrder = {

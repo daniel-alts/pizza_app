@@ -2,13 +2,6 @@ const orderModel = require("../models/orderModel");
 
 exports.getAllOrders = async function (req, res) {
   try {
-    console.log(req.headers.authorization);
-    const encryptedAuth = req.headers.authorization;
-    const auth = new Buffer.from(encryptedAuth.split(" ")[1], "base64")
-      .toString()
-      .split(":");
-    var user = auth[0];
-    var pass = auth[1];
     const queryObj = { ...req.query };
     const reservedKeys = ["sort", "page"];
     reservedKeys.forEach((key) => delete queryObj[key]);

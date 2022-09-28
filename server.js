@@ -1,10 +1,13 @@
 const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+
+dotenv.config({ path: "./config.env" });
 
 const app = require("./index");
 
-const PORT = 8000;
-const HOST = "127.0.0.1";
-const DB_URI = "mongodb://localhost:27017/pizza_app";
+const PORT = process.env.PORT || 8000;
+const HOST = process.env.HOST || "localhost";
+const DB_URI = process.env.DB_URI || "mongodb://localhost:27017/pizza_app";
 
 mongoose.connect(DB_URI);
 
