@@ -18,4 +18,12 @@ const OrderSchema = new Schema({
 
 const Order = mongoose.model('Order', OrderSchema);
 
+// async function run() {
+//   await mongoose.connect('mongodb://0.0.0.0:27017')
+//   Order
+
+// }
+
+// run()
+
 module.exports = Order;
