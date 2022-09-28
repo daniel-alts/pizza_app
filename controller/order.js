@@ -3,7 +3,8 @@ const moment = require('moment');
 
 
 const getOrders = async (req, res, next) => {
-  const { total_price, created_at, state } = req.query
+  try {
+    const { total_price, created_at, state } = req.query
   const pageLimit = 4
 
   const queryParameter = {}
@@ -29,15 +30,24 @@ const getOrders = async (req, res, next) => {
   
  return res.status(200).json(orders)
  
+  } catch (error) {
+    next(error)
+    
+  }
 }
 
 
 const getOrder = async (req, res, next) => {
-  const order = await Order.findById(req.params.id)
 
-  if (!order) return res.status(404).json({ msg: "order not found" })
-  
-  return res.status(200).json(order)
+  try {
+    const order = await Order.findById(req.params.id)
+
+    if (!order) return res.status(404).json({ msg: "order not found" })
+    
+    return res.status(200).json(order)
+  }catch(error) {
+    next(error)
+  }
  }
 
 
@@ -45,7 +55,8 @@ const getOrder = async (req, res, next) => {
 
 const createOrder = async (req, res, next) => {
 
-  const body = req.body;
+  try {
+    const body = req.body;
 
   const total_price = body.items.reduce((prev, curr) => {
       prev += curr.price
@@ -59,12 +70,18 @@ const createOrder = async (req, res, next) => {
   })
   
   return res.json({ status: true, order })
+}catch (error) {
+  next(error)
+}
 
 }
 
 const updateOrder = async (req, res, next) => {
 
-  const { id } = req.params;
+  
+  try {
+
+    const { id } = req.params;
   const { state } = req.body;
 
   const order = await Order.findById(id)
@@ -83,13 +100,22 @@ const updateOrder = async (req, res, next) => {
 
   return res.json({ status: true, order })
   
+
+  } catch (error) {
+    next(error)
+  }
 }
 
 deleteOrder = async (req, res, next) => {
 
- const order =  await Order.deleteOne({_id: req.params.id})
+try {
+  const order =  await Order.deleteOne({_id: req.params.id})
 
   return res.json({ status: true, order })
+} catch (error) {
+  next(error)
+  
+}
 
 }
 

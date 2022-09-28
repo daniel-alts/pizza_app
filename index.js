@@ -14,10 +14,17 @@ app.use('/orders', ordersRouter)
 app.use('/users', userRouter)
 
 
+app.use((err, req, res, next) => {
+    console.log(err);
+    res.status(500).json({
+        error: err.message
+    })
+})
 
-// app.get('/', (req, res) => {
-//     return res.json({ status: true })
-// })
+
+app.get('/', (req, res) => {
+    return res.json({ status: true })
+})
 
 
 
@@ -80,6 +87,8 @@ mongoose.connection.on("error", (err) => {
 	console.log(err);
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log('Listening on port, ', PORT)
 })
+
+module.exports = server
