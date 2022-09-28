@@ -1,7 +1,7 @@
 const express = require('express');
 const moment = require('moment');
 const mongoose = require('mongoose');
-const orderModel = require('./orderModel');
+const orderModel = require('./order.model');
 
 const PORT = 3334
 
