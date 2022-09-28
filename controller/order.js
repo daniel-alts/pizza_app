@@ -3,7 +3,30 @@ const moment = require('moment');
 
 
 const getOrders = async (req, res, next) => {
- const orders = await Order.find()
+  const { total_price, created_at, state } = req.query
+  const pageLimit = 4
+
+  const queryParameter = {}
+  if (total_price) {
+    queryParameter.total_price = total_price
+  }
+  if (created_at) {
+    queryParameter.created_at = created_at
+  }
+  if (state) {
+    queryParameter.state = state
+  }
+
+
+  const currentPage = req.query.page || 1
+  
+  const paginate = (currentPage - 1) * pageLimit
+
+  const orders = await Order.find()
+    .skip(paginate)
+    .sort(queryParameter)
+  
+  
  return res.status(200).json(orders)
  
 }
