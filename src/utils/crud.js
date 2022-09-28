@@ -9,13 +9,16 @@ const createOrder = model => async (req, res) => {
         return prev
     }, 0);
 
-    const order = await model.create({ 
-        items: body.items,
-        created_at: moment().toDate(),
-        total_price
-    })
-    
-    return res.status(201).json({ data: order })
+    try {
+        const order = await model.create({ 
+            items: body.items,
+            created_at: moment().toDate(),
+            total_price
+        })
+        return res.status(201).json({ data: order })
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 
@@ -27,7 +30,7 @@ const checkOrderById = model => async (req,res) => {
         return res.status(404).json({ status: false, order: null })
     }
 
-    return res.json({ status: true, order })
+    return res.status(200).json({ data: order })
 }
 
 

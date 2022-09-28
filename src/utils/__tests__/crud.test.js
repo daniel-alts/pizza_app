@@ -33,11 +33,11 @@ describe('createOrder', () => {
                 expect(status).toBe(201)
                 return this
             },
-            json(results) {
-                expect(results.data._id).toBeDefined()
-                expect(results.data.state).toBe(1)
-                expect(results.data.created_at).toBeDefined() 
-                expect(typeof results.data.items).toBe(typeof body.items)
+            json(result) {
+                expect(result.data._id).toBeDefined()
+                expect(result.data.state).toBe(1)
+                expect(result.data.created_at).toBeDefined() 
+                expect(typeof result.data.items).toBe(typeof body.items)
             }
         }
 
@@ -50,7 +50,6 @@ describe('createOrder', () => {
         expect.assertions(3)
 
         const body = {
-            id: mongoose.Schema.ObjectId,
             created_at: moment().toDate(),
             items:[{
                 name: 'peperoni',
@@ -69,13 +68,45 @@ describe('createOrder', () => {
                 expect(status).toBe(201)
                 return this
             },
-            json(results) {
-                expect(results.data.total_price).toBeDefined()
-                expect(results.data.total_price).toBe(3000)
+            json(result) {
+                expect(result.data.total_price).toBeDefined()
+                expect(result.data.total_price).toBe(3000)
             }
         }
 
         await createOrder(Order)(req, res)
+    })
+})
+
+describe('checkOrderById', () => {
+    it('check the order by ID', async () => {
+        expect.assertions(2)
+        const order = await Order.create({
+            items:[{
+                name: 'peperoni',
+                price: 1500,
+                size: 's',
+                quantity: 2,
+            }]
+        })
+        const req = {
+            params:{
+                orderId: order._id
+            }
+        }
+
+        const res = {
+            status(status) {
+                expect(status).toBe(200)
+                return this
+            },
+            json(result) {
+                expect(result.data._id.toString()).toBe(order._id.toString())
+            }
+        }
+
+        await checkOrderById(Order)(req, res)
+
     })
 })
 
