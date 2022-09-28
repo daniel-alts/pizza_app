@@ -46,7 +46,7 @@ exports.getUser = async function (req, res) {
 
 exports.createUser = async function (req, res) {
   try {
-    const { userData: body } = req.body;
+    const body = req.body;
 
     if (!body) {
       return res.status(400).json({
@@ -74,7 +74,6 @@ exports.createUser = async function (req, res) {
 exports.updateUser = async function (req, res) {
   try {
     const { userId } = req.params;
-    const { userCredentials } = req.body;
 
     let user = await userModel.findById(userId);
 
@@ -85,14 +84,14 @@ exports.updateUser = async function (req, res) {
       });
     }
 
-    if (user.username !== userCredentials.username.toLowerCase()) {
+    if (user.username !== res.locals.user.username.toLowerCase()) {
       return res.status(403).json({
         success: false,
         message: "Forbidden! You cannot alter another user details!",
       });
     }
 
-    const { userData: body } = req.body;
+    const body = req.body;
 
     if (!body) {
       return res.status(400).json({
@@ -124,8 +123,6 @@ exports.deleteUser = async function (req, res) {
   try {
     const { userId } = req.params;
 
-    const { userCredentials } = req.body;
-
     let user = await userModel.findById(userId);
 
     if (!user) {
@@ -136,8 +133,8 @@ exports.deleteUser = async function (req, res) {
     }
 
     if (
-      userCredentials.user_type.toLowerCase() !== "admin" &&
-      user.username !== userCredentials.username.toLowerCase()
+      res.locals.user.user_type.toLowerCase() !== "admin" &&
+      user.username !== res.locals.user.username.toLowerCase()
     ) {
       return res.status(403).json({
         success: false,

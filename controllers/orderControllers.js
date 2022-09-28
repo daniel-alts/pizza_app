@@ -2,6 +2,13 @@ const orderModel = require("../models/orderModel");
 
 exports.getAllOrders = async function (req, res) {
   try {
+    console.log(req.headers.authorization);
+    const encryptedAuth = req.headers.authorization;
+    const auth = new Buffer.from(encryptedAuth.split(" ")[1], "base64")
+      .toString()
+      .split(":");
+    var user = auth[0];
+    var pass = auth[1];
     const queryObj = { ...req.query };
     const reservedKeys = ["sort", "page"];
     reservedKeys.forEach((key) => delete queryObj[key]);
@@ -70,9 +77,9 @@ exports.getOrder = async function (req, res) {
 
 exports.createOrder = async function (req, res) {
   try {
-    const { order: body } = req.body;
-    const total_price = body.items?.reduce((prev, curr) => {
-      prev += curr.price;
+    const body = req.body;
+    const total_price = body.items?.reduce((prev, currItem) => {
+      prev += currItem.price * currItem.quantity;
       return prev;
     }, 0);
 
@@ -98,7 +105,7 @@ exports.createOrder = async function (req, res) {
 exports.updateOrder = async function (req, res) {
   try {
     const { orderId } = req.params;
-    const { order: body } = req.body;
+    const body = req.body;
     if (!body) {
       return res.status(400).json({
         success: false,

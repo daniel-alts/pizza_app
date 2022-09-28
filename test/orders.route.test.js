@@ -22,9 +22,9 @@ beforeAll((done) => {
       items: [
         {
           name: "Vegetarian pizza",
-          size: "s",
+          size: "m",
           price: 25,
-          quantity: 1,
+          quantity: 10,
         },
       ],
     };
@@ -48,34 +48,23 @@ afterAll((done) => {
 });
 
 describe("orders", () => {
-  const bodyWithAdminCredentials = {
-    userCredentials: {
-      username: "Bolaji",
-      password: "qwerty",
-      user_type: "admin",
-    },
-  };
   const newOrder = {
-    order: {
-      items: [
-        {
-          name: "Detroit Pizza",
-          size: "m",
-          price: 25,
-          quantity: 15,
-        },
-      ],
-    },
+    items: [
+      {
+        name: "Detroit Pizza",
+        size: "m",
+        price: 25,
+        quantity: 15,
+      },
+    ],
   };
   const updateOrder = {
-    order: {
-      state: 2,
-    },
+    state: 2,
   };
   it("GET /orders", async () => {
     const response = await supertest(app)
       .get("/orders")
-      .send(bodyWithAdminCredentials);
+      .auth("Bolaji", "qwerty", { type: "basic" });
     expect(response.headers["content-type"]).toBe(
       "application/json; charset=utf-8"
     );
@@ -90,7 +79,7 @@ describe("orders", () => {
     });
     const response = await supertest(app)
       .get(`/orders/${orderId}`)
-      .send(bodyWithAdminCredentials);
+      .auth("Bolaji", "qwerty", { type: "basic" });
     expect(response.headers["content-type"]).toBe(
       "application/json; charset=utf-8"
     );
@@ -102,7 +91,8 @@ describe("orders", () => {
   it("POST /orders", async () => {
     const response = await supertest(app)
       .post(`/orders`)
-      .send(Object.assign({}, bodyWithAdminCredentials, newOrder));
+      .auth("Bolaji", "qwerty", { type: "basic" })
+      .send(newOrder);
     expect(response.headers["content-type"]).toBe(
       "application/json; charset=utf-8"
     );
@@ -117,7 +107,8 @@ describe("orders", () => {
     });
     const response = await supertest(app)
       .patch(`/orders/${orderId}`)
-      .send(Object.assign({}, bodyWithAdminCredentials, updateOrder));
+      .auth("Bolaji", "qwerty", { type: "basic" })
+      .send(updateOrder);
     expect(response.headers["content-type"]).toBe(
       "application/json; charset=utf-8"
     );
@@ -131,7 +122,7 @@ describe("orders", () => {
     });
     const response = await supertest(app)
       .delete(`/orders/${orderId}`)
-      .send(bodyWithAdminCredentials);
+      .auth("Bolaji", "qwerty", { type: "basic" });
     expect(response.status).toBe(204);
     expect(response.body).toEqual({});
   });
