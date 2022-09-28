@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const ordersRouter = require('./routes/order')
+const userRouter = require('./routes/user')
+
 
 const PORT = 3334
 
@@ -9,6 +11,8 @@ const app = express()
 app.use(express.json());
 
 app.use('/orders', ordersRouter)
+app.use('/users', userRouter)
+
 
 
 // app.get('/', (req, res) => {
