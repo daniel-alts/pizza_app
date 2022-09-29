@@ -9,11 +9,22 @@ jest.setTimeout(20000) // resets Jest timeout time allow for execution.
 beforeAll( async () => {
     try{
         await mongoose.connect('mongodb://0.0.0.0:27017')
+        await mongoose.connection.db.dropDatabase()
     }catch {
         console.error('Couldn\'t connect to MongoDB')
     }
    
 })
+
+// Drops database after each describe operation
+afterEach( async () => {
+    try{
+        await mongoose.connection.db.dropDatabase()
+    } catch {
+        console.error('Check connection')
+    }
+})
+
 
 describe('createOrder', () => {
     it('create new order', async () => {
@@ -42,7 +53,6 @@ describe('createOrder', () => {
                 expect(result.data.state).toBe(1)
                 expect(result.data.created_at).toBeDefined() 
                 expect(typeof result.data.items).toBe(typeof body.items)
-                expect(result.data.items[0]).toHaveLength(4)
             }
         }
 
@@ -119,7 +129,7 @@ describe('checkAllOrder', () => {
     it('check that all orders were returned', async () => {
         expect.assertions(5)
 
-        const orders = await Order.create([
+        await Order.create([
             { items: [{
                 name: 'peperoni',
                 price: 1500,
@@ -142,14 +152,16 @@ describe('checkAllOrder', () => {
 
         const prices = [3000, 4500, 7500]
 
+        const req = {}
+
         const res = {
             status(status) {
-                expect(status),toBe(200)
+                expect(status).toBe(200)
                 return this
             },
             json(results) {
                 expect(results.data).toHaveLength(3)
-                results.data.forEach((result,i) => expect(`${result.total_price}`).toBe(`${prices[i]}`))
+                results.data.forEach( async (result,i) => await expect(`${result.total_price}`).toBe(`${prices[i]}`))
             }
         }
 
@@ -162,6 +174,11 @@ describe('checkAllOrder', () => {
 
 // Drops the database and the closes the connection after all the tests might have ran
 afterAll(async () => {
-    await mongoose.connection.db.dropDatabase()
-    await mongoose.connection.close()
+    try{
+        await mongoose.connection.db.dropDatabase()
+        await mongoose.connection.close()
+    } catch {
+        console.error('Failed to drop database')
+    }
+    
 });

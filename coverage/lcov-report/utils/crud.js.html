@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">51.16% </span>
+                <span class="strong">53.84% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>22/43</span>
+                <span class='fraction'>21/39</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">41.66% </span>
+                <span class="strong">54.54% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>5/12</span>
+                <span class='fraction'>6/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">54.05% </span>
+                <span class="strong">54.54% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>20/37</span>
+                <span class='fraction'>18/33</span>
             </div>
         
             
@@ -160,9 +160,9 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
@@ -181,19 +181,19 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -251,16 +251,16 @@
 const createOrder = model =&gt; async (req, res) =&gt; {
     const body = req.body;
 &nbsp;
-    const total_price = body.items.reduce((prev, curr) =&gt; {
-        prev += curr.price * curr.quantity
-        return prev
-    }, 0);
+    // const total_price = body.items.reduce((prev, curr) =&gt; {
+    //     prev += curr.price * curr.quantity
+    //     return prev
+    // }, 0);
 &nbsp;
     try {
         const order = await model.create({ 
             items: body.items,
             created_at: moment().toDate(),
-            total_price
+            // total_price
         })
         return res.status(201).json({ data: order })
     } catch (err) {
@@ -272,7 +272,7 @@ const createOrder = model =&gt; async (req, res) =&gt; {
 const checkOrderById = model =&gt; async (req,res) =&gt; {
     const { orderId } = req.params;
     const order = await model.findById(orderId)
-    console.log(order)
+&nbsp;
     <span class="missing-if-branch" title="if path not taken" >I</span>if (!order) {
 <span class="cstat-no" title="statement not covered" >        return res.status(404).json({ status: false, order: null })</span>
     }
@@ -281,10 +281,10 @@ const checkOrderById = model =&gt; async (req,res) =&gt; {
 }
 &nbsp;
 &nbsp;
-const checkAllOrder = <span class="fstat-no" title="function not covered" >mo</span>del =&gt; <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {</span>
-    const orders = <span class="cstat-no" title="statement not covered" >await model.find()</span>
+const checkAllOrder = model =&gt; async (req, res) =&gt; {
+    const orders = await model.find()
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return res.json({ status: true, orders })</span>
+    return res.status(200).json({ data: orders })
 }
 &nbsp;
 &nbsp;
@@ -343,7 +343,7 @@ module.exports = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2022-09-28T15:35:53.367Z
+                at 2022-09-29T10:39:44.133Z
             </div>
         <script src="../prettify.js"></script>
         <script>

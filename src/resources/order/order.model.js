@@ -17,6 +17,18 @@ const OrderSchema = new Schema({
   }]
 });
 
+
+OrderSchema.pre('save', function(next) {
+  let order = this;
+
+   order.items.reduce((prev, curr) => {
+    prev += curr.price * curr.quantity
+    order.total_price = prev
+    next()
+  }, 0);
+
+})
+
 const Order = mongoose.model('Order', OrderSchema);
 
 
