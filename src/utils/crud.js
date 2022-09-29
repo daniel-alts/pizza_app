@@ -37,7 +37,7 @@ const checkOrderById = model => async (req,res) => {
 const checkAllOrder = model => async (req, res) => {
     const orders = await model.find()
 
-    return res.json({ status: true, orders })
+    return res.status(200).json({ data: orders })
 }
 
 

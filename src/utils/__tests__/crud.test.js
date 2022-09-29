@@ -7,7 +7,12 @@ jest.setTimeout(20000) // resets Jest timeout time allow for execution.
 
 // Creates mondodb connection before testing
 beforeAll( async () => {
-    await mongoose.connect('mongodb://0.0.0.0:27017')
+    try{
+        await mongoose.connect('mongodb://0.0.0.0:27017')
+    }catch {
+        console.error('Couldn\'t connect to MongoDB')
+    }
+   
 })
 
 describe('createOrder', () => {
@@ -15,7 +20,6 @@ describe('createOrder', () => {
         expect.assertions(5)
 
         const body = {
-            created_at: moment().toDate(),
             items:[{
                 name: 'peperoni',
                 price: 1500,
@@ -38,6 +42,7 @@ describe('createOrder', () => {
                 expect(result.data.state).toBe(1)
                 expect(result.data.created_at).toBeDefined() 
                 expect(typeof result.data.items).toBe(typeof body.items)
+                expect(result.data.items[0]).toHaveLength(4)
             }
         }
 
@@ -50,7 +55,6 @@ describe('createOrder', () => {
         expect.assertions(3)
 
         const body = {
-            created_at: moment().toDate(),
             items:[{
                 name: 'peperoni',
                 price: 1500,
@@ -81,6 +85,7 @@ describe('createOrder', () => {
 describe('checkOrderById', () => {
     it('check the order by ID', async () => {
         expect.assertions(2)
+
         const order = await Order.create({
             items:[{
                 name: 'peperoni',
@@ -109,6 +114,51 @@ describe('checkOrderById', () => {
 
     })
 })
+
+describe('checkAllOrder', () => {
+    it('check that all orders were returned', async () => {
+        expect.assertions(5)
+
+        const orders = await Order.create([
+            { items: [{
+                name: 'peperoni',
+                price: 1500,
+                size: 's',
+                quantity: 2,
+            }]},
+            { items:[{
+                name: 'peperoni',
+                price: 1500,
+                size: 's',
+                quantity: 3,
+            }]},
+            { items:[{
+                name: 'peperoni',
+                price: 1500,
+                size: 's',
+                quantity: 5,
+            }]}
+        ])
+
+        const prices = [3000, 4500, 7500]
+
+        const res = {
+            status(status) {
+                expect(status),toBe(200)
+                return this
+            },
+            json(results) {
+                expect(results.data).toHaveLength(3)
+                results.data.forEach((result,i) => expect(`${result.total_price}`).toBe(`${prices[i]}`))
+            }
+        }
+
+        await checkAllOrder(Order)(req, res)
+    })
+
+
+})
+
 
 // Drops the database and the closes the connection after all the tests might have ran
 afterAll(async () => {
