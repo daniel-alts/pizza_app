@@ -2,7 +2,7 @@ const moment = require('moment');
 const orderModel = require('../Models/orderModel');
 const ResponseHandler = require('../utils/responseHandler');
 const AppError = require('../utils/AppError');
-
+const Catch_Async = require('../utils/catchAsync');
 // !sort by T Price
 exports.sortByTotalPrice = async (req, res, next) => {
 	req.query.sort = '-total_price';
@@ -16,7 +16,7 @@ exports.sortByState = async (req, res, next) => {
 };
 
 //  ! ---- Get All Orders
-exports.getOrders = async (req, res) => {
+exports.getOrders = Catch_Async(async (req, res) => {
 	// Build query
 	let queryObj = { ...req.query };
 
@@ -29,7 +29,7 @@ exports.getOrders = async (req, res) => {
 	}
 	const orders = await query;
 	new ResponseHandler(res, orders, 200);
-};
+});
 
 // ! ------ Create Order
 
@@ -73,7 +73,7 @@ exports.updateOrder = async (req, res) => {
 	const order = await orderModel.findById(id);
 
 	if (!order) {
-		return res.status(404).json({ status: false, order: null });
+		return next(new AppError(' Order not found ', 404));
 	}
 
 	if (state < order.state) {
@@ -88,8 +88,8 @@ exports.updateOrder = async (req, res) => {
 
 // ! ------ DELETE Order
 
-exports.deleteOrder = async (req, res) => {
+exports.deleteOrder = Catch_Async(async (req, res) => {
 	const order = await orderModel.deleteOne({ _id: req.params.id });
 
 	new ResponseHandler(res, order, 200);
-};
+});
