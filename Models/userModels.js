@@ -24,7 +24,6 @@ const UserSchema = new Schema(
 		userType: {
 			type: String,
 			default: 'Basic',
-			required: true,
 		},
 		profilePicture: {
 			type: String,
