@@ -1,11 +1,4 @@
-const User = require('./userModel');
-
-async function authenticate({ username, password }) {
-    const user = await User.findOne({ username });
-    if (user && user.password === password) {
-      return user;
-    }
-}
+const { authenticate } = require('./utils');
 
 async function basicAuthMiddleware(req, res, next) {
     if (req.path == "/users/authenticate" || req.path == "/users/new") {
@@ -36,7 +29,6 @@ async function basicAuthMiddleware(req, res, next) {
     }
     let permitted = true;
     Object.entries(adminPermissions).forEach(route => {
-        console.log(route, req.path, route[0].match(req[0]));
         if (route[0].match(req[0]) && route[1] === req.method) {
             permitted = false;
         }
@@ -45,6 +37,7 @@ async function basicAuthMiddleware(req, res, next) {
     if (!permitted) {
       return res.status(401).json({message: "You do not have permission to this route"})
     } else {
+      res.setHeader('Content-Type', 'application/json');
       req.user = user;
       next();
     }

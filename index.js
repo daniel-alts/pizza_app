@@ -1,13 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const process = require('process');
 require("dotenv").config();
 
 const basicAuthMiddleware = require('./middlewares');
 const orderRoutes = require('./routes/order');
 const userRoutes = require("./routes/user");
-
-const PORT = 3334;
 
 const app = express();
 
@@ -33,6 +30,5 @@ mongoose.connection.on("error", (err) => {
   console.log(err);
 });
 
-app.listen(PORT, () => {
-  console.log("Listening on port, ", PORT);
-});
+
+module.exports = app;
