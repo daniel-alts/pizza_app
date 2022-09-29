@@ -37,12 +37,28 @@ async function getOrderById(req, res) {
 }
 
 async function getAllOrders(req, res) {
-	const { page, count } = req.query;
+	const { page, count, state, sortBy } = req.query;
+
+	const query = state ? { state } : {}; // query by a state if provided
+
+	let sortedBy;
+	switch (sortBy) {
+		case "price":
+			sortedBy = { total_price: 1 }; // sort the total_price from ascending to descending
+			break;
+		case "date":
+			sortedBy = { created_at: 1 }; // sort the date created from asc to desc
+			break;
+		default:
+      sortedBy = { created_at: 1 }; // sort by date if no sortBy query is provided
+			break;
+	}
+
 	const orders = await orderModel
-		.find()
-		.sort({ created_at: 1 })
+		.find(query)
+		.sort(sortedBy)
 		.skip(page > 0 ? (page - 1) * count : 0)
-		.limit(count);
+		.limit(parseInt(count));
 
 	return res.json({ status: true, orders });
 }

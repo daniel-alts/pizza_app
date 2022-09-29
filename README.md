@@ -9,11 +9,11 @@
   
 - [x] using basic authentication, protect the order routes
 
-- [ ] add query params to the /orders route, we want to:
+- [x] add query params to the /orders route, we want to:
     - sort the total_price from ascending to descending
     - sort the date created from asc to desc
     - query by a state
-    
+
 - [x] add pagination to the GET /orders route
 
 **Bonus**
