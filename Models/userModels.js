@@ -15,7 +15,11 @@ const UserSchema = new Schema(
 		},
 		password: {
 			type: String,
-			required: true,
+			required: [true, 'Please provide your Password'],
+		},
+		passwordConfirm: {
+			type: String,
+			required: [true, 'Please provide your Password'],
 		},
 		userType: {
 			type: String,

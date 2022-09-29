@@ -1,6 +1,6 @@
 const Users = require('../Models/userModels');
 const AppError = require('../utils/AppError');
-const responseHandler = require('../utils/responseHandler');
+const ResponseHandler = require('../utils/responseHandler');
 
 // global user variable
 let user;
