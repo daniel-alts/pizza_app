@@ -18,10 +18,10 @@ const OrderSchema = new Schema({
 });
 
 
-OrderSchema.pre('save', function(next) {
+OrderSchema.pre('save', async function(next) {
   let order = this;
 
-   order.items.reduce((prev, curr) => {
+   await order.items.reduce((prev, curr) => {
     prev += curr.price * curr.quantity
     order.total_price = prev
     next()

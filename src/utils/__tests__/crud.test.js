@@ -5,23 +5,13 @@ const moment = require('moment')
 
 jest.setTimeout(20000) // resets Jest timeout time allow for execution.
 
-// Creates mondodb connection before testing
-beforeAll( async () => {
+// Creates mondodb connection before each testing
+beforeEach( async () => {
     try{
         await mongoose.connect('mongodb://0.0.0.0:27017')
         await mongoose.connection.db.dropDatabase()
     }catch {
         console.error('Couldn\'t connect to MongoDB')
-    }
-   
-})
-
-// Drops database after each describe operation
-afterEach( async () => {
-    try{
-        await mongoose.connection.db.dropDatabase()
-    } catch {
-        console.error('Check connection')
     }
 })
 
@@ -125,11 +115,81 @@ describe('checkOrderById', () => {
     })
 })
 
+
+describe('orderState', () => {
+    it('is order state valid', async () => {
+        expect.assertions(4)
+
+        const order = await Order.create({
+            items:[{
+                name: 'peperoni',
+                price: 1500,
+                size: 's',
+                quantity: 2,
+            }]
+        })
+
+        const req = {
+            params: {
+                id: order._id 
+            },
+            body: {
+                state: order.state
+            }
+        }
+
+        const res = {
+            status(status) {
+                expect(status).toBe(200)
+                expect(status).not.toBe(404)
+                expect(status).not.toBe(422)
+                return this
+            },
+            json(result) {
+                expect(result.data.state).toBe(order.state)
+            }
+        }
+
+        await orderState(Order)(req, res)
+    })
+})
+
+describe('deleteOrder', () => {
+    it('should delete order', async () => {
+        const order = await Order.create({
+            items:[{
+                name: 'peperoni',
+                price: 1500,
+                size: 's',
+                quantity: 2,
+            }]
+        })
+
+        const req = {
+            params: {
+                id: order._id
+            }
+        }
+        const res = {
+            status(status) {
+                expect(status).toBe(200)
+                return this
+            },
+            json(result) {
+                expect(`${result.data._id}`).toBe("undefined")
+            }
+        }
+
+        await deleteOrder(Order)(req, res)
+    })
+})
+
+
 describe('checkAllOrder', () => {
     it('check that all orders were returned', async () => {
         expect.assertions(5)
 
-        await Order.create([
+        const order = await Order.create([
             { items: [{
                 name: 'peperoni',
                 price: 1500,
@@ -161,15 +221,14 @@ describe('checkAllOrder', () => {
             },
             json(results) {
                 expect(results.data).toHaveLength(3)
-                results.data.forEach( async (result,i) => await expect(`${result.total_price}`).toBe(`${prices[i]}`))
+                results.data.forEach((result,i) => expect(`${order[i].total_price}`).toBe(`${prices[i]}`))
             }
         }
 
         await checkAllOrder(Order)(req, res)
     })
-
-
 })
+
 
 
 // Drops the database and the closes the connection after all the tests might have ran

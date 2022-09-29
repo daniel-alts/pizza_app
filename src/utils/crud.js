@@ -4,11 +4,6 @@ const moment = require('moment');
 const createOrder = model => async (req, res) => {
     const body = req.body;
 
-    // const total_price = body.items.reduce((prev, curr) => {
-    //     prev += curr.price * curr.quantity
-    //     return prev
-    // }, 0);
-
     try {
         const order = await model.create({ 
             items: body.items,
@@ -59,7 +54,7 @@ const orderState = model => async (req, res) => {
 
     await order.save()
 
-    return res.json({ status: true, order })
+    return res.status(200).json({ data: order })
 }
 
 
@@ -67,8 +62,9 @@ const deleteOrder = model => async (req, res) => {
     const { id } = req.params;
 
     const order = await model.deleteOne({ _id: id})
+    console.log(order)
 
-    return res.json({ status: true, order })
+    return res.status(200).json({ data: order })
 }
 
 
