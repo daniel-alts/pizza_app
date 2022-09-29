@@ -95,6 +95,7 @@ router.post('/', authenticate, async (req, res) => {
 
   const orderObject = {
     items: body.items,
+    created_at: new Date(),
     total_price,
   }
 

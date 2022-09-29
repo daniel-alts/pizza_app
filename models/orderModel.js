@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const OrderSchema = new Schema({
-  created_at: { type: Date, default: new Date() },
+  created_at: { type: Date, required: true },
   state: { type: Number, default: 1 },
   total_price: Number,
   items: [
