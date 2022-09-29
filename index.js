@@ -3,18 +3,43 @@ const moment = require('moment');
 const mongoose = require('mongoose');
 const orderModel = require('./orderModel');
 
-const PORT = 3334
+const User = require('./Users/userModel');
+const authenticate = require('./authenticate')
 
+const PORT = 3334;
+
+require('dotenv').config();
 const app = express()
 
 app.use(express.json());
 
 
-app.get('/', (req, res) => {
-    return res.json({ status: true })
+app.post('/signup', async (req, res) => {
+
+    const body = req.body;
+    const user = await User.User.create(body);
+
+    return res.json(user);
+    
+})
+
+app.post('/hello', async (req, res) => 
+{
+
+    const body = req.body;
+    authenticate.authenticate(req, res)
+
+    ordering();
+
+
 })
 
 
+
+async function ordering (req, res)
+{
+ 
+    
 app.post('/order', async (req, res) => {
     const body = req.body;
 
@@ -44,7 +69,16 @@ app.get('/order/:orderId', async (req, res) => {
 })
 
 app.get('/orders', async (req, res) => {
-    const orders = await orderModel.find()
+
+    const queryParam = await `{"${req.query.queryParam}": 1}`;
+    const paginateLimit = await req.query.limit;
+
+    const objectParse = await JSON.parse(queryParam);
+
+//This is to select between query param total_price or to sort by Date
+
+    //this would sort the total_price from ascending to descending
+    const orders = await orderModel.find().sort(objectParse).limit(paginateLimit); //for pagination
 
     return res.json({ status: true, orders })
 })
@@ -78,6 +112,21 @@ app.delete('/order/:id', async (req, res) => {
     return res.json({ status: true, order })
 })
 
+// app.get("/order"){
+
+//     const o
+
+// }
+
+    
+}
+
+
+app.get('/', (req, res) => {
+    return res.json({ status: true })
+})
+
+
 
 mongoose.connect('mongodb://localhost:27017')
 
@@ -93,3 +142,6 @@ mongoose.connection.on("error", (err) => {
 app.listen(PORT, () => {
     console.log('Listening on port, ', PORT)
 })
+
+
+module.exports = app
