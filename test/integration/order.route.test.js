@@ -16,7 +16,7 @@ const data = {
   {
     "name": "Test 104",
     "price": 100,
-    "size": "m",
+    "size": "l",
     "quantity": 1
   }
   ]
@@ -57,11 +57,11 @@ describe("POST /order", () => {
 
   it("adds order for admin user", async () => {
     const response = await supertest(app).post("/order").auth("test1", "test1").send(data);
-    console.log("Body: ", response.body);
     expect(response.headers["content-type"].split(";")[0]).toBe("application/json")
     expect(response.statusCode).toBe(200);
     expect(response.body.status).toBe(true);
     expect(response.body.order.state).toBe(1);
+    expect(response.body.order.total_price).toBe(300)
   })
 
 })
