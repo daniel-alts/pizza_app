@@ -21,6 +21,7 @@ exports.Register = Catch_Async(async (req, res, next) => {
 	new ResponseHandler(res, user, 201);
 });
 
+// login
 exports.Login = catchAsync(async (req, res, next) => {
 	user = await Users.findOne({
 		username: req.body.username,
