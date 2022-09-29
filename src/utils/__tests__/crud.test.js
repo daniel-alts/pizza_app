@@ -8,7 +8,7 @@ jest.setTimeout(20000) // resets Jest timeout time allow for execution.
 // Creates mondodb connection before each testing
 beforeEach( async () => {
     try{
-        await mongoose.connect('mongodb://0.0.0.0:27017')
+        await mongoose.connect('mongodb://0.0.0.0:27017/testing-order')
         await mongoose.connection.db.dropDatabase()
     }catch {
         console.error('Couldn\'t connect to MongoDB')
@@ -25,7 +25,7 @@ describe('createOrder', () => {
                 name: 'peperoni',
                 price: 1500,
                 size: 's',
-                quantity: 2,
+                quantity: 2
             }]
         }
 
@@ -96,7 +96,7 @@ describe('checkOrderById', () => {
         })
         const req = {
             params:{
-                orderId: order._id
+                id: order._id
             }
         }
 

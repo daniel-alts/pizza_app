@@ -7,8 +7,6 @@ const createOrder = model => async (req, res) => {
     try {
         const order = await model.create({ 
             items: body.items,
-            created_at: moment().toDate(),
-            // total_price
         })
         return res.status(201).json({ data: order })
     } catch (err) {
@@ -18,8 +16,8 @@ const createOrder = model => async (req, res) => {
 
 
 const checkOrderById = model => async (req,res) => {
-    const { orderId } = req.params;
-    const order = await model.findById(orderId)
+    const { id } = req.params;
+    const order = await model.findById(id)
 
     if (!order) {
         return res.status(404).json({ status: false, order: null })
@@ -30,7 +28,11 @@ const checkOrderById = model => async (req,res) => {
 
 
 const checkAllOrder = model => async (req, res) => {
-    const orders = await model.find()
+    try{
+        const orders = await model.find()
+    } catch {
+        return res.status(404)
+    }
 
     return res.status(200).json({ data: orders })
 }
