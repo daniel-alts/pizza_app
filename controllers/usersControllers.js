@@ -1,38 +1,27 @@
 const Users = require('../Models/userModels');
 const AppError = require('../utils/AppError');
 const ResponseHandler = require('../utils/responseHandler');
+const Catch_Async = require('../utils/catchAsync');
 
 // global user variable
 let user;
 
-exports.deleteUser = async (req, res, next) => {
-	try {
-		user = await Users.findByIdAndDelete(req.params.id);
+exports.deleteUser = Catch_Async(async (req, res, next) => {
+	user = await Users.findByIdAndDelete(req.params.id);
 
-		new ResponseHandler(res, user, 200);
-	} catch (err) {
-		return next(new AppError(err.message, 404));
-	}
-};
+	new ResponseHandler(res, user, 200);
+});
 
-exports.updateUser = async (req, res) => {
-	try {
-		user = await Users.findByIdAndUpdate(req.params.id, req.body, {
-			new: true,
-			runValidators: true,
-		});
-		new ResponseHandler(res, user, 200);
-	} catch (err) {
-		return next(new AppError(err.message, 404));
-	}
-};
+exports.updateUser = Catch_Async(async (req, res) => {
+	user = await Users.findByIdAndUpdate(req.params.id, req.body, {
+		new: true,
+		runValidators: true,
+	});
+	new ResponseHandler(res, user, 200);
+});
 
-exports.findUser = async (req, res) => {
-	try {
-		user = await Users.findById(req.params.id);
+exports.findUser = Catch_Async(async (req, res) => {
+	user = await Users.findById(req.params.id);
 
-		new ResponseHandler(res, user, 200);
-	} catch (error) {
-		return next(new AppError(err.message, 404));
-	}
-};
+	new ResponseHandler(res, user, 200);
+});
