@@ -2,11 +2,18 @@ const express = require("express");
 const UserModel = require('../models/userModel')
 const moment = require('moment')
 const router = express.Router();
+const {
+    getAllUsers,
+    getSingleUser,
+    createUser,
+    updateUser,
+    deleteUser
+} = require('../controllerFunctions/userFunc')
 
-router.get("/", (req, res) => {});
-router.get("/:userId", (req, res) => {});
-router.post("/", (req, res) => {});
-router.patch("/", (req, res) => {});
-router.delete("/", (req, res) => {});
+router.get("/", getAllUsers);
+router.get("/:userId", getSingleUser);
+router.post("/", createUser);
+router.patch("/:id", updateUser);
+router.delete("/:id", deleteUser);
 
 module.exports = router;
