@@ -30,11 +30,10 @@ const checkOrderById = model => async (req,res) => {
 const checkAllOrder = model => async (req, res) => {
     try{
         const orders = await model.find()
+        return res.status(200).json({ data: orders })
     } catch {
         return res.status(404)
     }
-
-    return res.status(200).json({ data: orders })
 }
 
 
@@ -64,7 +63,6 @@ const deleteOrder = model => async (req, res) => {
     const { id } = req.params;
 
     const order = await model.deleteOne({ _id: id})
-    console.log(order)
 
     return res.status(200).json({ data: order })
 }
