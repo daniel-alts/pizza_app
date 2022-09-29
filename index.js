@@ -3,6 +3,7 @@ const express = require('express');
 // ---------- Import Modules ----------
 const { connectToMongoDb } = require("./db/db")
 const orderRouter = require("./routes/order")
+const userRouter = require('./routes/user')
 
 const app = express()
 app.use(express.json());
@@ -17,6 +18,7 @@ app.get('/', (req, res) => {
 
 // ------------ Use API Routes -----------------
 app.use('/pizza', orderRouter)
+app.use('/user', userRouter)
 
 
 // Server Config
