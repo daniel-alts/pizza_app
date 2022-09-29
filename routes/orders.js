@@ -45,9 +45,22 @@ router.get('/', authenticate, async (req, res, next) => {
   }
 
   try {
-    const orders = await orderModel.find({})
+    let orders
 
-    return res.json({ status: true, orders })
+    // check for query parameters
+    const { price, date } = req.query
+
+    if (price) {
+      const value = price === 'asc' ? 1 : price === 'desc' ? -1 : false
+      if (value) orders = await orderModel.find({}).sort({ total_price: value })
+    } else if (date) {
+      const value = date === 'asc' ? 1 : date === 'desc' ? -1 : false
+      console.log(value, '<-- value')
+      if (value) orders = await orderModel.find({}).sort({ created_at: value })
+    } 
+    if (!orders) orders = await orderModel.find({})
+
+    return res.json({ status: true, orders, requ: req.query })
   } catch (err) {
     next(err)
   }
