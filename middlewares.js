@@ -23,16 +23,18 @@ async function basicAuthMiddleware(req, res, next) {
     }
 
     const adminPermissions = {
-        "/order": "POST",
-        "//\/orders\/.*/": "PATCH",
-        "/\/orders\/.*/": "DELETE"
+      1: ["^/order$", "POST"],
+      2: ["^/order/.*", "PATCH"],
+      3: ["^/order/.*", "DELETE"]
     }
+    
     let permitted = true;
     Object.entries(adminPermissions).forEach(route => {
-        if (route[0].match(req[0]) && route[1] === req.method) {
+        if (req.path.match(route[1][0]) && route[1][1] === req.method && user.user_type !== "admin") {
             permitted = false;
         }
     })
+    // console.log("Permitted: ", permitted, "Path: ", req.path, "Match: ", req.path.match(route[1][0]));
 
     if (!permitted) {
       return res.status(401).json({message: "You do not have permission to this route"})
