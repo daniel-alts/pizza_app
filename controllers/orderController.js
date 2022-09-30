@@ -39,11 +39,16 @@ async function getOrderById(req, res) {
 
 async function getAllOrder(req, res) {
     try {
-        let query = req.query
+        // Offset based pagination
+        const { page, limit, total_price, created_at, state } = req.query
 
-        const orders = await orderModel.find({}).sort(query)
+        // execute query with page and limit values
+        const orders = await orderModel.find({}).sort({ total_price: total_price, created_at: created_at, state: state }).limit(limit * 1).skip((page - 1) * limit).exec()
 
-        return res.json({ status: true, orders })
+        // get total documents in the Orders 
+        const count = await orderModel.count()
+
+        return res.json({ status: true, orders, totalPages: Math.ceil(count / limit), currentPage: page })
     } catch (error) {
         return res.status(400).json({ status: false, message: "Invalid query parameter" })
     }
