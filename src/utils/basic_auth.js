@@ -1,8 +1,10 @@
 const User = require("../models/userModel")
+const errorHandler = require("./error");
 
 async function authenticate(authorization, req, res){
+    
     if(!authorization){
-        return res.send("Access Denied: Log in first")
+            throw new errorHandler(404, "provide username and password")
     }
     const encoded = authorization.substring(6)
     const decoded = Buffer.from(encoded, "base64").toString("ascii")
@@ -16,7 +18,6 @@ async function authenticate(authorization, req, res){
     if(authenticatedUser.password != password){
         return res.send("password incorrect")
     }
-    return true;
 }
 
 module.exports = authenticate

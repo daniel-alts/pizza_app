@@ -1,6 +1,7 @@
 const express = require('express');
 const dbConnection = require('./dbConfig')
-const CONFIG = require("./config/config")
+const CONFIG = require("./src/config/config")
+const errorMiddleware = require("./src/middlewares/errorHandler")
 
 const PORT = CONFIG.PORT || 3000
 
@@ -11,8 +12,8 @@ const app = express()
 //initialize database
 dbConnection()
 
-const orderRouter = require('./routes/order')
-const userRouter = require('./routes/userRoutes');
+const orderRouter = require('./src/routes/order')
+const userRouter = require('./src/routes/userRoutes');
 
 //midlewares
 app.use(express.json());
@@ -28,7 +29,7 @@ app.get('/', (req, res) => {
     return res.json({ status: true })
 })
 
-
+app.use(errorMiddleware)
 
 app.listen(PORT, () => {
     console.log('Listening on port, ', PORT)
