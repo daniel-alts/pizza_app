@@ -34,7 +34,6 @@ async function basicAuthMiddleware(req, res, next) {
             permitted = false;
         }
     })
-    // console.log("Permitted: ", permitted, "Path: ", req.path, "Match: ", req.path.match(route[1][0]));
 
     if (!permitted) {
       return res.status(401).json({message: "You do not have permission to this route"})
