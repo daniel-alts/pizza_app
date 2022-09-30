@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const timestampsPlugin = require('./plugin/timestamps');
+const timestampsPlugin = require('./plugins/timestamps');
 
 
 const Schema = mongoose.Schema;
@@ -34,10 +34,12 @@ const userSchema = new Schema({
             }
         },
         firstName: {
+            type: String,
             minLength: [2, "Name length must be at least 2 letters."],
             maxLength: [20, "Name length can't exceed 25 letters."]
         },
         lastName: {
+            type: String,
             minLength: [2, "Name length must be at least 2 letters."],
             maxLength: [20, "Name length can't exceed 25 letters."]
         }

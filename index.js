@@ -2,9 +2,10 @@ const express = require('express');
 const connectToDatabase = require('./src/db'); //Database connection
 const orderRoutes = require('./src/routes/orderRoutes');
 const userRoutes = require('./src/routes/userRoutes');
+require('dotenv').config();
 
 
-
+//CREATE SERVER
 const app = express()
 
 //APPLICATION LEVEL MIDDLEWARES
@@ -36,7 +37,8 @@ app.get('*', (req, res) => {
 
 
 
-//START SEVER
+//START THE SEVER
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log('Listening on port, ', PORT)
 })
