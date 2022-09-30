@@ -1,6 +1,5 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const { connectToDabase } = require('./src/db');
+const connectToDatabase = require('./src/db'); //Database connection
 const orderRoutes = require('./src/routes/orderRoutes');
 const userRoutes = require('./src/routes/userRoutes');
 
@@ -35,9 +34,6 @@ app.get('*', (req, res) => {
 });
 
 
-
-//CONNECT TO DATABASE
-connectToDabase();
 
 
 //START SEVER

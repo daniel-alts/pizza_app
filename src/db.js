@@ -2,24 +2,28 @@ const mongoose = require('mongoose');
 require("dotenv").config();
 
 
-const DATABASE_URI = process.env.DATABASE_URI;
+const DATABASE_URI = process.env.DATABASE_URI
 
-const connectToDatabase = () => {
-    mongoose.connect(DATABASE_URI);
 
-    mongoose.connection.on("connected", () => {
-        console.log('Connected to dabase successfully.');
-    });
 
-    mongoose.connection.on("error", () => {
-        console.log('An error occured while trying to connect to database.');
-    });
+class Database {
+    constructor() {
+        this._connect();
+    }
+
+    _connect() {
+        mongoose.connect(DATABASE_URI).
+        then(() => {
+            console.log('Connected to dabase successfully.');
+        }).
+        catch(error => {
+            console.error('Database connection failure.');
+        })
+    }
 }
 
 
 
-module.exports = {
-    connectToDatabase,
-}
+module.exports = new Database();
 
 
