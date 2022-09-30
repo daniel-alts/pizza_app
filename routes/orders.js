@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const orderModel = require('../models/orderModel')
-const authenticate = require('../authenticate')
+const authenticate = require('../middleware/authenticate')
 
 /**
  * Get information about all orders
@@ -190,18 +190,5 @@ router.delete('/:id', authenticate, async (req, res, next) => {
     next(err)
   }
 })
-
-/**
- * Error handler middleware
- */
- const errorHandler = (error, req, res, next) => {
-  if (error.name === 'CastError') {
-    return res.status(400).send({ error: 'Unable to lookup order with provided ID' })
-  }
-
-  return res.status(500).send({ error: 'Sorry, error occured' })
-}
-
-router.use(errorHandler)
 
 module.exports = router
