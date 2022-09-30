@@ -1,19 +1,34 @@
 const router = require("express").Router();
-
-const mongoose = require("mongoose");
-const orderModel = require("../models/orderModel");
+const auth = require("../authentication/auth");
 const orderController = require("../controllers/orderController");
 
-router.get("/", orderController.getOrders);
+router.get(
+	"/",
+	auth.authenticateUser,
+	orderController.getOrders
+);
 
-router.post("/", orderController.postOrder);
+router.post(
+	"/",
+	auth.authenticateUser,
+	orderController.postOrder
+);
 
-router.get("/:orderId", orderController.getOrder);
+router.get(
+	"/:orderId",
+	auth.authenticateUser,
+	orderController.getOrder
+);
 
-router.patch("/:id", orderController.updateOrder);
+router.patch(
+	"/:id",
+	auth.authenticateUser,
+	orderController.updateOrder
+);
 
 router.delete(
 	"/:id",
+	auth.authenticateUser,
 	orderController.deleteOrder
 );
 
