@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const timestampsPlugin = require('./plugin/timestamps');
 
 
 const Schema = mongoose.Schema;
@@ -33,15 +34,19 @@ const userSchema = new Schema({
             }
         },
         firstName: {
-            minLength: [2, "Name length must be at least 2 letters"],
+            minLength: [2, "Name length must be at least 2 letters."],
             maxLength: [20, "Name length can't exceed 25 letters."]
         },
         lastName: {
-            minLength: [2, "Name length must be at least 2 letters"],
+            minLength: [2, "Name length must be at least 2 letters."],
             maxLength: [20, "Name length can't exceed 25 letters."]
         }
     }
 );
+
+
+//Add timestamps for time created and time updated
+userSchema.plugin(timestampsPlugin);
 
 
 
