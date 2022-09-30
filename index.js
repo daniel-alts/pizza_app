@@ -7,13 +7,14 @@ const userRouter = require('./routes/user')
 
 const app = express()
 app.use(express.json());
+app.use(express.static(__dirname + '/public'))
 
 // ----------- Connecting to MongoDB instance ----------
 connectToMongoDb()
 
 // API Home Route
 app.get('/', (req, res) => {
-    return res.json({ status: true })
+    return res.status(200).sendFile(__dirname + '/public/index')
 })
 
 // ------------ Use API Routes -----------------

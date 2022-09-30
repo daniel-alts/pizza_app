@@ -1,7 +1,7 @@
 const orderModel = require('../models/order');
 const moment = require('moment');
 
-async function order(req, res) {
+async function order(req, res, next) {
     try {
         const body = req.body
 
@@ -17,27 +17,28 @@ async function order(req, res) {
         })
         return res.json({ status: true, order })
     } catch (error) {
-        return res.json({ status: false, error })
+        error.type = 'Bad Request'
+        next(error)
     }
-
 }
 
-async function getOrderById(req, res) {
+async function getOrderById(req, res, next) {
     try {
         const { orderId } = req.params;
 
         const order = await orderModel.findById(orderId)
         if (!order) {
-            return res.status(404).json({ status: false, order: null })
+            return res.status(400).json({ status: false, message: "Order ID not valid", order: null })
         }
 
         return res.json({ status: true, order })
     } catch (error) {
-        return res.json({ status: false, error })
+        error.type = 'Not Found'
+        next(error)
     }
 }
 
-async function getAllOrder(req, res) {
+async function getAllOrder(req, res, next) {
     try {
         // Offset based pagination
         const { page, limit, total_price, created_at, state } = req.query
@@ -50,7 +51,8 @@ async function getAllOrder(req, res) {
 
         return res.json({ status: true, orders, totalPages: Math.ceil(count / limit), currentPage: page })
     } catch (error) {
-        return res.status(400).json({ status: false, message: "Invalid query parameter" })
+        error.type = 'Bad Request'
+        next(error)
     }
 }
 
@@ -74,7 +76,8 @@ async function updateOrder(req, res) {
 
         return res.json({ status: true, order })
     } catch (error) {
-        return res.json({ status: false, error })
+        error.type = 'Internal Server Error'
+        next(error)
     }
 }
 
@@ -86,7 +89,8 @@ async function deleteOrder(req, res) {
 
         return res.json({ status: true, order })
     } catch (error) {
-        return res.json({ status: false, error })
+        error.type = 'Internal Server Error'
+        next(error)
     }
 }
 

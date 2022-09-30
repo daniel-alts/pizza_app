@@ -4,7 +4,7 @@ async function passwordAuth(req, res, next) {
     const { authorization } = req.headers
 
     if (!authorization) {
-        return res.status(400).json({ status: false, message: 'Invalid Request' })
+        return res.status(400).json({ status: false, message: 'Invalid Request. Login to make operation' })
     }
     const auth = new Buffer.from(authorization.split(" ")[1], 'base64').toString().split(":")
 
@@ -13,7 +13,7 @@ async function passwordAuth(req, res, next) {
 
     const user = await userModel.find({ username: username })
     if (user.length === 0) {
-        return res.status(404).json({ status: false, message: "User not found. Please signup" })
+        return res.status(404).json({ status: false, message: "Username not found. Please signup" })
     }
 
     if (user[0].password !== password) {
@@ -27,7 +27,7 @@ async function adminAuth(req, res, next) {
     const { authorization } = req.headers
 
     if (!authorization) {
-        return res.status(400).json({ status: false, message: 'Invalid Request' })
+        return res.status(400).json({ status: false, message: 'Invalid Request. Login to make operation' })
     }
     const auth = new Buffer.from(authorization.split(" ")[1], 'base64').toString().split(":")
 
@@ -40,7 +40,7 @@ async function adminAuth(req, res, next) {
     }
 
     if (user[0].user_type !== 'admin') {
-        return res.status(401).json({ status: false, message: "You are unauthorized for this operation" })
+        return res.status(401).json({ status: false, message: "Not an Admin! You are unauthorized for this operation" })
     }
 
     next()
@@ -50,7 +50,7 @@ async function userAuth(req, res, next) {
     const { authorization } = req.headers
 
     if (!authorization) {
-        return res.status(400).json({ status: false, message: 'Invalid Request' })
+        return res.status(400).json({ status: false, message: 'Invalid Request. Login to make operation' })
     }
     const auth = new Buffer.from(authorization.split(" ")[1], 'base64').toString().split(":")
 
@@ -63,7 +63,7 @@ async function userAuth(req, res, next) {
     }
 
     if (user[0].user_type !== 'user') {
-        return res.status(401).json({ status: false, message: "You are unauthorized for this operation" })
+        return res.status(401).json({ status: false, message: "Not a User! You are unauthorized for this operation" })
     }
 
     next()
