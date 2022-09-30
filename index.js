@@ -3,6 +3,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const ordersRoute = require('./routes/orders')
 const usersRoute = require('./routes/users')
+const errorHandler = require('./middleware/errHandler')
 
 const app = express()
 
@@ -14,6 +15,8 @@ app.use('/api/users', usersRoute)
 app.all('/', (req, res) => {
   return res.json({ status: true })
 })
+
+app.use(errorHandler)
 
 /**
  * Connect to database
