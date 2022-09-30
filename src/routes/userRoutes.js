@@ -1,5 +1,5 @@
 const express = require('express');
-const userController = require('../../pizza_app/controllers/userController')
+const userController = require('../controllers/userController')
 
 
 const userRouter = express.Router();

@@ -4,7 +4,7 @@ const errorHandler = require("./error");
 async function authenticate(authorization, req, res){
     
     if(!authorization){
-            throw new errorHandler(404, "provide username and password")
+            throw new Error(404, "provide username and password")
     }
     const encoded = authorization.substring(6)
     const decoded = Buffer.from(encoded, "base64").toString("ascii")

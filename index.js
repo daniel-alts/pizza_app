@@ -1,6 +1,6 @@
 const express = require('express');
-const dbConnection = require('./dbConfig')
-const CONFIG = require("./src/config/config")
+const dbConnection = require('./src/config/dbConfig')
+const CONFIG = require("./src/config/config.js")
 const errorMiddleware = require("./src/middlewares/errorHandler")
 
 const PORT = CONFIG.PORT || 3000
