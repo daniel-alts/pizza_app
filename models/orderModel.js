@@ -1,32 +1,23 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema
+const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
 
 const OrderSchema = new Schema({
-  created_at: { type: Date, required: true },
+  id: ObjectId,
+  created_at: Date,
   state: { type: Number, default: 1 },
   total_price: Number,
   items: [
     {
-      name: { type: String, required: true },
-      price: { type: Number, required: true },
-      size: { type: String, enum: ['m', 's', 'l'], required: true },
-      quantity: { type: Number, required: true },
+      name: String,
+      price: Number,
+      size: { type: String, enum: ['m', 's', 'l'] },
+      quantity: Number,
     },
   ],
-})
+});
 
-/**
- * Convert id to string
- * Remove id object from response
- * Remove _v from response
- */
-OrderSchema.set('toJSON', {
-  transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    delete returnedObject.__v
-  },
-})
+const Order = mongoose.model('Order', OrderSchema);
 
-module.exports = mongoose.model('Order', OrderSchema)
+module.exports = Order;
