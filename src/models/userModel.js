@@ -1,22 +1,44 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
+
+
 const Schema = mongoose.Schema;
 
 
 
-const userSchema = Schema(
-    {
-        "username": {
+const userSchema = new Schema({
+        //Mandatory fields
+        username: {
             type: String,
             required: true,
-            unique
+            unique: true
         },
-        "password": {
+        password: {
             type: String,
             required: true,
         },
-        "userType": {
+        userType: {
+            type: {String, enum: ['admin, user']},
+            required: true,
+
+        },
+
+        //Additional fields
+        email: {
             type: String,
-            required: true
+            required: true,
+            lowercase: true,
+            validate: (val) => {
+                return validator.isEmail(val);
+            }
+        },
+        firstName: {
+            minLength: [2, "Name length must be at least 2 letters"],
+            maxLength: [20, "Name length can't exceed 25 letters."]
+        },
+        lastName: {
+            minLength: [2, "Name length must be at least 2 letters"],
+            maxLength: [20, "Name length can't exceed 25 letters."]
         }
     }
 );

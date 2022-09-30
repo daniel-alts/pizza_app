@@ -1,24 +1,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
-
-//IMPORT ROUTES
-const orderRoutes = require('./routes/orderRoutes');
-const userRoutes = require('./routes/userRoutes');
-
+const { connectToDabase } = require('./src/db');
+const orderRoutes = require('./src/routes/orderRoutes');
+const userRoutes = require('./src/routes/userRoutes');
 
 
-
-
-
-
-const PORT = 3334
 
 const app = express()
 
+//APPLICATION LEVEL MIDDLEWARES
 app.use(express.json());
-
-
-//ROUTES
+//Routes
 app.use('/order', orderRoutes);
 app.use('/user', userRoutes);
 
@@ -29,20 +21,26 @@ app.get('/', (req, res) => {
 })
 
 
-
-
-
-mongoose.connect('mongodb://localhost:27017')
-
-mongoose.connection.on("connected", () => {
-	console.log("Connected to MongoDB Successfully");
+app.use((error, req, res, next) => {
+    console.log(error);
+    if (error.type == "Bad Request") {
+        res.status(400).json({ status: false, message: "An error occured."} )
+    }
+    next();
 });
 
-mongoose.connection.on("error", (err) => {
-	console.log("An error occurred while connecting to MongoDB");
-	console.log(err);
+
+app.get('*', (req, res) => {
+    res.status(404).json({ status: false, message: "Page Not Found"});
 });
 
+
+
+//CONNECT TO DATABASE
+connectToDabase();
+
+
+//START SEVER
 app.listen(PORT, () => {
     console.log('Listening on port, ', PORT)
 })
