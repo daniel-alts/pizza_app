@@ -1,4 +1,6 @@
 const orderModel = require('../Models/orderModel');
+const asyncHandler = require('express-async-handler')
+const moment = require('moment')
 
 const makeOrder = asyncHandler(async (req, res) => {
   const body = req.body;
@@ -29,7 +31,7 @@ const getOrderById = asyncHandler(async (req, res) => {
 })
 
 const getOrders = asyncHandler( async (req, res) => {
-  const orders = await orderModel.find()
+  const orders = await orderModel.find().limit(1)
 
   return res.json({ status: true, orders })
 })

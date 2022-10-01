@@ -4,17 +4,18 @@ const API_KEY = process.env.API_KEY
 
 function authenticateRoute(req, res){
   return new Promise((resolve, reject)=>{
-    const token = req.header.authorization
-    token = token.split(" ")[1]
+    let token = req.headers.authorization
+        token = token.split(" ")[1]
 
-    if(!token){
-      reject("No token provided")
-    }
-    if (token !== API_KEY) {
-      reject("Invalid token")
-    }
+        if (!token) {
+            reject("No token provided");
+        }
 
-    resolve()
+        if (token !== API_KEY) {
+            reject("Invalid token");
+        }
+
+        resolve();
   })
 }
 
