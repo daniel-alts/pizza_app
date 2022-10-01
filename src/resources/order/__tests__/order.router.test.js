@@ -12,7 +12,6 @@ describe('order router', () => {
 
 		//loops through the routes above
 		routes.forEach((route) => {
-            console.log(router.stack)
 			// .stack stacks up the route in layers with respect to the route
 			const match = router.stack.find(
 				(s) =>
