@@ -16,13 +16,16 @@ app.use(express.json());
 
 
 
+
 // using the routers
 app.use('/register',userRouter)
-app.use(authentication ,orderRouter)
+app.use('/orders' ,authentication ,orderRouter)
+
 
 app.get('/', (req, res) => {
     return res.json({ status: true })
 })
+
 
 app.all('*',(req,res)=>{
     return res.status(404).json({ status: false, msg: "page not Found" })

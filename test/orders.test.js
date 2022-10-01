@@ -3,7 +3,7 @@ const app = require('../index');
 
 
 afterAll(() => {
-    supertest(app).post('/order').send({
+    supertest(app).post('/orders').send({
             "items": [
                 {
                 "name": "Large Cheese Pizza",
@@ -22,18 +22,18 @@ describe('accessing orders with auth', () => {
 
 
     it('get all orders', async () => {
-        const response = await supertest(app).get('/orders').set({Authorization:"deji secret"})
+        const response = await supertest(app).get('/orders').set({Authorization:"Basic ZGVqaTpzZWNyZXQ="})
         expect(response.statusCode).toBe(200)
     })
     
     it("get single order with id", async () => {
-        const response = await supertest(app).get('/order/632f4551f6b8aaefe5b0e5c1').set({Authorization:"deji secret"})
+        const response = await supertest(app).get('/orders/632f4551f6b8aaefe5b0e5c1').set({Authorization:"Basic ZGVqaTpzZWNyZXQ="})
 
         expect(response.statusCode).toBe(200)
     })
     
     it("post single order", async () => {
-        const response = await supertest(app).post('/order').set({Authorization:"deji secret"}).send({ 
+        const response = await supertest(app).post('/orders').set({Authorization:"Basic ZGVqaTpzZWNyZXQ="}).send({ 
             "items": [
                 {
                     "name": "Large Cheese And Pepperoni",
@@ -47,7 +47,7 @@ describe('accessing orders with auth', () => {
     })
 
     it("update single order with id", async () => {
-        const response = await supertest(app).patch('/order/632f5d0d55a92cd50d026386').set({Authorization:"deji secret"}).send({ 
+        const response = await supertest(app).patch('/orders/632f5d0d55a92cd50d026386').set({Authorization:"Basic ZGVqaTpzZWNyZXQ="}).send({ 
             "state": 2
         })
 
@@ -55,7 +55,7 @@ describe('accessing orders with auth', () => {
     })
 
     it("delete single order with id", async () => {
-        const response = await supertest(app).delete('/order/632f45d416cc197dabc9f5bb').set({Authorization:"deji secret"})
+        const response = await supertest(app).delete('/orders/632f45d416cc197dabc9f5bb').set({Authorization:"Basic ZGVqaTpzZWNyZXQ="})
         expect(response.status).toBe(200)
     })
 })
