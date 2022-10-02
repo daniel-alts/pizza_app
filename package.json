@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "cross-env NODE_ENV=test jest",
+    "pretest": "cross-env NODE_ENV=test",
     "start:dev": "nodemon index"
   },
   "keywords": [],
