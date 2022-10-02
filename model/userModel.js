@@ -34,13 +34,13 @@ const userSchema = new Schema({
 // *convert id to String
 // *Remove id object from response
 // *Remove _v from response
-userSchema.set("toJSON", {
-    transform: (document, returnedObject) => {
-        returnedObject.id = returnedObject._id.toString();
-        delete returnedObject._id;
-        delete returnedObject.__v;
-    },
-});
+// userSchema.set("toJSON", {
+//     transform: (document, returnedObject) => {
+//         returnedObject.id = returnedObject._id.toString();
+//         delete returnedObject._id;
+//         delete returnedObject.__v;
+//     },
+// });
 
 // const user = mongoose.model();
 const user = mongoose.model("user", userSchema);

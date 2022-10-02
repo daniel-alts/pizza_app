@@ -1,10 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-const { connectToMongoDB } = require("./db");
-const moment = require("moment");
-const mongoose = require("mongoose");
-const OrderModel = require("./model/orderModel");
-const UserModel = require("./model/userModel");
+const {connectToMongoDB} = require("./db");
 const userRoute = require("./routes/user");
 const orderRoute = require("./routes/order");
 const errorHandler = require("./middlewares/errHandler");
@@ -19,8 +15,8 @@ connectToMongoDB();
 
 app.use(express.json());
 
-app.use("api/orders", orderRoute);
-app.use("api/users", userRoute);
+app.use("/api/orders", orderRoute);
+app.use("/api/users", userRoute);
 
 app.all("/", (req, res) => {
     return res.json({ status: true });

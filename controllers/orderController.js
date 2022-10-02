@@ -3,16 +3,9 @@ const router = express.Router();
 const orderModel = require("../model/orderModel");
 
 /*Get Information about all orders*/
-const getOrderInfo = async(req, res, next) => {
+const getOrderInfo = async(rq, res, next) => {
     try {
         //Check if user is authenticated
-        const authenticatedUser = req.authenticatedUser;
-        if (!authenticatedUser) {
-            return res.status(403).send({ mesage: Forbidden });
-        }
-        if (authenticatedUser.role !== "admin") {
-            return res.status(401).status({ message: Unauthorized });
-        }
 
         const orders = await orderModel.find({});
         const resObj = {};

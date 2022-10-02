@@ -1,21 +1,15 @@
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const userModel = require("../model/userModel");
 const authenticate = require("../middlewares/authenticate");
 
 /*Get all users*/
-const getAllUsers = async(req, res, next) => {
+const getAllUsers = async(req, res) => {
     try {
-        const authenticatedUser = req.authenticatedUser;
 
-        if (!authenticatedUser) {
-            return res.status(403).send({ message: "Forbidden" });
-        }
-        if (authenticatedUser.role !== "admin") {
-            return res.status(401).send({ message: "Unauthorized" });
-        }
+        const users = await userModel.find();
 
-        const users = await userModel.find({}, { username: 1, user_type: 1 });
-
-        return res.json({ status: true, users });
+        return res.status(200).json({message: "users retrieved", data: users});
     } catch (err) {
         return res.json({ status: false, data: err.message });
     }
@@ -23,27 +17,53 @@ const getAllUsers = async(req, res, next) => {
 
 const createUser = async(req, res) => {
     try {
-        const { username, password, user_type } = req.body;
-        const userObject = {
-            username,
-            password: req.body,
-        };
-        if (user_type) userObject.user_type = user_type;
-        const user = new userModel(userObject);
-        user
-            .save()
-            .then((result) => {
-                const { id, username, user_type } = result;
-                const returnObj = { id, username, user_type };
-                return res.status(201).json({ status: true, data: returnObj });
-            })
-            .catch((err) => {
-                console.log("error occured", err);
-                return res.status(201).json({ status: false, message: err.message });
-            });
-    } catch (err) {
-        res.json(err);
+        const { username, password, email } = req.body;
+        const emailExist = await userModel.findOne({email})
+        if(!emailExist) {
+            const hashPassword = bcrypt.hashSync(password, 10);
+            const userObject = {
+                username,
+                email,
+                password: hashPassword,
+            };
+            console.log("userObject =>", userObject)
+            const user = await userModel.create(userObject)
+            res.status(201).json({message: "user created successfully", data: user})
+        } else {
+            throw new Error("email exists")
+        }
+    } catch (error) {
+        res.status(409).json({message: error.message});
     }
 };
 
-module.exports = { getAllUsers, createUser };
+const loginUser = async (req, res) => {
+    try {
+        const {email, password} = req.body;
+        if(!email || !password) {
+            throw new Error("email and password and required to login")
+        }
+
+        const user = await userModel.findOne({email});
+        if(user) {
+            const verifyPassword = await bcrypt.compare(password, user.password);
+            if(verifyPassword) {
+                const data = {
+                    id: user._id,
+                    email: user.email
+                }
+                const token = jwt.sign(data, process.env.SECRET, {expiresIn: "30d"})
+                return res.status(200).json({message: "user logged in successfully", token})
+            } else {
+                throw new Error("email or password not correct")
+            }
+        } else {
+            throw new Error("user not found")
+        }
+    } catch (error) {
+        res.status(400).json({message: error.message})
+    }
+    
+}
+
+module.exports = { getAllUsers, createUser, loginUser };

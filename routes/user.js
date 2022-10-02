@@ -1,15 +1,22 @@
 const express = require("express");
-const router = express.Router();
-const controller = require("../controllers/userController");
+const userController = require("../controllers/userController");
 // const mongoose = require("mongoose");
 const authenticate = require("../middlewares/authenticate");
 const userModel = require("../model/userModel");
 
-/*Get all users*/
 
-router.route("/").get(authenticate, controller.getAllUsers);
+
+const router = express.Router();
+
+const {getAllUsers, createUser, loginUser} = userController;
+/*Get all users*/
+router.get("/", getAllUsers)
+
+// router.route("/").get(authenticate, controller.getAllUsers);
 
 /*Create new user*/
-router.route("/register").post(controller.createUser);
+router.post("/register", createUser);
+router.post("/login", loginUser);
+
 
 module.exports = router;
