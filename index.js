@@ -3,7 +3,7 @@ const authRoute = require("./routes/AuthRoute");
 require("dotenv").config();
 const mongoose = require("mongoose");
 const orderRoute = require("./routes/OrderRoute");
-const userRoute = require("./routes/UserRoute");
+
 const { auth, admin } = require("./middlewares");
 
 const PORT = process.env.PORT;
@@ -19,7 +19,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api", authRoute);
-app.use("/api/user", auth, userRoute);
+
 app.use("/api/order", [auth, admin], orderRoute);
 
 mongoose.connect(MONGO_DB_COLLECTION_URL);
