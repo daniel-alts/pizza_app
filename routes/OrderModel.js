@@ -32,7 +32,12 @@ orderRoute.get("/order/:orderId", async (req, res) => {
 });
 
 orderRoute.get("/orders", async (req, res) => {
-  const orders = await orderModel.find();
+  const { page = 1, limit = 5 } = req.query;
+
+  const orders = await orderModel
+    .find()
+    .limit(limit * 1)
+    .skip((page - 1) * limit);
 
   return res.json({ status: true, orders });
 });

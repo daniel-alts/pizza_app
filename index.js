@@ -4,7 +4,7 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const orderRoute = require("./routes/OrderModel");
 
-const PORT = 3334;
+const PORT = process.env.PORT;
 
 const MONGO_DB_COLLECTION_URL = process.env.MONGO_DB_COLLECTION_URL;
 
