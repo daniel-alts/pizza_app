@@ -15,7 +15,7 @@ async function order(req, res, next) {
             created_at: moment().toDate(),
             total_price
         })
-        return res.json({ status: true, order })
+        return res.status(201).json({ status: true, order })
     } catch (error) {
         error.type = 'Bad Request'
         next(error)
@@ -49,7 +49,7 @@ async function getAllOrder(req, res, next) {
         // get total documents in the Orders 
         const count = await orderModel.count()
 
-        return res.json({ status: true, orders, totalPages: Math.ceil(count / limit), currentPage: page })
+        return res.status(200).json({ status: true, orders, totalPages: Math.ceil(count / limit), currentPage: page })
     } catch (error) {
         error.type = 'Bad Request'
         next(error)
