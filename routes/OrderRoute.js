@@ -105,13 +105,4 @@ orderRoute.get("/created", async (req, res) => {
   }
 });
 
-orderRoute.get("/query", async (req, res) => {
-  try {
-    const queryByState = await orderModel.find({ state: 3 });
-    res.status(200).json(queryByState);
-  } catch (error) {
-    res.status(500).json(error);
-  }
-});
-
 module.exports = orderRoute;
