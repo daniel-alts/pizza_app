@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const orderModel = require('./models/orderModel');
 require('dotenv').config();
 const PORT = 3334 || process.env.PORT;
-
+const { connectToDatabase } = require('./config/mongoose');
 const app = express();
 
 app.use(express.json());
@@ -12,7 +12,7 @@ app.use(express.json());
 app.get('/', (req, res) => {
   return res.json({ status: true });
 });
-app.use('/api', require('./routes/routes'));
+app.use('/api', require('./routes/order.routes'));
 
 // app.post('/order', async (req, res) => {
 //   const body = req.body;
@@ -79,16 +79,18 @@ app.use('/api', require('./routes/routes'));
 //   return res.json({ status: true, order });
 // });
 
-mongoose.connect('mongodb://localhost:27017');
+// mongoose.connect('mongodb://localhost:27017');
 
-mongoose.connection.on('connected', () => {
-  console.log('Connected to MongoDB Successfully');
-});
+// mongoose.connection.on('connected', () => {
+//   console.log('Connected to MongoDB Successfully');
+// });
 
-mongoose.connection.on('error', (err) => {
-  console.log('An error occurred while connecting to MongoDB');
-  console.log(err);
-});
+// mongoose.connection.on('error', (err) => {
+//   console.log('An error occurred while connecting to MongoDB');
+//   console.log(err);
+// });
+
+connectToDatabase();
 
 app.listen(PORT, () => {
   console.log('Listening on port, ', PORT);
