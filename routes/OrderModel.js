@@ -68,4 +68,20 @@ orderRoute.delete("/order/:id", async (req, res) => {
   return res.json({ status: true, order });
 });
 
+orderRoute.get("/totalPrice", async (req, res) => {
+  const date = new Date();
+  const lastMonth = new Date(date.setMonth(date.getMonth() - 1));
+  const previousMonth = new Date(new Date().setMonth(lastMonth.getMonth() - 1));
+  console.log(previousMonth);
+
+  try {
+    const totalPrice = await orderModel.aggregate([
+      { $sort: { total_price: -1, _id: 1 } },
+    ]);
+    res.status(200).json(totalPrice);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
 module.exports = orderRoute;
