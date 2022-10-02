@@ -10,7 +10,7 @@ router.get("/listOne/:orderId", controller.singleOrder);
 /* Crete order */
 router.post("/create", controller.createOrder);
 /* Edit order */
-router.patch("/order/:id", controller.editOrder);
+router.patch("/edit/:id", controller.editOrder);
 /* Edit order */
 router.delete("/delete/:id", controller.deleteOrder);
 

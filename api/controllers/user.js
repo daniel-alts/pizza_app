@@ -16,11 +16,10 @@ const signin = (req, res) => {
     .findOne({ username: username })
     // .select('+password')
     .then(async (user) => {
+      if (!user) throw "Invalid username or password";
       /* check if password matches */
       const compare = await bcrypt.compare(password, user.password);
       if (!compare) throw "Invalid username or password";
-
-      delete user.password
 
       /* assign token */
       const token = jwt.sign(
@@ -50,6 +49,7 @@ const signin = (req, res) => {
 
 const signup = async (req, res) => {
   try {
+    console.log('Got to user testing')
     let { username, password } = req.body;
 
     if (!username || !password) throw "Provide required fields";

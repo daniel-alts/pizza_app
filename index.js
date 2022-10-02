@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 
-require('dotenv').config();
+require("dotenv").config();
 
 const orderRoutes = require("./api/routes/orders");
 const userRoutes = require("./api/routes/user");
@@ -18,7 +18,7 @@ app.get("/", (req, res) => {
 });
 
 /* Protected Order Route */
-app.use("/order", authorize, orderRoutes);
+app.use("/orders", authorize, orderRoutes);
 
 /* User Route */
 app.use("/user", userRoutes);

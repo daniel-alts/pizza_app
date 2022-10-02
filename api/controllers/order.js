@@ -4,8 +4,6 @@ const { getPagination } = require("../../utils/func");
 
 const allOrders = async (req, res) => {
   try {
-    // let { query = "" } = req.body;
-    /* Ascending(1) or descending(-1) order */
     let { order = "desc", page = 1, perPage = 2, state = "" } = req.query;
 
     let orderType = order == "desc" ? -1 : 1;
@@ -86,7 +84,7 @@ const createOrder = async (req, res) => {
       total_price,
     });
 
-    res.json({ status: true, order });
+    res.status(201).json({ status: true, order });
   } catch (error) {
     res.status(400).json({
       status: false,
