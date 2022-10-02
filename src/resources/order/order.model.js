@@ -7,8 +7,9 @@ const ObjectId = Schema.ObjectId
 const OrderSchema = new Schema({
 	id: ObjectId,
 	created_at: {
-		type: Date,
+		type: ObjectId,
 		default: Date,
+    ref: 'user'
 	},
 	state: { type: Number, default: 1 },
 	total_price: Number,

@@ -13,8 +13,9 @@ describe('Order model', () => {
 			const created_at =
 				Order.schema.obj.created_at
 			expect(created_at).toEqual({
-				type: Date,
-                default: Date
+				type: mongoose.Schema.ObjectId,
+                default: Date,
+                ref: 'user'
 			})
 		})
 		it('state', () => {
