@@ -27,7 +27,7 @@ async function authenticateUser(req, res, next) {
 		}
 		next();
 	} catch (err) {
-		next();
+		res.status(404).send(Error);
 	}
 }
 

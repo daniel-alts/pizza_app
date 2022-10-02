@@ -2,59 +2,77 @@ const orderModel = require("../models/orderModel");
 const moment = require("moment");
 
 const getOrders = async (req, res, next) => {
-	const { userName } = req.userAuthenticated;
-	if (userName) {
-		const orders = await orderModel.find();
+	const { price, state } = req.query;
+	let orders;
+	if (price) {
+		const value =
+			price === "asc"
+				? 1
+				: price === "desc"
+				? -1
+				: false;
+		const orders = await orderModel
+			.find({})
+			.sort({ total_price: value });
+		return res.json({ status: true, orders });
+	} else if (state) {
+		const value =
+			state === "asc"
+				? 1
+				: state === "desc"
+				? -1
+				: false;
+		const orders = await orderModel
+			.find({})
+			.sort({ state: value });
+		return res.json({ status: true, orders });
+	}
+
+	if (!orders) {
+		const orders = await orderModel.find({});
 		return res.json({ status: true, orders });
 	}
 };
 
 const postOrder = async (req, res) => {
 	const body = req.body;
-	const { userName } = req.userAuthenticated;
-	if (userName) {
-		const total_price = body.items.reduce(
-			(prev, curr) => {
-				prev += curr.price * curr.quantity;
-				return prev;
-			},
-			0
-		);
-
-		const order = await orderModel.create({
-			items: body.items,
-			created_at: moment().toDate(),
-			total_price,
-		});
-
-		return res.json({ status: true, order });
-	}
+	const total_price = body.items.reduce(
+		(prev, curr) => {
+			prev += curr.price * curr.quantity;
+			return prev;
+		},
+		0
+	);
+	const order = await orderModel.create({
+		items: body.items,
+		created_at: moment().toDate(),
+		total_price,
+	});
+	return res.json({ status: true, order });
 };
 
 const getOrder = async (req, res) => {
 	const { orderId } = req.params;
 	const { userName } = req.userAuthenticated;
-	if (userName) {
-		const order = await orderModel.findById(
-			orderId
-		);
 
-		if (!order) {
-			return res
-				.status(404)
-				.json({ status: false, order: null });
-		}
+	const order = await orderModel.findById(
+		orderId
+	);
 
-		return res.json({ status: true, order });
+	if (!order) {
+		return res
+			.status(404)
+			.json({ status: false, order: null });
 	}
+
+	return res.json({ status: true, order });
 };
 
 const updateOrder = async (req, res) => {
 	const { id } = req.params;
 	const { state } = req.body;
-	const { userName, role } =
-		req.userAuthenticated;
-	if (userName && role === "admin") {
+	const { role } = req.userAuthenticated;
+	if (role === "admin") {
 		const order = await orderModel.findById(id);
 
 		if (!order) {
@@ -83,9 +101,8 @@ const updateOrder = async (req, res) => {
 
 const deleteOrder = async (req, res) => {
 	const { id } = req.params;
-	const { userName, role } =
-		req.userAuthenticated;
-	if (userName && role === "admin") {
+	const { role } = req.userAuthenticated;
+	if (role === "admin") {
 		const order = await orderModel.deleteOne({
 			_id: id,
 		});
