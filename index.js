@@ -5,6 +5,8 @@ const orderModel = require('./models/orderModel');
 const OrderRoute = require("./routes/orderRoutes");
 const UserRoute = require("./routes/userRoutes")
 const OrderController = require("./controllers/orderController")
+const UserController = require("./controllers/userController")
+const authenticateUser = require('./middleware/auth')
 
 const PORT = 3334
 
@@ -14,6 +16,7 @@ app.use(express.json());
 
 app.use("/order", OrderRoute)
 app.use("/", UserRoute)
+// app.use(authenticateUser)
 
 app.get('/', (req, res) => {
     return res.json({ status: true })

@@ -1,18 +1,46 @@
-const User = require("../models/userModels");
+const UserModel = require("../models/userModels");
+const User = require("../controllers/userController")
+const userModel = require("../models/userModels")
+const bcrypt = require('bcrypt')
 
 exports.authenticateUser = async (req, res, next) => {
+    const authorization = req.headers.authorization
     try {
-        const id = req.body._id;
-        const findUser = await User.findById(id)
-        if(findUser.user_type !== 'user') {
-            return res.status(401).send("Not Authorized")
+        if(!authorization) {
+            return res.status(403).send({
+                message:"Forbidden"
+            })
         }
-        next
+        const encoded = authorization.substring(6);
+        const decoded =  Buffer.from(encoded, 'base64').toString('ascii')
+        const [username, password] = decoded.split(':')
+        const authUser = await User.findOne({username});
+        if(!authUser) {
+            return res.status(403).send({
+                message: 'Forbidden'
+            })
+        }
+        if(authUser){
+             const match = await bcrypt.compare(password,  authUser.password)
+       if(!match) {
+        return res.status(403).send({message: 'Forbidden'})
+       }
+       if(match) {
+        req.authUser =  {
+            username:authUser.username,
+            role: authUser.user_type
+       }
+       }
+      
+    }
+    next()
     } catch (error) {
+        next()
         res.json({
             message: error
         })
 
+        next()
         
     }
 }
