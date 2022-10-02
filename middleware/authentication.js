@@ -2,7 +2,6 @@ const User = require('../model/userModel')
 
 const authenticate = async (req,res,next)=>{
     const auth = req.headers.authorization
-
     if(!auth){    
         return res.status(401).json({status:false, msg: 'Please provide your username and password in the Basic authorization header or go to /register to create an account'})
     }
@@ -17,7 +16,9 @@ const authenticate = async (req,res,next)=>{
         if(!user){
             return res.status(404).json({status: false, msg: "you are not registered yet go to /register and create an account"})
         }
-        if(user.password !== password){
+        const comparePass = await user.comparePassword(password)
+        
+        if(!comparePass){
             return res.status(401).json({status: false, msg: "your Password is incorrect"})
         }
     } catch (error) {
