@@ -1,12 +1,13 @@
 const router = require("express").Router();
+const authenticateUser = require("../middlewares/authentication");
 const { getAllOrders } = require("../controllers/orderController");
 const OrderAPI = require("../controllers/orderController");
-router.post("/", OrderAPI.createOrder);
+router.route("/").post(authenticateUser, OrderAPI.createOrder);
 router.get("/all", getAllOrders);
 router
   .route("/:id")
-  .get(OrderAPI.getOrderByID)
-  .patch(OrderAPI.updateOrder)
-  .delete(OrderAPI.deleteOrder);
+  .get(authenticateUser, OrderAPI.getOrderByID)
+  .patch(authenticateUser, OrderAPI.updateOrder)
+  .delete(authenticateUser, OrderAPI.deleteOrder);
 
 module.exports = router;

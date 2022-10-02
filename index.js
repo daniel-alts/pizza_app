@@ -2,14 +2,14 @@ const express = require("express");
 const moment = require("moment");
 const mongoose = require("mongoose");
 const orderModel = require("./models/orderModel");
-
+const cookieParser = require("cookie-parser");
 const PORT = 3334;
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
+app.use(cookieParser());
 app.get("/", (req, res) => {
   return res.json({ status: true });
 });

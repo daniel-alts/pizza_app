@@ -1,4 +1,5 @@
 const User = require("../models/userModel");
+const { createJWTUser, attachCookiesToResponse } = require("../utils/util");
 module.exports = class UserAPI {
   static async registerUser(req, res) {
     const { username, firstname, lastname, email, password } = req.body;
@@ -32,6 +33,8 @@ module.exports = class UserAPI {
       if (!isPassValid) {
         return res.status(400).json({ msg: "Invalid Credentials" });
       }
+      const tokenUser = createJWTUser(user);
+      attachCookiesToResponse({ res, payload: tokenUser });
       res.status(200).json("Logged In");
     } catch (err) {
       res.status(401).json({ Error: err });
