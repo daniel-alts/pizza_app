@@ -32,10 +32,26 @@ orderRoute.get("/order/:orderId", async (req, res) => {
 });
 
 orderRoute.get("/orders", async (req, res) => {
-  const { page = 1, limit = 5 } = req.query;
+  const { page = 1, limit = 5, state } = req.query;
+  const sort = [];
+
+  for (const param in req.query) {
+    if (["total_price", "created_at"].includes(param)) {
+      const direction = req.query[param];
+      const sort_direction = direction == "asc" ? 1 : -1;
+      const row_sort = [param, sort_direction];
+      sort.push(row_sort);
+    }
+  }
+
+  const filter = {};
+  if (state) {
+    filter.state = state;
+  }
 
   const orders = await orderModel
-    .find()
+    .find(filter)
+    .sort(sort)
     .limit(limit * 1)
     .skip((page - 1) * limit);
 
@@ -73,17 +89,6 @@ orderRoute.delete("/order/:id", async (req, res) => {
   return res.json({ status: true, order });
 });
 
-orderRoute.get("/totalPrice", async (req, res) => {
-  try {
-    const totalPrice = await orderModel.aggregate([
-      { $sort: { total_price: 1, _id: 1 } },
-    ]);
-    res.status(200).json(totalPrice);
-  } catch (error) {
-    res.status(500).json(error);
-  }
-});
-
 orderRoute.get("/created", async (req, res) => {
   try {
     const orderCreated = await orderModel.aggregate([
@@ -99,6 +104,7 @@ orderRoute.get("/created", async (req, res) => {
     res.status(500).json(error);
   }
 });
+
 orderRoute.get("/query", async (req, res) => {
   try {
     const queryByState = await orderModel.find({ state: 3 });

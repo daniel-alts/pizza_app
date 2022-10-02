@@ -1,16 +1,16 @@
 const express = require("express");
 const userModel = require("../models/userModel");
 const registerRoute = express.Router();
-const CryptoJS = require("crypto-js");
+const bcrypt = require("bcrypt");
 
 registerRoute.post("/register", async (req, res) => {
+  const salt = await bcrypt.genSalt(10);
+  const password = await bcrypt.hash(req.body.password, salt);
+
   const newUser = new userModel({
     username: req.body.username,
     email: req.body.email,
-    password: CryptoJS.AES.encrypt(
-      req.body.password,
-      process.env.PASS_SEC
-    ).toString(),
+    password,
   });
   try {
     await newUser.save().then((result) => {

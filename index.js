@@ -1,8 +1,10 @@
 const express = require("express");
-const registerRoute = require("./routes/auth");
+const authRoute = require("./routes/AuthRoute");
 require("dotenv").config();
 const mongoose = require("mongoose");
-const orderRoute = require("./routes/OrderModel");
+const orderRoute = require("./routes/OrderRoute");
+const userRoute = require("./routes/UserRoute");
+const { auth, admin } = require("./middlewares");
 
 const PORT = process.env.PORT;
 
@@ -16,8 +18,9 @@ app.get("/", (req, res) => {
   return res.json({ status: true });
 });
 
-app.use("/api/order", orderRoute);
-app.use("/api", registerRoute);
+app.use("/api", authRoute);
+app.use("/api/user", auth, userRoute);
+app.use("/api/order", [auth, admin], orderRoute);
 
 mongoose.connect(MONGO_DB_COLLECTION_URL);
 
