@@ -5,14 +5,8 @@ const orderModel = require('../models/orderModel')
  */
 const getOrdersInfo = async (req, res, next) => {
   try {
-    // check for authenticated user
-    const authenticatedUser = req.authenticatedUser
-
-    if (!authenticatedUser) {
-      return res.status(403).send({ message: 'Forbidden' })
-    }
-
-    if (authenticatedUser.role !== 'admin') {
+    // check for authenticated user's role
+    if (req.authenticatedUser.role !== 'admin') {
       return res.status(401).send({ message: 'Unauthorised' })
     }
 
@@ -35,13 +29,6 @@ const getOrdersInfo = async (req, res, next) => {
  */
 const getAllOrders = async (req, res, next) => {
   try {
-    // check for authenticated user
-    const authenticatedUser = req.authenticatedUser
-
-    if (!authenticatedUser) {
-      return res.status(403).send({ message: 'Forbidden' })
-    }
-
     let orders
 
     // check for query parameters
@@ -68,13 +55,6 @@ const getAllOrders = async (req, res, next) => {
  */
 const getOrderById = async (req, res, next) => {
   try {
-    // check for authenticated user
-    const authenticatedUser = req.authenticatedUser
-
-    if (!authenticatedUser) {
-      return res.status(403).send({ message: 'Forbidden' })
-    }
-
     const { orderId } = req.params
     const order = await orderModel.findById(orderId)
     if (!order) {
@@ -91,13 +71,6 @@ const getOrderById = async (req, res, next) => {
  */
 const createOrder = async (req, res, next) => {
   try {
-    // check for authenticated user
-    const authenticatedUser = req.authenticatedUser
-
-    if (!authenticatedUser) {
-      return res.status(403).send({ message: 'Forbidden' })
-    }
-
     const body = req.body
 
     const total_price = body.items.reduce((prev, curr) => {
@@ -131,14 +104,8 @@ const createOrder = async (req, res, next) => {
  */
 const updateOrder = async (req, res, next) => {
   try {
-    // check for authenticated user
-    const authenticatedUser = req.authenticatedUser
-
-    if (!authenticatedUser) {
-      return res.status(403).send({ message: 'Forbidden' })
-    }
-
-    if (authenticatedUser.role !== 'admin') {
+    // check for authenticated user's role
+    if (req.authenticatedUser.role !== 'admin') {
       return res.status(401).send({ message: 'Unauthorised' })
     }
 
@@ -171,14 +138,8 @@ const updateOrder = async (req, res, next) => {
  */
 const deleteOrder = async (req, res, next) => {
   try {
-    // check for authenticated user
-    const authenticatedUser = req.authenticatedUser
-
-    if (!authenticatedUser) {
-      return res.status(403).send({ message: 'Forbidden' })
-    }
-
-    if (authenticatedUser.role !== 'admin') {
+    // check for authenticated user's role
+    if (req.authenticatedUser.role !== 'admin') {
       return res.status(401).send({ message: 'Unauthorised' })
     }
 

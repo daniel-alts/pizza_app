@@ -5,6 +5,7 @@ module.exports = async (req, res, next) => {
   // get basic authentication from header
   const authorization = req.headers.authorization
   try {
+    if (!authorization) return res.status(403).send({ message: 'Forbidden' })
     if (authorization) {
       // remove "Basic "
       const encoded = authorization.substring(6)
@@ -15,6 +16,7 @@ module.exports = async (req, res, next) => {
       const authenticatedUser = await userModel.findOne({ username })
       // compare the password
       const match = await bcrypt.compare(password, authenticatedUser.password)
+      if (!match) return res.status(403).send({ message: 'Forbidden' })
       // if successful, store the details in the request
       if (match) {
         req.authenticatedUser = {
@@ -25,6 +27,7 @@ module.exports = async (req, res, next) => {
     }
     next()
   } catch (err) {
-    next()
+    console.log(err)
+    return res.status(500).send({ message: 'Error occurred' })
   }
 }
