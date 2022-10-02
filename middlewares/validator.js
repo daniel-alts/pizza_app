@@ -10,7 +10,7 @@ const validator = (req, res, next, schema, options = defaultOptions) => {
   const compare = compareAgainstSchema(req.body, schema, 'body')
 
   if (compare.error) {
-    return res.json({ status: false, ...compare })
+    return res.status(400).json({ status: false, ...compare })
   }
 
   if (options.strict) {
@@ -18,7 +18,7 @@ const validator = (req, res, next, schema, options = defaultOptions) => {
     Object.keys(schema).forEach((key) => delete _got[key])
     _got = Object.keys(_got)
     if (_got.length > 0) {
-      return res.json({ status: false, error: `unidentified fields ${_got.join(', ')}` })
+      return res.status(400).json({ status: false, error: `unidentified fields ${_got.join(', ')}` })
     }
   }
 

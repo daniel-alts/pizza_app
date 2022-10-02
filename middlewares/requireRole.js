@@ -5,7 +5,7 @@ const requireRole = (...roles) => (req, res, next) => {
   }
   
   if (!roles.includes(req.user.user_type)) {
-    return res.json({ status: false, error: 'Cannot access this resource' })
+    return res.status(403).json({ status: false, error: 'Cannot access this resource' })
   }
 
   next()
