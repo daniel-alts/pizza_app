@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
 const OrderSchema = new Schema({
-  id: ObjectId,
   created_at: Date,
   state: { type: Number, default: 1 },
   total_price: Number,
@@ -15,7 +14,7 @@ const OrderSchema = new Schema({
     quantity: Number,
   }],
   user: { type: ObjectId, ref: 'User' }
-});
+}, { timestamps: true });
 
 const Order = mongoose.model('Order', OrderSchema);
 
