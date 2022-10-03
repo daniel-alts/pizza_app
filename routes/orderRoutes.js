@@ -14,17 +14,9 @@ router
 	.put(Auth, orderController.updateOrder);
 
 //  ! admin Privileges only
-
+// only admins should be able to sort all orders
 router
 	.route('/state')
-	.get(orderController.sortByState, orderController.getOrders);
-
-router
-	.route('/total-price')
-	.get(
-		Auth,
-		orderController.sortByTotalPrice,
-		orderController.getOrders,
-	);
+	.get(Auth, orderController.sortByState, orderController.getOrders);
 
 module.exports = router;
