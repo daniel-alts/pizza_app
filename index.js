@@ -1,11 +1,18 @@
 const express = require('express');
+require('dotenv').config()
+
+const {connectToMongoDB} = require('./controller/db')
+
 const moment = require('moment');
 const mongoose = require('mongoose');
-const orderModel = require('./orderModel');
+const orderModel = require('./model/orderModel')
 
-const PORT = 3334
 
+const PORT = process.env.PORT
 const app = express()
+
+//Connect to DB
+connectToMongoDB()
 
 app.use(express.json());
 
@@ -79,16 +86,7 @@ app.delete('/order/:id', async (req, res) => {
 })
 
 
-mongoose.connect('mongodb://localhost:27017')
 
-mongoose.connection.on("connected", () => {
-	console.log("Connected to MongoDB Successfully");
-});
-
-mongoose.connection.on("error", (err) => {
-	console.log("An error occurred while connecting to MongoDB");
-	console.log(err);
-});
 
 app.listen(PORT, () => {
     console.log('Listening on port, ', PORT)
