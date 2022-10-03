@@ -1,9 +1,10 @@
-const express = require('express')
+const express = require('express');
+const { authenticateUser } = require('../middleware/authenticate');
 const orderModel = require('../models/orderModel');
 
 const orderRouter = express.Router()
 
-orderRouter.post('/',  async (req, res) => {
+orderRouter.post('/', authenticateUser,  async (req, res) => {
     const body = req.body;
 
     const total_price = body.items.reduce((prev, curr) => {
@@ -20,7 +21,7 @@ orderRouter.post('/',  async (req, res) => {
     return res.json({ status: true, order })
 })
 
-orderRouter.get('/:orderId', async (req, res) => {
+orderRouter.get('/:orderId',authenticateUser, async (req, res) => {
     const { orderId } = req.params;
     const order = await orderModel.findById(orderId)
 
@@ -31,13 +32,13 @@ orderRouter.get('/:orderId', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-orderRouter.get('/', async (req, res) => {
+orderRouter.get('/', authenticateUser, async (req, res) => {
     const orders = await orderModel.find()
 
     return res.json({ status: true, orders })
 })
 
-orderRouter.patch('/:id', async (req, res) => {
+orderRouter.patch('/:id', authenticateUser, async (req, res) => {
     const { id } = req.params;
     const { state } = req.body;
 
@@ -58,7 +59,7 @@ orderRouter.patch('/:id', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-orderRouter.delete('/:id', async (req, res) => {
+orderRouter.delete('/:id', authenticateUser, async (req, res) => {
     const { id } = req.params;
 
     const order = await orderModel.deleteOne({ _id: id})
