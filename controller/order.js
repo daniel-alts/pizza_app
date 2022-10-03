@@ -25,19 +25,15 @@ const accessingOrder = async (req, res, next) => {
 const getOrders = async (req, res, next) => {
   try {
     
-    const { limit = 1, page = 1, state = 2 } = req.query;
+    const { limit = 1, page = 1, } = req.query;
     // console.log("hi")
     
     const orders = await orderModel
       .find({})
-      .sort({ total_price: "asc", created_at: "asc" })
+      .sort({ total_price: "asc", created_at: "asc", state:"asc" })
       .limit(parseInt(limit) * 1)
       .skip((parseInt(page) - 1) * limit);
 
-      orders.map(order => {
-        order.state = state
-        return order.state
-      })
     return res.json({ status: true, orders });
   } catch (error) {
     error.message = "invalid connection";
