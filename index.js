@@ -3,12 +3,15 @@ const moment = require("moment");
 const mongoose = require("mongoose");
 const orderModel = require("./orderModel");
 const userModel = require("./userModel");
+const bcrypt = require('bcrypt')
+const auth = require("./utils/middlewares/authenticate")
 
 const PORT = 3334;
 
 const app = express();
 
 app.use(express.json());
+app.use(auth)
 
 app.get("/", (req, res) => {
   return res.json({ status: true });
@@ -83,7 +86,10 @@ app.delete("/order/:id", async (req, res) => {
 
 app.post("/user", async (req, res) => {
   try {
-    const user = await userModel.create(req.body);
+    const {username,password,user_type} = req.body
+    const hashedPassword = await bcrypt.hash(password,10)
+
+    const user = await userModel.create({username,password:hashedPassword,user_type});
 
     res.status("201").json({ status: "success", user });
   } catch (err) {
