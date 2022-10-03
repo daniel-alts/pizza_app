@@ -4,9 +4,48 @@ const moment = require("moment");
 
 //GET ALL ORDERS
 const getAllOrder = async (req, res) => {
-  const orders = await orderModel.find();
+  //SORTING ORDERS
 
-  return res.status(200).json({ status: true, orders });
+  const price = req.query.price;
+  const date = req.query.date;
+
+  let value;
+
+  //SORING ORDERS BY PRICE IN ASCENDING OR DESCENDING ORDER
+  if (price) {
+    value = price;
+
+    if (value === "asc") {
+      value = 1;
+
+      const orders = await orderModel.find().sort({ total_price: value });
+      return res.status(200).json({ status: true, orders });
+    } else if (value === "desc") {
+      value = -1;
+
+      const orders = await orderModel.find().sort({ total_price: value });
+      return res.status(200).json({ status: true, orders });
+    }
+    //SORTING ORDERS BY DATE IN ASCENDING OR DESCENDING ORDER
+  } else if (date) {
+    value = date;
+    if (value === "asc") {
+      value = 1;
+
+      const orders = await orderModel.find().sort({ created_at: value });
+      return res.status(200).json({ status: true, orders });
+    } else if (value === "desc") {
+      value = -1;
+
+      const orders = await orderModel.find().sort({ created_at: value });
+      return res.status(200).json({ status: true, orders });
+    }
+
+    //IF USER DOESNT PASS A PRICE OR DATE OF THE ORDER THEN ALL ORDERS SHOULD BE RETURNED
+  } else {
+    const orders = await orderModel.find();
+    return res.status(200).json({ status: true, orders });
+  }
 };
 
 //GET SINGLE ORDERS
