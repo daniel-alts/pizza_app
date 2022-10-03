@@ -67,8 +67,5 @@ exports.Auth = Catch_Async(async (req, res, next) => {
 
 	// Confirm user.
 	req.curUser = await Users.findById(decodeToken.id);
-	console.log(req.curUser);
 	next();
 });
-
-exports.Protect = Catch_Async(async (req, res, next) => {});
