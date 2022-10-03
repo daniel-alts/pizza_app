@@ -5,7 +5,11 @@ const ObjectId = Schema.ObjectId;
 
 const OrderSchema = new Schema({
   id: ObjectId,
-  created_at: Date,
+  created_at:  {
+    type: Date,
+    default: Date.now,
+    required: 'Must have start date - default value is the created date'
+},
   state: { type: Number, default: 1 },
   total_price: Number,
   items: [{
