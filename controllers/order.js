@@ -6,7 +6,7 @@ const moment = require("moment");
 const getAllOrder = async (req, res) => {
   const orders = await orderModel.find();
 
-  return res.json({ status: true, orders });
+  return res.status(200).json({ status: true, orders });
 };
 
 //GET SINGLE ORDERS
@@ -20,7 +20,7 @@ const getOrderById = async (req, res) => {
     if (!order) {
       return res.status(404).json({ status: false, order: null });
     }
-    return res.json({ status: true, order });
+    return res.status(200).json({ status: true, order });
   } catch (err) {
     res.status(400).send({
       status: false,
@@ -46,7 +46,7 @@ const createOrder = async (req, res) => {
     total_price,
   });
 
-  return res.json({ status: true, order });
+  return res.status(201).json({ status: true, order });
 };
 
 //UPDATE ORDERS
@@ -70,7 +70,7 @@ const updateOrder = async (req, res) => {
 
   await order.save();
 
-  return res.json({ status: true, order });
+  return res.status(200).json({ status: true, order });
 };
 
 //DELETE ORDERS
@@ -83,7 +83,7 @@ const deleteOrder = async (req, res) => {
     return res.status(404).json({ status: false, order: null });
   }
 
-  return res.json({ status: true, order });
+  return res.status(200).json({ status: true, order });
 };
 
 module.exports = {
