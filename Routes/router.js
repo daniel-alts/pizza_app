@@ -4,7 +4,7 @@ const {getOrderById, getOrders, updateOrders, deleteOrder, makeOrder} = require(
 
 const router = express.Router()
 
-router.post('/', /*authenticateRoute,*/ makeOrder)
+router.post('/', authenticateRoute, makeOrder)
 
 router.get('/:orderId', /*authenticateRoute,*/ getOrderById)
 

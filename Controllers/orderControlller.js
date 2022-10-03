@@ -1,8 +1,7 @@
 const orderModel = require('../Models/orderModel');
-const asyncHandler = require('express-async-handler')
 const moment = require('moment')
 
-const makeOrder = asyncHandler(async (req, res) => {
+const makeOrder = async (req, res) => {
   const body = req.body;
 
   const total_price = body.items.reduce((prev, curr) => {
@@ -17,9 +16,9 @@ const makeOrder = asyncHandler(async (req, res) => {
   })
   
   return res.json({ status: true, order })
-} )
+} 
 
-const getOrderById = asyncHandler(async (req, res) => {
+const getOrderById = async (req, res) => {
   const { orderId } = req.params;
   const order = await orderModel.findById(orderId)
 
@@ -28,15 +27,25 @@ const getOrderById = asyncHandler(async (req, res) => {
   }
 
   return res.json({ status: true, order })
-})
+}
 
-const getOrders = asyncHandler( async (req, res) => {
-  const orders = await orderModel.find().limit(1)
+const getOrders = async (req, res) => {
+  const state = req.query.state
+  let order = req.query.order
+  let orderNo
+   if (order === "asc") {
+    orderNo = 1
+   }
+   else{
+    orderNo = -1
+   }
+
+  const orders = await orderModel.find(state).limit(1).sort({created_at: orderNo, total_price: orderNo})
 
   return res.json({ status: true, orders })
-})
+}
 
-const updateOrders = asyncHandler( async (req, res) => {
+const updateOrders = async (req, res) => {
   const { id } = req.params;
   const { state } = req.body;
 
@@ -55,15 +64,15 @@ const updateOrders = asyncHandler( async (req, res) => {
   await order.save()
 
   return res.json({ status: true, order })
-})
+}
 
-const deleteOrder = asyncHandler(async (req, res) => {
+const deleteOrder = async (req, res) => {
   const { id } = req.params;
 
   const order = await orderModel.deleteOne({ _id: id})
 
   return res.json({ status: true, order })
-})
+}
 
 module.exports = {
   getOrderById,
