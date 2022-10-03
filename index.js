@@ -3,6 +3,7 @@ const moment = require('moment');
 const mongoose = require('mongoose');
 const orderModel = require('./orderModel');
 const UserRoute = require("./Routes/UserRoutes")
+const authenticate = require("./authenticate")
 
 const PORT = 3334
 
@@ -15,7 +16,12 @@ app.use("/user", UserRoute);
 
 
 app.get('/', (req, res) => {
-    return res.json({ status: true })
+    authenticate(req,res)
+        .then(() => {
+            return res.json({ status: true })
+        }).catch((err) => {
+            return res.json({ status: false, message: err })
+        })
 })
 
 
