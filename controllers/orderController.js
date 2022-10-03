@@ -36,17 +36,8 @@ const getOrders = async (req, res, next) => {
 
 const postOrder = async (req, res) => {
 	const body = req.body;
-	const total_price = body.items.reduce(
-		(prev, curr) => {
-			prev += curr.price * curr.quantity;
-			return prev;
-		},
-		0
-	);
 	const order = await orderModel.create({
 		items: body.items,
-		created_at: moment().toDate(),
-		total_price,
 	});
 	return res.json({ status: true, order });
 };
@@ -70,7 +61,7 @@ const getOrder = async (req, res) => {
 
 const updateOrder = async (req, res) => {
 	const { id } = req.params;
-	const { state } = req.body;
+	const { state, price } = req.body;
 	const { role } = req.userAuthenticated;
 	if (role === "admin") {
 		const order = await orderModel.findById(id);
@@ -90,6 +81,7 @@ const updateOrder = async (req, res) => {
 		}
 
 		order.state = state;
+		order.items[0].price = price;
 
 		await order.save();
 
