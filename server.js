@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 dotenv.config();
 
+// Create server class
 class server extends createServer {
 	constructor(app, port) {
 		super();
@@ -15,6 +16,8 @@ class server extends createServer {
 		});
 	}
 }
+
+// Connect DB
 
 mongoose
 	.connect(process.env.MONGO_URL)
