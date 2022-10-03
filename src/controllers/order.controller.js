@@ -18,9 +18,27 @@ const createOrder = async (req, res) => {
 };
 
 const getOrders = async (req, res) => {
-  const orders = await orderModel.find();
+  const { sort_by } = req.query;
+  const { state } = req.query;
 
-  return res.json({ status: true, orders });
+  const page = req.query.page * 1 || 1;
+  const limit = req.query.limit * 1 || 10;
+  const skip = (page - 1) * limit;
+  let orders;
+  if (sort_by == 'total_price') {
+    orders = await orderModel.find().sort({ total_price: -1 });
+  } else if (sort_by == 'created_at') {
+    orders = await orderModel.find().sort({ createdAt: -1 });
+  } else if (req.query.state) {
+    orders = await orderModel.find({ state });
+  } else {
+    orders = await orderModel.find();
+    // .skip(skip)
+    // .limit(limit)
+    // .exec();
+  }
+  res.status(200).json({ status: 'OK', orders });
+  return;
 };
 
 const getOneOrder = async (req, res) => {
@@ -36,9 +54,23 @@ const getOneOrder = async (req, res) => {
 
 const updateOrder = async (req, res) => {
   const { id } = req.params;
-  const { state } = req.body;
-
+  // console.log(id);
+  // const body = req.body.name || req.body.price;
+  // const love = Object.keys(req.body);
+  // console.log(love.toString());
+  // const order = await orderModel.findById(req.query.order_id);
+  // console.log(order.items);
+  // for (i = 0; i < order.items.length; i++) {
+  //   if (order.items[i]['_id'] == req.query.item_id) {
+  //     order.items[i][love] = body;
+  //     order.save();
+  //   }
+  // }
+  // console.log(order);
+  // const item = order.req.query.item_id
+  // console.log(item);
   const order = await orderModel.findById(id);
+  const orderli = await orderModel.findOne({ items: items[id] });
 
   if (!order) {
     return res.status(404).json({ status: false, order: null });
@@ -62,7 +94,7 @@ const deleteOrder = async (req, res) => {
 
   const order = await orderModel.deleteOne({ _id: id });
 
-  return res.json({ status: true, order });
+  return res.json({ status: true, order, msg: 'Order now deleted' });
 };
 
 module.exports = {

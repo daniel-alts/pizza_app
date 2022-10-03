@@ -5,13 +5,13 @@ const {
   updateOrder,
   deleteOrder,
 } = require('../controllers/order.controller');
-const { basicAuthentication } = require('../config/auth');
+
 const router = Router();
 
-router.post('/order', basicAuthentication, createOrder);
-router.get('/:orderId', basicAuthentication, getOrders);
-router.patch('/:id', basicAuthentication, updateOrder);
-router.delete('/:id', basicAuthentication, deleteOrder);
-router.get('/orders', basicAuthentication, getOrders);
+router.post('/order', createOrder);
+router.get('/:orderId', getOrders);
+router.patch('/', updateOrder);
+router.delete('/:id', deleteOrder);
+router.get('/orders', getOrders);
 
 module.exports = router;
