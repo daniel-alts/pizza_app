@@ -3,7 +3,6 @@ const orderModel = require('../Models/orderModel');
 const ResponseHandler = require('../utils/responseHandler');
 const AppError = require('../utils/AppError');
 const Catch_Async = require('../utils/catchAsync');
-const { query } = require('express');
 
 // GLobal order variable
 // DO NOT EDIT
@@ -12,11 +11,18 @@ let order;
 // !sort by T Price
 exports.sortByTotalPrice = async (req, res, next) => {
 	req.query.sort = '-total_price';
-	// req.query.limit ='3'
 	next();
 };
 
 exports.sortByState = async (req, res, next) => {
+	if (req.curUser.role !== 'Admin')
+		next(
+			new AppError(
+				'Admin Privileges only, Cannot access resources',
+				403,
+			),
+		);
+
 	req.query.sort = 'state, total_price';
 	next();
 };
@@ -44,8 +50,20 @@ exports.getOrders = Catch_Async(async (req, res) => {
 		query = query.sort(SORTBY);
 	}
 
-	const orders = await query;
+	// 4) Pagination
+	const page = req.query.page * 1 || 1;
+	const limit = req.query.limit * 1 || 100;
+	const skip = (page - 1) * limit;
 
+	// query order by details
+	query = await query.skip(skip).limit(limit);
+
+	if (req.query.page) {
+		const orderCount = await orderModel.countDocuments();
+		if (skip > orderCount)
+			throw new Error('This page does not exist');
+	}
+	const orders = await query;
 	new ResponseHandler(res, orders, 200);
 });
 
