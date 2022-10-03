@@ -15,7 +15,6 @@ const timestamps = (schema) => {
         }
         next();
     })
-
 }
 
 

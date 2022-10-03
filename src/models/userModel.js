@@ -1,10 +1,8 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
 const timestampsPlugin = require('./plugins/timestamps');
 
 
 const Schema = mongoose.Schema;
-
 
 
 const userSchema = new Schema({
@@ -19,7 +17,7 @@ const userSchema = new Schema({
             required: true,
         },
         userType: {
-            type: {String, enum: ['admin, user']},
+            type: {String, enum: ['admin', 'user']},
             required: true,
 
         },
@@ -29,19 +27,12 @@ const userSchema = new Schema({
             type: String,
             required: true,
             lowercase: true,
-            validate: (val) => {
-                return validator.isEmail(val);
-            }
         },
         firstName: {
             type: String,
-            minLength: [2, "Name length must be at least 2 letters."],
-            maxLength: [20, "Name length can't exceed 25 letters."]
         },
         lastName: {
             type: String,
-            minLength: [2, "Name length must be at least 2 letters."],
-            maxLength: [20, "Name length can't exceed 25 letters."]
         }
     }
 );

@@ -1,26 +1,20 @@
-const { addUser } = require('../services/userServices');
+const userServices = require('../services/userServices');
 
 
 
 const registerUser = async (req, res, next) => {
     try {
-        const userDetails = req.body.userDetails;
-        await addUser(userDetails);
-        return res.status(201).json({ status: true, message: "Registration successful." });
+        const user = await userServices.addUser(req.body);
+        if (user) {
+            return res.status(201).json({ status: true, user });
+        } else {
+            return res.status(400).json({ status: false, user: null });
+        }
     } catch(error) {
+        error.type = '';
         next(error);
     }
 };
-
-
-// const login = async (req, res, next) => {
-//     try {
-//         const loginDetails = req.body.loginDetails;
-//         await findUser(loginDetails);
-//         return
-//     }
-// }
-
 
 
 
