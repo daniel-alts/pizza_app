@@ -24,7 +24,7 @@ orderRouter.post('/', authenticateUser,  async (req, res) => {
 orderRouter.get('/:orderId',authenticateUser, async (req, res) => {
     const { orderId } = req.params;
     const order = await orderModel.findById(orderId)
-
+    
     if (!order) {
         return res.status(404).json({ status: false, order: null })
     }
@@ -33,7 +33,45 @@ orderRouter.get('/:orderId',authenticateUser, async (req, res) => {
 })
 
 orderRouter.get('/', authenticateUser, async (req, res) => {
-    const orders = await orderModel.find()
+    // check for query parameters
+    const { price, date, state } = req.query
+
+    // query by price
+    if(price){
+        let value;
+        if(price === 'asc'){
+            value = 1
+            const orders = await orderModel.find().sort( {total_price : value} )
+            return res.json({ status: true, orders })
+        }
+
+        if(price === 'desc'){
+            value = -1
+            const orders = await orderModel.find().sort( {total_price : value} )
+            return res.json({ status: true, orders })
+        }
+        // query by date
+    } else if(date){
+        let value;
+        if(price === 'asc'){
+            value = 1
+            const orders = await orderModel.find().sort( {created_at : value} )
+            return res.json({ status: true, orders })
+        }
+
+        if(price === 'desc'){
+            value = -1
+            const orders = await orderModel.find().sort( {created_at : value} )
+            return res.json({ status: true, orders })
+        }
+    } 
+    
+    // PAGINATION //
+    const page = req.query.page * 1
+    const limit = req.query.limit * 1
+    const skip = (page - 1) * limit
+
+    const orders = await orderModel.find().skip(skip).limit(limit)
 
     return res.json({ status: true, orders })
 })
