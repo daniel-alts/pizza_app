@@ -10,4 +10,4 @@ UserRouter.get('/', [passwordAuth, adminAuth], userController.allUsers)
 UserRouter.patch('/:id', [passwordAuth], userController.updateUser)
 UserRouter.delete('/:id',[passwordAuth, adminAuth], userController.deleteUser)
 
-module.exports = UserRouter
+module.exports = UserRouter 

@@ -39,4 +39,25 @@ describe("Pizza Order Route", () => {
             .set('Authorization', 'Basic ' + userAuth)
         expect(response.status).toBe(201)
     })
+
+    it("PUT /pizza/:id status code 404", async () => {
+        const response = await supertest(app)
+            .patch('/pizza/').send({ "state": 3 })
+            .set('Authorization', 'Basic ' + adminAuth)
+        expect(response.status).toBe(404)
+    })
+
+    it("PUT /pizza/:id status code 200", async () => {
+        const response = await supertest(app)
+            .patch('/pizza/633a15d90ad196f7407d5579').send({ "state": 4 })
+            .set('Authorization', 'Basic ' + adminAuth)
+        expect(response.status).toBe(200)
+    })
+
+    it("DELETE /pizza/:id status code 200", async () => {
+        const response = await supertest(app)
+            .patch('/pizza/633a15d90ad196f7407d5579')
+            .set('Authorization', 'Basic ' + adminAuth)
+        expect(response.status).toBe(200)
+    })
 })

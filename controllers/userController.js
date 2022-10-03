@@ -21,7 +21,7 @@ async function signup(req, res) {
 async function allUsers(req, res) {
     try {
         const user = await userModel.find()
-        return res.json({ status: true, user })
+        return res.status(200).json({ status: true, user })
     } catch (error) {
         return res.json({ status: false, error })
     }
@@ -46,7 +46,7 @@ async function updateUser(req, res) {
         }
 
         await user.save()
-        return res.json({ status: true, user, message: "updated successfully" })
+        return res.status(200).json({ status: true, user, message: "updated successfully" })
     } catch (error) {
         return res.json({ status: false, error })
     }
@@ -57,7 +57,7 @@ async function deleteUser(req, res) {
         const { id } = req.params
 
         const user = await userModel.findByIdAndDelete(id)
-        return res.json({ status: true, user, message: "User deleted successfully" })
+        return res.status(200).json({ status: true, user, message: "User deleted successfully" })
     } catch (error) {
         return res.json({ status: false, error })
     }

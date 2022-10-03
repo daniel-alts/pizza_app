@@ -74,7 +74,7 @@ async function updateOrder(req, res) {
 
         await order.save()
 
-        return res.json({ status: true, order })
+        return res.status(200).json({ status: true, order })
     } catch (error) {
         error.type = 'Internal Server Error'
         next(error)
@@ -87,7 +87,7 @@ async function deleteOrder(req, res) {
 
         const order = await orderModel.deleteOne({ _id: id })
 
-        return res.json({ status: true, order })
+        return res.status(200).json({ status: true, order })
     } catch (error) {
         error.type = 'Internal Server Error'
         next(error)
