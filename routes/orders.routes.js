@@ -1,6 +1,7 @@
 const orderModel = require("../models/orderModel");
 const moment = require("moment");
 const express = require("express");
+const basicOauth = require("../middleware/authenticate.middleware");
 
 const orderRoute = express.Router();
 
@@ -32,8 +33,25 @@ orderRoute.get("/:orderId", async (req, res) => {
   return res.json({ status: true, order });
 });
 
-orderRoute.get("/", async (req, res) => {
-  const orders = await orderModel.find();
+orderRoute.get("/", basicOauth, async (req, res) => {
+  // get sorting values from query params if available
+  const { price, date } = req.query;
+  let sortBy = {};
+  if (price) {
+    const sortVal = price === "asc" ? 1 : price === "desc" ? -1 : false;
+    if (sortVal) sortBy = { total_price: sortVal };
+  } else if (date) {
+    const sortVal = date === "asc" ? 1 : date === "desc" ? -1 : false;
+    if (sortVal) sortBy = { created_at: sortVal };
+  }
+
+
+  let orders;
+  if (!sortBy) {
+    orders = await orderModel.find();
+  } else {
+    orders = await orderModel.find({}).sort(sortBy);
+  }
 
   return res.json({ status: true, orders });
 });

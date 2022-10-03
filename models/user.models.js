@@ -5,20 +5,26 @@ const { ObjectId } = Schema;
 
 const UserSchema = new Schema({
   id: ObjectId,
-  created_at: Date,
-  updated_at: Date,
+  created_at: { type: Date, default: Date.now },
+  updated_at: { type: Date, default: Date.now },
   username: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   password: {
     type: String,
     required: true,
   },
-  user_type: String,
+  user_type: {
+    type: String,
+    default: "user",
+    enum: ["admin", "user"],
+  },
+  fullname: String,
+  city: String,
 });
 
 const user = mongoose.model("user", UserSchema);
 
-module.exports = UserSchema;
+module.exports = user;

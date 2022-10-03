@@ -1,11 +1,21 @@
 const userModel = require("../models/user.models");
-const moment = require("moment");
 const express = require("express");
+const basicOauth = require("../middleware/authenticate.middleware");
+const bcrypt = require("bcrypt");
 
 const userRoute = express.Router();
 
 // get users
-userRoute.get("/", (req, res) => {
+userRoute.get("/", basicOauth, (req, res) => {
+    const authenticatedUser = req.user;
+
+  if (!authenticatedUser) {
+    return res.status(403).send("Forbidden");
+  }
+
+  if (authenticatedUser.role !== "admin") {
+    return res.status(401).send("You're not authorized");
+  }
   userModel
     .find()
     .then((user) => res.send(user))
@@ -16,10 +26,49 @@ userRoute.get("/", (req, res) => {
 });
 
 // create user
-userRoute.post("/", (req, res) => {});
+userRoute.post("/", async (req, res) => {
+  const user = await req.body;
+  const encryptPassword = await bcrypt.hash(user.password, 10);
+  user.password = await encryptPassword;
+  userModel
+    .create(user)
+    .then((user) => {
+      res.status(201).send(user);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(err);
+    });
+});
 
 // update user
-userRoute.put("/:id", (req, res) => {});
+userRoute.put("/:id", (req, res) => {
+  const { id } = req.params;
+  const userUpdate = req.body;
+  userUpdate.updated_at = new Date();
+  userModel
+    .findByIdAndUpdate(id, userUpdate, { new: true })
+    .then((user) => {
+      res.status(200).send(user);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(err);
+    });
+});
 
 // delete user
-userRoute.delete("/:id", (req, res) => {});
+userRoute.delete("/:id", (req, res) => {
+  const id = req.params.id;
+  userModel
+    .findByIdAndRemove(id)
+    .then((user) => {
+      res.status(200).send(user);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(err);
+    });
+});
+
+module.exports = userRoute;

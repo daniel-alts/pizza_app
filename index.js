@@ -7,6 +7,7 @@ const app = express()
 
 // import routes
 const orderRoute = require('./routes/orders.routes');
+const userRoute = require('./routes/users.routes');
 
 app.use(express.json());
 
@@ -17,6 +18,7 @@ app.get('/', (req, res) => {
 
 // handle Book routes
 app.use('/order', orderRoute);
+app.use('/user', userRoute);
 
 
 connectToMongoDB();
