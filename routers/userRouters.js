@@ -21,7 +21,7 @@ userRouter.post("/", async (req, res) => {
     res.status(201).send({ Data: newUser });
   } catch (error) {
     console.log(error.message);
-    res.status(500).send(error.message);
+    res.status(409).send(error.message);
   }
 });
 
@@ -37,7 +37,7 @@ userRouter.get("/", async (req, res) => {
     res.status(200).send(allUsers);
   } catch (error) {
     console.log(error.message);
-    res.status(500).send(error.message);
+    res.status(409).send(error.message);
   }
 });
 
