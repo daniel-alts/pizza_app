@@ -4,8 +4,11 @@ const moment = require("moment");
 
 //GET ALL ORDERS
 const getAllOrder = async (req, res) => {
-  //SORTING ORDERS
+  //PAGINATION
+  const page = req.query.page || 0;
+  const orderPerPage = 2;
 
+  //SORTING ORDERS
   const price = req.query.price;
   const date = req.query.date;
 
@@ -18,12 +21,20 @@ const getAllOrder = async (req, res) => {
     if (value === "asc") {
       value = 1;
 
-      const orders = await orderModel.find().sort({ total_price: value });
+      const orders = await orderModel
+        .find()
+        .sort({ total_price: value })
+        .skip(page * orderPerPage)
+        .limit(orderPerPage);
       return res.status(200).json({ status: true, orders });
     } else if (value === "desc") {
       value = -1;
 
-      const orders = await orderModel.find().sort({ total_price: value });
+      const orders = await orderModel
+        .find()
+        .sort({ total_price: value })
+        .skip(page * orderPerPage)
+        .limit(orderPerPage);
       return res.status(200).json({ status: true, orders });
     }
     //SORTING ORDERS BY DATE IN ASCENDING OR DESCENDING ORDER
@@ -32,18 +43,29 @@ const getAllOrder = async (req, res) => {
     if (value === "asc") {
       value = 1;
 
-      const orders = await orderModel.find().sort({ created_at: value });
+      const orders = await orderModel
+        .find()
+        .sort({ total_price: value })
+        .skip(page * orderPerPage)
+        .limit(orderPerPage);
       return res.status(200).json({ status: true, orders });
     } else if (value === "desc") {
       value = -1;
 
-      const orders = await orderModel.find().sort({ created_at: value });
+      const orders = await orderModel
+        .find()
+        .sort({ total_price: value })
+        .skip(page * orderPerPage)
+        .limit(orderPerPage);
       return res.status(200).json({ status: true, orders });
     }
 
     //IF USER DOESNT PASS A PRICE OR DATE OF THE ORDER THEN ALL ORDERS SHOULD BE RETURNED
   } else {
-    const orders = await orderModel.find();
+    const orders = await orderModel
+      .find()
+      .skip(page * orderPerPage)
+      .limit(orderPerPage);
     return res.status(200).json({ status: true, orders });
   }
 };
