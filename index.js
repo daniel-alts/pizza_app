@@ -21,5 +21,5 @@ app.use('/order', orderRoute);
 
 connectToMongoDB();
 app.listen(PORT, () => {
-    console.log('Listening on port, ', PORT)
+    console.log(`Listening on port ${PORT}`)
 })
