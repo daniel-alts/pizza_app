@@ -4,6 +4,10 @@ const auth = require('../controllers/auth');
 
 router.route('/signup').post(auth.Register);
 
-// router.route('/').get(userController);
+router.route('/login').post(auth.Login);
+
+// router.route('/:id').get(userController);
+// router.route('/:id').patch(userController);
+// router.route('/:delete').patch(userController);
 
 module.exports = router;

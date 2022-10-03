@@ -8,7 +8,6 @@ let user;
 
 exports.deleteUser = Catch_Async(async (req, res, next) => {
 	user = await Users.findByIdAndDelete(req.params.id);
-
 	new ResponseHandler(res, user, 200);
 });
 
@@ -20,8 +19,4 @@ exports.updateUser = Catch_Async(async (req, res) => {
 	new ResponseHandler(res, user, 200);
 });
 
-exports.findUser = Catch_Async(async (req, res) => {
-	user = await Users.findById(req.params.id);
-
-	new ResponseHandler(res, user, 200);
-});
+// s

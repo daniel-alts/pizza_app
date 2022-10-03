@@ -1,24 +1,30 @@
 const router = require('express').Router();
-
 const orderController = require('../controllers/orderControllers');
+const { Auth } = require('../controllers/auth');
 
+// Basic Users Routes.
 router
 	.route('/')
-	.get(orderController.getOrders)
-	.post(orderController.createOrder);
+	.get(Auth, orderController.queryByRole, orderController.getOrders)
+	.post(Auth, orderController.createOrder);
 
 router
-	.route('/total-price')
-	.get(orderController.sortByTotalPrice, orderController.getOrders);
+	.route('/:id')
+	.delete(Auth, orderController.deleteOrder)
+	.put(Auth, orderController.updateOrder);
+
+//  ! admin Privileges only
 
 router
 	.route('/state')
 	.get(orderController.sortByState, orderController.getOrders);
 
 router
-	.route('/:id')
-	.delete(orderController.deleteOrder)
-	.put(orderController.updateOrder)
-	.get(orderController.findOrder);
+	.route('/total-price')
+	.get(
+		Auth,
+		orderController.sortByTotalPrice,
+		orderController.getOrders,
+	);
 
 module.exports = router;

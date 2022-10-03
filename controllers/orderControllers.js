@@ -3,6 +3,12 @@ const orderModel = require('../Models/orderModel');
 const ResponseHandler = require('../utils/responseHandler');
 const AppError = require('../utils/AppError');
 const Catch_Async = require('../utils/catchAsync');
+const { query } = require('express');
+
+// GLobal order variable
+// DO NOT EDIT
+let order;
+
 // !sort by T Price
 exports.sortByTotalPrice = async (req, res, next) => {
 	req.query.sort = '-total_price';
@@ -15,25 +21,38 @@ exports.sortByState = async (req, res, next) => {
 	next();
 };
 
+exports.queryByRole = async (req, res, next) => {
+	// Users have access to only their orders
+
+	if (req.curUser.role === 'Basic') {
+		req.query.created_by = req.curUser.email;
+	}
+	next();
+};
+
+// get User Order
+
 //  ! ---- Get All Orders
 exports.getOrders = Catch_Async(async (req, res) => {
 	// Build query
+
 	let queryObj = { ...req.query };
-
 	let query = orderModel.find(queryObj);
-
 	if (req.query.sort) {
 		const SORTBY = req.query.sort.split(',').join(' ');
 		console.log(SORTBY);
 		query = query.sort(SORTBY);
 	}
+
 	const orders = await query;
+
 	new ResponseHandler(res, orders, 200);
 });
 
 // ! ------ Create Order
 
 exports.createOrder = async (req, res) => {
+	const { email } = req.curUser;
 	const body = req.body;
 
 	const total_price = body.items.reduce((prev, curr) => {
@@ -41,7 +60,8 @@ exports.createOrder = async (req, res) => {
 		return prev;
 	}, 0);
 
-	const order = await orderModel.create({
+	order = await orderModel.create({
+		created_by: email,
 		items: body.items,
 		created_at: moment().toDate(),
 		total_price,
@@ -50,27 +70,14 @@ exports.createOrder = async (req, res) => {
 	new ResponseHandler(res, order, 200);
 };
 
-// ! ------ FIND Order
-
-exports.findOrder = async (req, res) => {
-	const order = await orderModel.findById(req.params.id);
-
-	if (!order) {
-		return res.status(404).json({ status: false, order: null });
-	}
-
-	new ResponseHandler(res, order, 200);
-};
-
 //
 
 // ! ------ uPDATE Order
-
 exports.updateOrder = async (req, res) => {
 	const { id } = req.params;
 	const { state } = req.body;
 
-	const order = await orderModel.findById(id);
+	order = await orderModel.findById(id);
 
 	if (!order) {
 		return next(new AppError(' Order not found ', 404));
@@ -78,6 +85,10 @@ exports.updateOrder = async (req, res) => {
 
 	if (state < order.state) {
 		return next(new AppError(' Invalid operation', 422));
+	}
+
+	if (req.curUser.email !== order.created_by) {
+		return next(new AppError('You can only update your Order', 403));
 	}
 
 	order.state = state;
@@ -88,8 +99,16 @@ exports.updateOrder = async (req, res) => {
 
 // ! ------ DELETE Order
 
-exports.deleteOrder = Catch_Async(async (req, res) => {
-	const order = await orderModel.deleteOne({ _id: req.params.id });
+exports.deleteOrder = Catch_Async(async (req, res, next) => {
+	order = await orderModel.findById({ _id: req.params.id });
 
-	new ResponseHandler(res, order, 200);
+	console.log(req.curUser.email);
+	console.log(order.created_by);
+
+	if (req.curUser.email !== order.created_by) {
+		return next(new AppError('You can only delete your Order', 403));
+	}
+
+	await orderModel.deleteOne({ _id: req.params.id });
+	new ResponseHandler(res, null, 200);
 });
