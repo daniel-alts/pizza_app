@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/orders',orderRouter);
-app.use('/user',userRouter);
+app.use('/users',userRouter);
 
 
 mongoose.connect('mongodb+srv://omotega:pulisic22@cluster0.7jjoo.mongodb.net/?retryWrites=true&w=majority');
@@ -34,3 +34,5 @@ mongoose.connection.on("error", (err) => {
 app.listen(PORT, () => {
     console.log('Listening on port, ', PORT)
 })
+
+module.exports = app;

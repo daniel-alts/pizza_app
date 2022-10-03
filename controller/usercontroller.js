@@ -8,7 +8,7 @@ const createUser = async (req, res) => {
         password,
     })
     if (!user) return res.status(400).json({ status: false, user: null })
-    return res.status(201).json({ ststus: true, user });
+    return res.status(201).json({ status: true, user });
 }
 
 module.exports = {
