@@ -7,14 +7,19 @@ const UserSchema = new Schema({
   id: ObjectId,
   created_at: Date,
   username: {
-    type:String,
+    type: String,
     required: [true, "A username must be provided"],
+    unique: true,
   },
-  password :{
-    required :[true,"A password must be provided"]
-  }
-
+  password: {
+    type: String,
+    required: [true, "A password must be provided"],
+  },
+  user_type: {
+    type: String,
+    enum: ['admin', 'user'],
+  },
 });
-const User = mongoose.model('User',UserSchema);
+const User = mongoose.model("User", UserSchema);
 
 module.exports = User;

@@ -1,95 +1,107 @@
-const express = require('express');
-const moment = require('moment');
-const mongoose = require('mongoose');
-const orderModel = require('./orderModel');
+const express = require("express");
+const moment = require("moment");
+const mongoose = require("mongoose");
+const orderModel = require("./orderModel");
+const userModel = require("./userModel");
 
-const PORT = 3334
+const PORT = 3334;
 
-const app = express()
+const app = express();
 
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  return res.json({ status: true });
+});
 
-app.get('/', (req, res) => {
-    return res.json({ status: true })
-})
+app.post("/order", async (req, res) => {
+  const body = req.body;
 
+  const total_price = body.items.reduce((prev, curr) => {
+    prev += curr.price;
+    return prev;
+  }, 0);
 
-app.post('/order', async (req, res) => {
-    const body = req.body;
+  const order = await orderModel.create({
+    items: body.items,
+    created_at: moment().toDate(),
+    total_price,
+  });
 
-    const total_price = body.items.reduce((prev, curr) => {
-        prev += curr.price
-        return prev
-    }, 0);
+  return res.json({ status: true, order });
+});
 
-    const order = await orderModel.create({ 
-        items: body.items,
-        created_at: moment().toDate(),
-        total_price
-    })
-    
-    return res.json({ status: true, order })
-})
+app.get("/order/:orderId", async (req, res) => {
+  const { orderId } = req.params;
+  const order = await orderModel.findById(orderId);
 
-app.get('/order/:orderId', async (req, res) => {
-    const { orderId } = req.params;
-    const order = await orderModel.findById(orderId)
+  if (!order) {
+    return res.status(404).json({ status: false, order: null });
+  }
 
-    if (!order) {
-        return res.status(404).json({ status: false, order: null })
-    }
+  return res.json({ status: true, order });
+});
 
-    return res.json({ status: true, order })
-})
+app.get("/orders", async (req, res) => {
+  const orders = await orderModel.find();
 
-app.get('/orders', async (req, res) => {
-    const orders = await orderModel.find()
+  return res.json({ status: true, orders });
+});
 
-    return res.json({ status: true, orders })
-})
+app.patch("/order/:id", async (req, res) => {
+  const { id } = req.params;
+  const { state } = req.body;
 
-app.patch('/order/:id', async (req, res) => {
-    const { id } = req.params;
-    const { state } = req.body;
+  const order = await orderModel.findById(id);
 
-    const order = await orderModel.findById(id)
+  if (!order) {
+    return res.status(404).json({ status: false, order: null });
+  }
 
-    if (!order) {
-        return res.status(404).json({ status: false, order: null })
-    }
+  if (state < order.state) {
+    return res
+      .status(422)
+      .json({ status: false, order: null, message: "Invalid operation" });
+  }
 
-    if (state < order.state) {
-        return res.status(422).json({ status: false, order: null, message: 'Invalid operation' })
-    }
+  order.state = state;
 
-    order.state = state;
+  await order.save();
 
-    await order.save()
+  return res.json({ status: true, order });
+});
 
-    return res.json({ status: true, order })
-})
+app.delete("/order/:id", async (req, res) => {
+  const { id } = req.params;
 
-app.delete('/order/:id', async (req, res) => {
-    const { id } = req.params;
+  const order = await orderModel.deleteOne({ _id: id });
 
-    const order = await orderModel.deleteOne({ _id: id})
+  return res.json({ status: true, order });
+});
 
-    return res.json({ status: true, order })
-})
+// User handlers
 
+app.post("/user", async (req, res) => {
+  try {
+    const user = await userModel.create(req.body);
 
-mongoose.connect('mongodb://localhost:27017')
+    res.status("201").json({ status: "success", user });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+mongoose.connect("mongodb://localhost:27017");
 
 mongoose.connection.on("connected", () => {
-	console.log("Connected to MongoDB Successfully");
+  console.log("Connected to MongoDB Successfully");
 });
 
 mongoose.connection.on("error", (err) => {
-	console.log("An error occurred while connecting to MongoDB");
-	console.log(err);
+  console.log("An error occurred while connecting to MongoDB");
+  console.log(err);
 });
 
 app.listen(PORT, () => {
-    console.log('Listening on port, ', PORT)
-})
+  console.log("Listening on port, ", PORT);
+});
