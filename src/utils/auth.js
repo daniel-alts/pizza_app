@@ -6,6 +6,7 @@ const protectRoute = async (
 	next,
 ) => {
 	const header = req.headers
+    //protecting route from auth.js
 	if (!header.authorization) {
 		return res
 			.status(403)
