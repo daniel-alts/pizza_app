@@ -9,17 +9,16 @@ const authtenticateUser =  async (req,res,next) =>{
         res.status(401).send("You are not authenticated!")
     }
  
-    let auth = new Buffer.from(authheader.split(' ')[1],
-    'base64').toString().split(':');
-    const userName = auth[0];
-    const password = auth[1];
-    
-    const Allusers = await Users.find()
+  const b64auth = (req.headers.authorization || '').split(' ')[1] || ''
+  if(!b64auth) return res.status(401)
+  const [userName, password] = Buffer.from(b64auth, 'base64').toString().split(':')
+
+   const Allusers = await Users.find()
 
     const User =   Allusers.find((user)=>user.UserName === userName && user.Password ===password )
     if (User) {
         
-        next()
+     return  next()
     } 
 
     else {
