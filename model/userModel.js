@@ -13,6 +13,10 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
+    email:{
+        type: String,
+        unique: [true, 'User already registered']
+    },
     userType:{
         type: String,
         required: true,
@@ -20,3 +24,7 @@ const UserSchema = new Schema({
         default: "user"
     }
 })
+
+const userModel = mongoose.model('User', UserSchema);
+
+module.exports = userModel;
