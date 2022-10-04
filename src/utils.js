@@ -1,11 +1,14 @@
 
 
-function deleteUnrequiredProperty(obj, ...props) {
+function deleteUnrequiredProperty(user, props) {
+    const userObject = user.toJSON();
     for (const prop of props) {
-        if (obj.hasOwnProperty) {
-            delete obj.prop;
+        if (userObject.hasOwnProperty(prop)) {
+            console.log('Working');
+            delete userObject[prop];
         }
     }
+    return userObject;
 }
 
 

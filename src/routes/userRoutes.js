@@ -7,7 +7,8 @@ const userController = require('../controllers/userController');
 userRoutes.post('/',
     async (req, res, next) => {
         try {
-            userController.registerUser(req, res)
+            const userDetails = req.body;
+            await userController.registerUser(req, res, userDetails)
         } catch(error) {
             next(error);
         }

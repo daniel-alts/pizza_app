@@ -18,9 +18,9 @@ const userSchema = new Schema({
             required: true,
         },
         userType: {
-            type: {String, enum: ['admin', 'user']},
-            required: true,
-
+            type: String, 
+            enum: ['admin', 'user'],
+            required: true
         },
 
         //Additional fields
@@ -31,9 +31,11 @@ const userSchema = new Schema({
         },
         firstName: {
             type: String,
+            default: "Not specified"
         },
         lastName: {
             type: String,
+            default: "Not specified"
         }
     }
 );

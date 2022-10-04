@@ -4,10 +4,18 @@ const { deleteUnrequiredProperty } = require('../utils');
 
 
 
-const registerUser = async (user) => {
-    let newUser = await UserModel.create(user);
-    deleteUnrequiredProperty(newUser, 'password');
-    return newUser;
+const registerUser = async (userDetails) => {
+    const { username, password, userType, email, firstName, lastName } = userDetails;
+    let user = await UserModel.create({
+        username,
+        password,
+        userType,
+        email,
+        firstName,
+        lastName
+    });
+    const savedUser = deleteUnrequiredProperty(user, ['password']);
+    return savedUser;
 }
 
 
