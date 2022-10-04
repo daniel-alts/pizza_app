@@ -1,42 +1,43 @@
 const orderModel = require("../models/orderModel");
-const moment = require("moment");
 
-const getOrders = async (req, res, next) => {
-	const { price, state, date } = req.query;
+const getOrders = async (req, res) => {
 	let orders;
-	if (price) {
-		const value =
-			price === "asc"
-				? 1
-				: price === "desc"
-				? -1
-				: false;
-		const orders = await orderModel
-			.find({})
-			.sort({ total_price: value });
-		return res.json({ status: true, orders });
-	} else if (state) {
-		const value =
-			state === "asc"
-				? 1
-				: state === "desc"
-				? -1
-				: false;
-		const orders = await orderModel
-			.find({})
-			.sort({ state: value });
-		return res.json({ status: true, orders });
-	} else if (date) {
-		const value =
-			state === "asc"
-				? 1
-				: state === "desc"
-				? -1
-				: false;
-		const orders = await orderModel
-			.find({})
-			.sort({ state: value });
-		return res.json({ status: true, orders });
+	if (req.query) {
+		const { price, state, date } = req.query;
+		if (price) {
+			const value =
+				price === "asc"
+					? 1
+					: price === "desc"
+					? -1
+					: false;
+			const orders = await orderModel
+				.find({})
+				.sort({ total_price: value });
+			return res.json({ status: true, orders });
+		} else if (state) {
+			const value =
+				state === "asc"
+					? 1
+					: state === "desc"
+					? -1
+					: false;
+			const orders = await orderModel
+				.find({})
+				.sort({ state: value });
+			return res.json({ status: true, orders });
+		} else if (date) {
+			const value =
+				state === "asc"
+					? 1
+					: state === "desc"
+					? -1
+					: false;
+			const orders = await orderModel
+				.find({})
+				.sort({ state: value });
+			return res.json({ status: true, orders });
+		}
 	}
 
 	if (!orders) {
@@ -49,22 +50,23 @@ const postOrder = async (req, res) => {
 	const body = req.body;
 	const order = await orderModel.create({
 		items: body.items,
+		created_at: new Date(),
 	});
+
 	return res.json({ status: true, order });
 };
 
 const getOrder = async (req, res) => {
 	const { orderId } = req.params;
-	const { userName } = req.userAuthenticated;
 
 	const order = await orderModel.findById(
 		orderId
 	);
 
 	if (!order) {
-		return res
-			.status(404)
-			.json({ status: false, order: null });
+		res.status(404);
+		res.json({ status: false, order });
+		return;
 	}
 
 	return res.json({ status: true, order });
@@ -78,17 +80,19 @@ const updateOrder = async (req, res) => {
 		const order = await orderModel.findById(id);
 
 		if (!order) {
-			return res
-				.status(404)
-				.json({ status: false, order: null });
+			res.status(404);
+			res.json({ status: false, order: null });
+			return;
 		}
 
 		if (state < order.state) {
-			return res.status(422).json({
+			res.status(422);
+			res.json({
 				status: false,
 				order: null,
 				message: "Invalid operation",
 			});
+			return;
 		}
 
 		order.state = state;
@@ -96,9 +100,13 @@ const updateOrder = async (req, res) => {
 
 		await order.save();
 
-		return res.json({ status: true, order });
+		res.status(201);
+		res.json({ status: true, order });
+		return;
 	} else {
-		return res.json("Unauthorized user");
+		res.status(404);
+		res.json("Unauthorized user");
+		return;
 	}
 };
 
@@ -110,9 +118,14 @@ const deleteOrder = async (req, res) => {
 			_id: id,
 		});
 
-		return res.json({ status: true, order });
+		res.status(201);
+		res.json({ status: true, order });
+		return;
 	} else {
-		return res.json("Unauthorized user");
+		res.json("Unauthorized user");
+		res.status(404);
+
+		return;
 	}
 };
 module.exports = {

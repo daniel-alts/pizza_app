@@ -15,6 +15,10 @@ async function authenticateUser(req, res, next) {
 		const user = await userModel.findOne({
 			userName,
 		});
+		//  const match = await bcrypt.compare(
+		// 		passWord,
+		// 		user.passWord
+		// 	);
 		if (user && passWord === user.passWord) {
 			req.userAuthenticated = {
 				userName: user.userName,
@@ -27,7 +31,8 @@ async function authenticateUser(req, res, next) {
 		}
 		next();
 	} catch (err) {
-		res.status(404).send(Error);
+		console.log(err);
+		return res.status(500).send("Server Error");
 	}
 }
 

@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 
 const orderRouter = require("./routes/orders.js");
 const userRouter = require("./routes/user.js");
-const userModel = require("./models/userModel");
+// const userModel = require("./models/userModel");
 
 const PORT = 3334;
 
