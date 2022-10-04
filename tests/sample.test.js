@@ -12,7 +12,7 @@ beforeEach(async () => {
 
 		await mongoose.connection.db.dropDatabase();
 	} catch {
-		console.error("Couldn't connect to MongoDB");
+		console.log("Couldn't connect to MongoDB");
 	}
 });
 // Drops the database and the closes the connection after all the tests might have ran
