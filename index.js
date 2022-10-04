@@ -31,7 +31,7 @@ app.use((error, req, res, next) => {
 
 
 app.get('*', (req, res) => {
-    return res.status(404).json({ status: false, message: "Page Not Found"});
+    return res.status(404).json({ status: false, message: "Not Found"});
 });
 
 
