@@ -5,7 +5,8 @@ const basicOauth = require("../middleware/authenticate.middleware");
 
 const orderRoute = express.Router();
 
-orderRoute.post("/", async (req, res) => {
+// post order routes
+orderRoute.post("/", basicOauth, async (req, res) => {
   const body = req.body;
 
   const total_price = body.items.reduce((prev, curr) => {
@@ -22,7 +23,8 @@ orderRoute.post("/", async (req, res) => {
   return res.json({ status: true, order });
 });
 
-orderRoute.get("/:orderId", async (req, res) => {
+// get order by id routes
+orderRoute.get("/:orderId", basicOauth, async (req, res) => {
   const { orderId } = req.params;
   const order = await orderModel.findById(orderId);
 
@@ -33,10 +35,13 @@ orderRoute.get("/:orderId", async (req, res) => {
   return res.json({ status: true, order });
 });
 
+// get order routes
 orderRoute.get("/", basicOauth, async (req, res) => {
   // get sorting values from query params if available
   const { price, date } = req.query;
   let sortBy = {};
+  let orders;
+
   if (price) {
     const sortVal = price === "asc" ? 1 : price === "desc" ? -1 : false;
     if (sortVal) sortBy = { total_price: sortVal };
@@ -45,8 +50,6 @@ orderRoute.get("/", basicOauth, async (req, res) => {
     if (sortVal) sortBy = { created_at: sortVal };
   }
 
-
-  let orders;
   if (!sortBy) {
     orders = await orderModel.find();
   } else {
@@ -56,9 +59,15 @@ orderRoute.get("/", basicOauth, async (req, res) => {
   return res.json({ status: true, orders });
 });
 
-orderRoute.patch("/:id", async (req, res) => {
+// Update order route
+orderRoute.patch("/:id", basicOauth, async (req, res) => {
   const { id } = req.params;
   const { state } = req.body;
+
+  // check authorization before pulling from db
+  if (req.authenticatedUser.role !== "admin") {
+    return res.status(401).send("You're not authorised");
+  }
 
   const order = await orderModel.findById(id);
 
@@ -79,12 +88,16 @@ orderRoute.patch("/:id", async (req, res) => {
   return res.json({ status: true, order });
 });
 
-orderRoute.delete("/:id", async (req, res) => {
+// delete order route
+orderRoute.delete("/:id", basicOauth, async (req, res) => {
   const { id } = req.params;
 
+  if (req.authenticatedUser.role !== "admin") {
+    return res.status(401).send("You're not authorised");
+  }
   const order = await orderModel.deleteOne({ _id: id });
 
   return res.json({ status: true, order });
 });
 
-module.exports = orderModel;
+module.exports = orderRoute;
