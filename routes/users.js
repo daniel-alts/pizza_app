@@ -14,15 +14,22 @@ userRoute.post('/register', async (req, res) => {
 })
 
 userRoute.post('/login', async (req, res) => {
-    const body = req.body;
+    const user = req.body;
 
-    const user = await userModel.findOne(body)
+    const User = await userModel.findOne(user)
 
     if(!user) {
         return res.status(404).json({message: "Enter Username and Password"})
     }
 
-    res.send(user)
+    if (user.user.username === User.username){
+        if (user.user.password === User.password){
+            return res.send("welcome to your Dashboard")
+        }
+    }
+    res.json({
+        error: "Incorrect username or password"
+    })
 })
 
 

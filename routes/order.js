@@ -1,8 +1,27 @@
 const express = require("express")
 const moment = require('moment');
 const orderModel = require('../orderModel');
+const userModel = require('../userModel');
+const {authenticate} = require("../authenticate")
 
 const orderRoute = express.Router()
+
+orderRoute.use( async (req, res, next) => {
+    // return new Promise ((resolve, reject) => {
+        loginDetails = req.body
+        const User = await userModel.findOne(loginDetails)  
+
+        if (!loginDetails){
+            return res.send("Please enter username and password!")
+        }
+
+        if ((loginDetails.user.password === User.password) && (loginDetails.user.username === User.username)){
+           return next()
+        }
+        res.json({
+            error: "Incorrect username or password"
+        })
+})
 
 orderRoute.post('/', async (req, res) => {
     const body = req.body;
