@@ -1,9 +1,9 @@
 const express = require("express");
-const { authorize } = require("../utils/authenticate.utils");
+const { authorize, authenticateUser } = require("../utils/authenticate.utils");
 const {
 	createUser,
-	loginUser,
-	logoutUser,
+	// loginUser,
+	// logoutUser,
 	getAllUsers,
 } = require("../controllers/user.controller");
 
@@ -12,13 +12,13 @@ const userRoute = express.Router();
 // Register user
 userRoute.post("/register", createUser);
 
-// Login
-userRoute.post("/login", loginUser);
+// // Login
+// userRoute.post("/login", loginUser);
 
-// Logout
-userRoute.post("/logout", logoutUser);
+// // Logout
+// userRoute.post("/logout", logoutUser);
 
 // get all users
-userRoute.get("/", authorize(["admin"]), getAllUsers);
+userRoute.get("/", authenticateUser, authorize(["admin"]), getAllUsers);
 
 module.exports = userRoute;

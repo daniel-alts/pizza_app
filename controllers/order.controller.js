@@ -16,10 +16,7 @@ async function createOrder(req, res, next) {
 			total_price,
 		});
 
-		return res.status(201).json({
-			message: "Order created successfully",
-			data: order,
-		});
+		return res.status(201).send(order);
 	} catch (error) {
 		console.log(error);
 	}
@@ -37,20 +34,21 @@ async function getOrderById(req, res) {
 }
 
 async function getAllOrders(req, res) {
-	const { page, count, state, sortBy } = req.query;
+	const { page, count, state, sortBy, orderBy } = req.query;
 
 	const query = state ? { state } : {}; // query by a state if provided
+  const order = orderBy === "desc" ? -1 : 1; // order by ascending order if not provided
 
 	let sortedBy;
 	switch (sortBy) {
 		case "price":
-			sortedBy = { total_price: 1 }; // sort the total_price from ascending to descending
+			sortedBy = { total_price: order }; // sort the total_price from ascending to descending
 			break;
 		case "date":
-			sortedBy = { created_at: 1 }; // sort the date created from asc to desc
+			sortedBy = { created_at: order }; // sort the date created from asc to desc
 			break;
-		default:
-      sortedBy = { created_at: 1 }; // sort by date if no sortBy query is provided
+		default: // sort by date if no sortBy query is provided
+			sortedBy = { created_at: order };
 			break;
 	}
 
