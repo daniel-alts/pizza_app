@@ -7,7 +7,8 @@ const PORT = 3334
 const app = express()
 
 app.use(express.json());
-app.use("/order", require("./Routes/router"))
+app.use("/order", require("./Routes/orderRouter"))
+app.use("/user", require("./Routes/userRouter"))
 
 
 app.get('/', (req, res) => {
