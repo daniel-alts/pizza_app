@@ -1,8 +1,3 @@
-const orderModel = require('../model/orderModel')
-
-
-const moment = require('moment')
-
 const UserModel = require('../model/usersModel')
 
 async function createUser(req, res){

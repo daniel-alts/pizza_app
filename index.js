@@ -12,7 +12,7 @@ const app = express()
 app.use(express.json());
 
 app.use('/api/orders', authentication.authenticateUser, orderRouter)
-app.use('/api/order', authentication.authenticateUser, orderRouter)
+
 app.use('/api/users', userRouter)
 
 

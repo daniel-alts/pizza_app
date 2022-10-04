@@ -3,9 +3,39 @@ const orderModel = require('../model/orderModel')
 
 async function getAllOrders(req, res){
     try{
-        const orders = await orderModel.find()
 
-        return res.json({ status: true, orders })
+        //Get the query string from url
+        const queryParams = {...req.query}
+
+        //exclude fields that may cause interference
+        const excludedFields = ['page', 'sort', 'limit']
+        excludedFields.forEach((field) => delete queryParams[field])
+
+        //query the database
+        let query = orderModel.find(queryParams)
+
+        //sort based on query
+        if(req.query.sort){
+            query = query.sort(`-${req.query.sort}`)
+        }
+
+        //Add pagination
+        if(req.query.page){
+            const page = req.query.page * 1 || 1;
+            const limit = req.query.limit * 1
+            const skip = (page - 1) * limit
+            query = query.skip(skip).limit(limit)
+            let numOfOrdersCollection = await orderModel.countDocuments()
+            if(skip >= numOfOrdersCollection){
+                throw new Error()
+            }
+        }
+
+        const orders = await query;
+        res.json({ status: true, orders })
+        
+  
+   
     }catch(err){
         res.status(404).json({
             status: false,
@@ -37,9 +67,10 @@ async function getOrderById(req, res){
 async function addOrder(req, res){
     try{
         const body = req.body;
-
         const total_price = body.items.reduce((prev, curr) => {
-        prev += curr.price
+           
+        prev += (curr.price * curr.quantity)
+        console.log(prev)
         return prev
     }, 0);
        
