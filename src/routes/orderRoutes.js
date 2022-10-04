@@ -107,7 +107,7 @@ orderRoutes.patch('/:id',
             next(error);
         }
     }, 
-    async (req, res) => {
+    async (req, res, next) => {
         try {
             const { id } = req.params;
             const { state } = req.body;
@@ -154,7 +154,7 @@ orderRoutes.delete('/:id',
     async (req, res, next) => {
         try {
             const { id } = req.params;
-            await orderController.deleteOrder(id);
+            await orderController.deleteOrder(req, res, id);
         } catch(error) {
             next(error);
         }

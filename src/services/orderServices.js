@@ -37,7 +37,7 @@ const updateOrder = async (order, state) => {
 
 
 const deleteOrder = async (id) => {
-    const order = await OrderModel.deleteOne({ _id: id });
+    const order = await OrderModel.deleteOne({ _id: id});
     return order;
 }
 
