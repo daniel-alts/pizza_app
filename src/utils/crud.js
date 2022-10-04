@@ -1,7 +1,12 @@
-const moment = require('moment')
-
 const createOrder =
 	(model) => async (req, res) => {
+		const authenticatedUser =
+			req.authenticatedUser
+		if (!authenticatedUser) {
+			return res
+				.status(403)
+				.send({ message: 'forbidden' })
+		}
 		const body = req.body
 
 		try {
@@ -12,12 +17,23 @@ const createOrder =
 				.status(201)
 				.json({ data: order })
 		} catch (err) {
-			console.log(err)
+			res
+				.status(500)
+				.json({
+					error: 'Error creating order',
+				})
 		}
 	}
 
 const checkOrderById =
 	(model) => async (req, res) => {
+		const authenticatedUser =
+			req.authenticatedUser
+		if (!authenticatedUser) {
+			return res
+				.status(403)
+				.send({ message: 'forbidden' })
+		}
 		const { id } = req.params
 		const order = await model.findById(id)
 
@@ -36,17 +52,33 @@ const checkOrderById =
 const checkAllOrder =
 	(model) => async (req, res) => {
 		try {
+			const authenticatedUser =
+				req.authenticatedUser
+			if (!authenticatedUser) {
+				return res
+					.status(403)
+					.send({ message: 'forbidden' })
+			}
 			const orders = await model.find()
+			console.log(orders)
 			return res
 				.status(200)
 				.json({ data: orders })
-		} catch {
+		} catch (err) {
+			console.log(err)
 			return res.status(404)
 		}
 	}
 
 const orderState =
 	(model) => async (req, res) => {
+		const authenticatedUser =
+			req.authenticatedUser
+		if (!authenticatedUser) {
+			return res
+				.status(403)
+				.send({ message: 'forbidden' })
+		}
 		const { id } = req.params
 		const { state } = req.body
 
@@ -78,6 +110,22 @@ const orderState =
 
 const deleteOrder =
 	(model) => async (req, res) => {
+		const authenticatedUser =
+			req.authenticatedUser
+		if (!authenticatedUser) {
+			return res
+				.status(403)
+				.send({ message: 'forbidden' })
+		}
+
+		if (
+			authenticatedUser.role !== 'admin'
+		) {
+			return res
+				.status(401)
+				.send({ message: 'Unauthorised' })
+		}
+
 		const { id } = req.params
 
 		const order = await model.deleteOne({
@@ -85,7 +133,7 @@ const deleteOrder =
 		})
 
 		return res
-			.status(200)
+			.status(204)
 			.json({ data: order })
 	}
 

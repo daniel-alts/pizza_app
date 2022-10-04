@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const { urlencoded } = require('body-parser')
 const morgan = require('morgan')
 const orderRouter = require('./resources/order/order.router')
+const { protectRoute, signUp } = require('./utils/auth')
 
 const PORT = 3334
 
@@ -11,8 +12,10 @@ const app = express()
 app.use(express.json())
 app.use(urlencoded({ extended: true }))
 app.use(morgan('dev'))
+app.use('/api', protectRoute)
 
-app.use('/order', orderRouter)
+app.post('/signup', signUp)
+app.use('/api/order', orderRouter)
 
 
 
