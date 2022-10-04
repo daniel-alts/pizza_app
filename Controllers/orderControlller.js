@@ -1,7 +1,9 @@
 const orderModel = require('../Models/orderModel');
 const moment = require('moment')
+const {authenticateRoute} = require("../Middleware/authentication")
 
 const makeOrder = async (req, res) => {
+  await authenticateRoute(req, res)
   const body = req.body;
 
   const total_price = body.items.reduce((prev, curr) => {
@@ -19,6 +21,7 @@ const makeOrder = async (req, res) => {
 } 
 
 const getOrderById = async (req, res) => {
+  await authenticateRoute(req, res)
   const { orderId } = req.params;
   const order = await orderModel.findById(orderId)
 
@@ -30,13 +33,14 @@ const getOrderById = async (req, res) => {
 }
 
 const getOrders = async (req, res) => {
+  await authenticateRoute(req, res)
   const state = req.query.state
   let order = req.query.order
   let orderNo
-   if (order === "asc") {
+   if (order === "asc") {//sort by ascending
     orderNo = 1
    }
-   else{
+   else if(order === "desc"){//sort by descending
     orderNo = -1
    }
 
@@ -46,6 +50,7 @@ const getOrders = async (req, res) => {
 }
 
 const updateOrders = async (req, res) => {
+  await authenticateRoute(req, res)
   const { id } = req.params;
   const { state } = req.body;
 
@@ -67,6 +72,7 @@ const updateOrders = async (req, res) => {
 }
 
 const deleteOrder = async (req, res) => {
+  await authenticateRoute(req, res)
   const { id } = req.params;
 
   const order = await orderModel.deleteOne({ _id: id})
