@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1664659664017" clover="3.2.0">
+  <project timestamp="1664659664018" name="All files">
+    <metrics statements="58" coveredstatements="53" conditionals="6" coveredconditionals="3" methods="13" coveredmethods="13" elements="77" coveredelements="69" complexity="0" loc="58" ncloc="58" packages="2" files="4" classes="4"/>
+    <package name="resources.order">
+      <metrics statements="23" coveredstatements="23" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+      <file name="order.controller.js" path="C:\Users\hp\Documents\pizza_app\src\resources\order\order.controller.js">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+      </file>
+      <file name="order.model.js" path="C:\Users\hp\Documents\pizza_app\src\resources\order\order.model.js">
+        <metrics statements="14" coveredstatements="14" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="1" count="4" type="stmt"/>
+        <line num="2" count="4" type="stmt"/>
+        <line num="4" count="4" type="stmt"/>
+        <line num="5" count="4" type="stmt"/>
+        <line num="7" count="4" type="stmt"/>
+        <line num="28" count="4" type="stmt"/>
+        <line num="31" count="9" type="stmt"/>
+        <line num="33" count="9" type="stmt"/>
+        <line num="35" count="9" type="stmt"/>
+        <line num="36" count="9" type="stmt"/>
+        <line num="37" count="9" type="stmt"/>
+        <line num="42" count="9" type="stmt"/>
+        <line num="46" count="4" type="stmt"/>
+        <line num="51" count="4" type="stmt"/>
+      </file>
+      <file name="order.router.js" path="C:\Users\hp\Documents\pizza_app\src\resources\order\order.router.js">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="utils">
+      <metrics statements="35" coveredstatements="30" conditionals="6" coveredconditionals="3" methods="11" coveredmethods="11"/>
+      <file name="crud.js" path="C:\Users\hp\Documents\pizza_app\src\utils\crud.js">
+        <metrics statements="35" coveredstatements="30" conditionals="6" coveredconditionals="3" methods="11" coveredmethods="11"/>
+        <line num="1" count="3" type="stmt"/>
+        <line num="4" count="4" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="11" count="2" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="20" count="3" type="stmt"/>
+        <line num="21" count="1" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="24" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="31" count="1" type="stmt"/>
+        <line num="37" count="3" type="stmt"/>
+        <line num="38" count="1" type="stmt"/>
+        <line num="39" count="1" type="stmt"/>
+        <line num="40" count="1" type="stmt"/>
+        <line num="44" count="0" type="stmt"/>
+        <line num="49" count="3" type="stmt"/>
+        <line num="50" count="1" type="stmt"/>
+        <line num="51" count="1" type="stmt"/>
+        <line num="53" count="1" type="stmt"/>
+        <line num="55" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="56" count="0" type="stmt"/>
+        <line num="62" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="70" count="1" type="stmt"/>
+        <line num="72" count="1" type="stmt"/>
+        <line num="74" count="1" type="stmt"/>
+        <line num="80" count="3" type="stmt"/>
+        <line num="81" count="1" type="stmt"/>
+        <line num="83" count="1" type="stmt"/>
+        <line num="87" count="1" type="stmt"/>
+        <line num="92" count="3" type="stmt"/>
+        <line num="100" count="3" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>
