@@ -20,15 +20,23 @@ app.post('/order', async (req, res) => {
 
     const total_price = body.items.reduce((prev, curr) => {
         prev += curr.price
-        return prev
+       return prev
     }, 0);
 
+
+//basic authentication 
     const order = await orderModel.create({ 
         items: body.items,
         created_at: moment().toDate(),
-        total_price
+        total_price : body.total_price,
+        username : body.username,
+        password : body.password,
+        user_type: body.user_type
     })
-    
+    //***basic authentication
+    if(!order.items || !order.total_price || !order.username || !order.password || !order.user_type || order.password.length < 4){
+        return res.status(404).json({message: "Inputs are required"})
+        }
     return res.json({ status: true, order })
 })
 
@@ -44,7 +52,10 @@ app.get('/order/:orderId', async (req, res) => {
 })
 
 app.get('/orders', async (req, res) => {
-    const orders = await orderModel.find()
+    /*Pagination*/
+    const limitVal = req.query.limit || 3;
+    const skipVal = req.query.skip || 0
+    const orders = await orderModel.find().limit(limitVal).skip(skipVal);
 
     return res.json({ status: true, orders })
 })
@@ -79,7 +90,7 @@ app.delete('/order/:id', async (req, res) => {
 })
 
 
-mongoose.connect('mongodb://localhost:27017')
+mongoose.connect('mongodb://127.0.0.1:27017/orders', {UseNewUrlParser: true})
 
 mongoose.connection.on("connected", () => {
 	console.log("Connected to MongoDB Successfully");
