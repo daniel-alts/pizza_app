@@ -17,5 +17,5 @@
 - [x] add pagination to the GET /orders route
 
 **Bonus**
-- [ ] Write integration tests for all the routes
+- [x] Write integration tests for all the routes
 - [x] Refactor the code such that we have routers for orders and users
