@@ -1,5 +1,4 @@
 const userModel = require("../Models/userModel")
-const moment = require('moment')
 const {authenticateRoute} = require("../Middleware/authentication")
 
 const makeUser = async (req, res)=>{
@@ -30,14 +29,46 @@ const getUserById = async (req, res)=>{
 const getUsers = async (req, res)=>{
   await authenticateRoute(req, res)
 
-  const users = await userModel.find()
+   const users = await userModel.find()
 
-  return res.json({status: true, users})
+   return res.json({ status: true, users })
 }
 
+const deleteUser = async (req, res)=>{
+  await authenticateRoute(req, res)
+  const {id} = req.params 
+
+  const user = await userModel.deleteOne({_id: id})
+  
+  return res.json({ status: true, user })
+}
+
+const updateUser = async (req, res)=>{
+  await authenticateRoute(req, res)
+  const { id } = req.params;
+  const { state } = req.body;
+
+  const user = await userModel.findById(id)
+
+  if (!user) {
+      return res.status(404).json({ status: false, order: null })
+  }
+
+  if (state < user.state) {
+      return res.status(422).json({ status: false, order: null, message: 'Invalid operation' })
+  }
+
+  user.state = state;
+
+  await user.save()
+
+  return res.json({ status: true, user })
+}
 
 module.exports = {
   makeUser,
   getUserById,
-  getUsers
+  getUsers,
+  deleteUser,
+  updateUser
 }
