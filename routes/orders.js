@@ -1,5 +1,6 @@
 const express = require('express')
 const orderModel = require('../model/orderModel')
+const authenticateUser =  require('../controller/auth')
 const moment = require('moment');
 const orderRouter = express.Router()
 
@@ -73,7 +74,7 @@ orderRouter.get('/state', async(req,res)=>{
 })
 
 //create an order
-orderRouter.post('/', async (req, res) => {
+orderRouter.post('/', authenticateUser, async (req, res) => {
     const body = req.body;
 
     const total_price = body.items.reduce((prev, curr) => {
@@ -91,7 +92,7 @@ orderRouter.post('/', async (req, res) => {
 })
 
 //update order
-orderRouter.patch('/:id', async (req, res) => {
+orderRouter.patch('/:id', authenticateUser, async (req, res) => {
     const { id } = req.params;
     const { state } = req.body;
 
@@ -114,7 +115,7 @@ orderRouter.patch('/:id', async (req, res) => {
 
 //delete order
 
-orderRouter.delete('/:id', async (req, res) => {
+orderRouter.delete('/:id', authenticateUser, async (req, res) => {
     const { id } = req.params;
 
     const order = await orderModel.deleteOne({ _id: id})
