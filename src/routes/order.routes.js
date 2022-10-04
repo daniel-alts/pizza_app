@@ -8,9 +8,9 @@ const {
 
 const router = Router();
 
-router.post('/order', createOrder);
+router.post('/create', createOrder);
 router.get('/:orderId', getOrders);
-router.patch('/', updateOrder);
+router.patch('/:id', updateOrder);
 router.delete('/:id', deleteOrder);
 router.get('/orders', getOrders);
 

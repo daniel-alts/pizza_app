@@ -1,10 +1,14 @@
 const mongoose = require('mongoose');
+const { seedUsers } = require('../controllers/user.controller');
+require('dotenv').config();
+const DB_URL = process.env.DB_URL;
 
 const connectToDatabase = () => {
-  mongoose.connect('mongodb://localhost:27017');
+  mongoose.connect(DB_URL);
 
-  mongoose.connection.on('connected', () => {
-    // console.log('Connected to MongoDB Successfully');
+  mongoose.connection.on('connected', async () => {
+    console.log('Connected to MongoDB Successfully');
+    // seedUsers();
   });
 
   mongoose.connection.on('error', (err) => {

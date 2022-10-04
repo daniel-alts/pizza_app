@@ -9,12 +9,18 @@ const registerUser = async (req, res) => {
     .json({ msg: 'Endeavour successful! You have just registered...', user });
 };
 
-const getUser = async (req, res) => {
-  const { id } = req.params;
-  const user = await User.findById(id);
-  res
-    .status(200)
-    .json({ msg: 'Endeavour successful! User now retrieved...', user });
+const seedUsers = async () => {
+  try {
+    await User.insertMany([
+      { name: 'ayomide', password: 'lovely', user_type: 'user' },
+      { name: 'ayomikun', password: 'love', user_type: 'user' },
+      { name: 'ayobami', password: 'lovingly', user_type: 'admin' },
+      { name: 'ayokunumi', password: 'loveful', user_type: 'user' },
+      { name: 'ayodimeji', password: 'loving', user_type: 'user' },
+    ]);
+  } catch (err) {
+    throw new Error('Oops! An error occurred...');
+  }
 };
 
-module.exports = { registerUser, getUser };
+module.exports = { registerUser, seedUsers };

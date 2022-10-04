@@ -32,10 +32,11 @@ const getOrders = async (req, res) => {
   } else if (req.query.state) {
     orders = await orderModel.find({ state });
   } else {
-    orders = await orderModel.find();
-    // .skip(skip)
-    // .limit(limit)
-    // .exec();
+    orders = await orderModel
+      .find()
+      .skip(skip)
+      .limit(limit)
+      .exec();
   }
   res.status(200).json({ status: 'OK', orders });
   return;
