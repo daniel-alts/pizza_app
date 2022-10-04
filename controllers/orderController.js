@@ -20,6 +20,18 @@ exports.getAllOrders = async (req, res) => {
       query = query.sort("-created_at"); // Default sorting: starting from the most recent order
     }
 
+    //Pagination
+    const page = req.query.page * 1 || 1; //`*1` converts the string to a number and if the query param is not provided, then the default value is 1
+    const limit = req.query.limit * 1 || 20; //`*1` converts the string to a number and if the query param is not provided, then the default value is 20
+    const skip = (page - 1) * limit;
+    // console.log(page, limit, skip);
+    query = query.skip(skip).limit(limit);
+
+    if (req.query.page) {
+      const numOfOrders = await orderModel.countDocuments();
+      if (skip >= numOfOrders) throw new Error("This page does not exist");
+    }
+
     const orders = await query;
     return res.json({ status: true, orders });
   } catch (error) {
