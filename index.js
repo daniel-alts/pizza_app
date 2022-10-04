@@ -2,6 +2,7 @@ const express = require('express');
 const moment = require('moment');
 const mongoose = require('mongoose');
 const orderModel = require('./orderModel');
+const userModel = require('./userModel')
 
 const PORT = 3334
 
@@ -12,6 +13,10 @@ app.use(express.json());
 
 app.get('/', (req, res) => {
     return res.json({ status: true })
+})
+
+app.post ('/user', async (req, res) => {
+    const body = req.body;
 })
 
 
