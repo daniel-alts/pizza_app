@@ -1,0 +1,90 @@
+[
+    {
+        "items": [{
+        "name": "Pepperoni",
+        "price": 200,
+        "size": "m",
+        "quantity": 1
+        }],
+        "location": "Lagos",
+        "phoneNo": "081819199"
+    },
+
+    {
+        "items": [{
+        "name": "Pepperoni",
+        "price": 3000,
+        "size": "l",
+        "quantity": 2
+        }],
+        "location": "Lagos",
+        "phoneNo": "081819199"
+    },
+
+    {
+        "items": [{
+        "name": "Pepperoni",
+        "price": 1000,
+        "size": "s",
+        "quantity": 3
+        }],
+        "location": "Lagos",
+        "phoneNo": "081819199"
+    },
+    
+    {
+      "items": [{
+        "name": "Extra Cheese",
+        "price": 500,
+        "size": "s",
+        "quantity": 2
+      }],
+      "location": "Enugu",
+      "phoneNo": "0818191878"
+    },
+
+    {
+        "items": [{
+          "name": "Extra Cheese",
+          "price": 2000,
+          "size": "l",
+          "quantity": 5
+        }],
+        "location": "Enugu",
+        "phoneNo": "0818191878"
+    },
+    
+    {
+        "items": [{
+        "name": "Sausage",
+        "price": 1500,
+        "size": "m",
+        "quantity": 2
+        }],
+        "location": "Lagos",
+        "phoneNo": "0918192858"
+    },
+
+    {
+        "items": [{
+        "name": "Sausage",
+        "price": 500,
+        "size": "l",
+        "quantity": 5
+        }],
+        "location": "Lagos",
+        "phoneNo": "0918192858"
+    },
+
+    {
+        "items": [{
+        "name": "Green pepper",
+        "price": 2000,
+        "size": "l",
+        "quantity": 1
+        }],
+        "location": "Lagos",
+        "phoneNo": "0702222858"
+    }
+
+]
