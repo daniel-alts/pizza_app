@@ -4,7 +4,7 @@ const userServices = require('../services/userServices');
 
 const registerUser = async (req, res, next) => {
     try {
-        const user = await userServices.addUser(req.body);
+        const user = await userServices.registerUser(req.body);
         if (user) {
             return res.status(201).json({ status: true, user });
         } else {

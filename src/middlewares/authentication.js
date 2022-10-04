@@ -1,16 +1,21 @@
 const userServices = require('../services/userServices');
 
 
-const basicAuthentication = async (req, res, userTypes) => {
-    const { username, password } = req.headers.authorization;
-    const user = await userServices.findByUsername(username, password);
+const basicAuth = async (req, res, userTypes) => {
+    const encodedAuth = (req.headers.authorization || '').split(' ')[1] || '';
+    const [username, password] = Buffer.from(encodedAuth, 'base64').toString().split(':') || '';
+    const user = await userServices.findByUsername(username);
 
     if (!user) {
-        return res.status(404).json({message: "Invalid username or password."});
+        return res.status(401).json({message: "Invalid username."});
+    }
+
+    if (user.password !== password) {
+        return res.status(401).json({message: "Invalid password."});
     }
 
     if (!(userTypes.includes(user.userType))) {
-        return res.status(401).json({ message: "Request declined. Admin authorization required." });
+        return res.status(401).json({ message: "You're not authorized. Please, contact an admin." });
     }
 }
 
@@ -18,5 +23,5 @@ const basicAuthentication = async (req, res, userTypes) => {
 
 
 module.exports = {
-    basicAuthentication,
+    basicAuth,
 };

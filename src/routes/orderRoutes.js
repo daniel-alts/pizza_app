@@ -1,8 +1,7 @@
 const express = require('express');
 const orderRoutes = express.Router();
-const moment = require('moment');
 const orderController = require('../controllers/orderController');
-const { basicAuthentication } = require('../middlewares/authentication');
+const { basicAuth } = require('../middlewares/authentication');
 
 
 
@@ -10,7 +9,7 @@ const { basicAuthentication } = require('../middlewares/authentication');
 orderRoutes.post('/', 
     async (req, res, next) => {
         try {
-            await basicAuthentication(req, res, ['admin', 'user']); //Sends a response with appropriate message if authentication fails
+            await basicAuth(req, res, ['admin', 'user']); 
             next();
         } catch(error) {
             next(error);
@@ -30,7 +29,7 @@ orderRoutes.post('/',
 orderRoutes.get('/:orderId', 
     async (req, res, next) => {
         try {
-            await basicAuthentication(req, res, ['admin', 'user']); //Sends a response with appropriate message if authentication fails
+            await basicAuth(req, res, ['admin', 'user']); 
             next();
         } catch(error) {
             next(error);
@@ -61,7 +60,7 @@ orderRoutes.get('/:orderId',
 orderRoutes.get('/',
     async (req, res, next) => {
         try {
-            await basicAuthentication(req, res, ['admin']); //Sends a response with appropriate message if authentication fails
+            await basicAuth(req, res, ['admin']); 
             next();
         } catch(error) {
             next(error);
@@ -85,7 +84,7 @@ orderRoutes.get('/',
 orderRoutes.patch('/:id',
     async (req, res, next) => {
         try {
-            await basicAuthentication(req, res, ['admin']); //Sends a response with appropriate message if authentication fails
+            await basicAuth(req, res, ['admin']); 
             next();
         } catch(error) {
             next(error);
@@ -125,7 +124,7 @@ orderRoutes.patch('/:id',
 orderRoutes.delete('/:id', 
     async (req, res, next) => {
         try {
-            await basicAuthentication(req, res, ['admin']); //Sends a response with appropriate message if authentication fails
+            await basicAuth(req, res, ['admin']); 
             next();
         } catch(error) {
             next(error);

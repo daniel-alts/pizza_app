@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 const timestamps = (schema) => {
     //Add create and update time to the schema
     schema.add({
@@ -5,13 +7,13 @@ const timestamps = (schema) => {
         updatedAt: Date
     });
 
-    //Set create and update time to now
+    //Set time created/updated on each save.
     schema.pre('save', function(next) {
-        this.updatedAt = Date.now();
+        this.updatedAt = moment().toDate();
 
         //Run only at the initialization of the current record
         if (!this.createdAt) {
-            this.createdAt = Date.now();
+            this.createdAt = moment().toDate();
         }
         next();
     })

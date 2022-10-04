@@ -1,21 +1,19 @@
 const userModel = require('../models/userModel');
 const UserModel = require('../models/userModel');
-const validator = require('validator');
+const { deleteUnrequiredProperty } = require('../utils');
 
 
 
-const addUser = async (user) => {
-    await UserModel.create(user);
+const registerUser = async (user) => {
+    let newUser = await UserModel.create(user);
+    deleteUnrequiredProperty(newUser, 'password');
+    return newUser;
 }
 
 
-const findByUsername = async (loginDetails) => {
-    const { username, password } = loginDetails;
-    
+const findByUsername = async (username) => {
     const user = await UserModel.find({ username });
-    if (user.password == password) {
-        return user;
-    } else return null;
+    return user;
 }
     
 
@@ -30,6 +28,6 @@ const findByUsername = async (loginDetails) => {
 
 
 module.exports = {
-    addUser,
+    registerUser,
     findByUsername,
 }
