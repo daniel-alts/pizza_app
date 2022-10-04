@@ -2,7 +2,10 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
+const { userSchema } = require('./userModel')
+
 const OrderSchema = new Schema({
+  _id: Number,
   state: { 
     type: Number, 
     default: 1 
@@ -26,7 +29,8 @@ const OrderSchema = new Schema({
     required: true
   },
   created_at: Date,
-  updated_at: Date
+  updated_at: Date,
+  user: userSchema
 });
 
 const Order = mongoose.model('Order', OrderSchema);

@@ -1,25 +1,35 @@
 const orderModel = require('../models/orderModel');
+const moment = require('moment')
 
 async function addOrder(req, res) {
     const body = req.body;
-
+    const countUsers = await orderModel.count({})
+    if (countUsers == 0) body._id = 1
+    else body._id = countUsers + 1
     const total_price = body.items.reduce((prev, curr) => {
-        prev += curr.price
+        prev += curr.price * curr.quantity
         return prev
     }, 0);
 
     const order = await orderModel.create({ 
+        _id: body._id,
         items: body.items,
         created_at: moment().toDate(),
-        total_price
+        total_price,
+        location: body.location,
+        phoneNo: body.phoneNo,
+        user: res.locals.user
     })
     
-    return res.json({ status: true, order })
+    return res.json({ status: true, order: {items: order.items, total_price: order.total_price} })
 }
 
 async function getOrder(req, res) {
-    const orders = await orderModel.find()
+    let orders = await orderModel.find({user: res.locals.user})
 
+    if (Array.isArray(orders)) {
+        orders = orders.map(order => ({_id: order._id, state: order.state, total_price: order.total_price, items: order.items}))
+    }
     return res.json({ status: true, orders })
 }
 
@@ -31,13 +41,16 @@ async function getOrderById(req, res) {
         return res.status(404).json({ status: false, order: null })
     }
 
-    return res.json({ status: true, order })
+    if (order.user.email != res.locals.user.email) return res.status(404).json({ status: false, order: "Wrong id" })
+
+    const {_id, state, total_price, items} = order
+
+    return res.json({ status: true, order: {_id, state, total_price, items} })
 }
 
 async function updateOrderById(req, res) {
     const { id } = req.params;
     const { state } = req.body;
-
     const order = await orderModel.findById(id)
 
     if (!order) {
