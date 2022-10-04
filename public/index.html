@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pizza App</title>
+</head>
+<body>
+  <h1>Welcome to the Pizza App!</h1>
+  <h2>User Routes:</h2>
+  <ul>
+    <li>POST /users/register: create a user</li>
+    <br />
+    Admins only:
+    <li>GET /users: get all users</li>
+  </ul>
+  <h2>Order Routes:</h2>
+  <ul>
+    <li>GET /order: get all orders</li>
+    <li>GET /order/:orderId: get all orders</li>
+    <li>POST /order: create an order</li>
+    <br />
+    Admins only:
+    <li>PATCH /order/:id: edit an order</li>
+    <li>DELETE /order/:id: delete an order</li>
+  </ul>
+</body>
+</html>
