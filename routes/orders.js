@@ -54,7 +54,7 @@ orderRouter.get('/price', async(req,res)=>{
     return res.status(200).json({status: true, orders})
 })
 
-//sort by data created
+//sort by date created
 orderRouter.get('/date', async(req,res)=>{
     if (req.query.sort == "asc"){
         const orders = await orderModel.find().sort({created_at:1})
@@ -62,6 +62,14 @@ orderRouter.get('/date', async(req,res)=>{
     }
     const orders = await orderModel.find().sort({created_at:-1})
     return res.status(200).json({status: true, orders})
+})
+
+//sort by state
+orderRouter.get('/state', async(req,res)=>{
+    const queryState =  req.query.state
+    const orders = await orderModel.find({state: queryState})
+    return res.status(200).json({status: true, orders})
+
 })
 
 //create an order
