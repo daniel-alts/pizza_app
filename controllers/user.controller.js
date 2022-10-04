@@ -23,7 +23,7 @@ async function loginUser(req, res) {
 		req.session.user = user;
 		return res.send(user);
 	} else {
-		return res.send("wrong ID or password");
+		return res.status(401).send("wrong ID or password");
 	}
 }
 
