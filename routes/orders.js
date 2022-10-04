@@ -5,9 +5,29 @@ const orderRouter = express.Router()
 
 //get all orders
 orderRouter.get('/', async (req, res) => {
-    const orders = await orderModel.find()
 
-    return res.json({ status: true, orders })
+    //setting number of orderss to be shown on a page
+    const {page= 1, limit = 5}= req.query
+
+    try{
+        const orders = await orderModel.find()
+            .limit(limit * 1)
+            .skip((page-1) * limit)
+            .exec()
+
+        const count = await orderModel.countDocuments()
+
+        return res.json({
+            status: true,
+            orders,
+            totalPages: Math.ceil(count / limit),
+            page: page
+        })
+    }catch (err){
+        console.log(err)
+    }
+
+
 })
 
 //get one order
