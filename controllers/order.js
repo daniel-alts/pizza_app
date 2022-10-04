@@ -25,7 +25,26 @@ async function addOrder(req, res) {
 }
 
 async function getOrder(req, res) {
-    let orders = await orderModel.find({user: res.locals.user})
+    let orders 
+    if (req.query?.sort_by) {
+        // console.log("hello")
+        let {sort_by, order = "asc"} = req.query
+
+        let allOrders = {
+            asc: 1,
+            desc: -1,
+        }
+
+        if (sort_by.includes(",")) {
+            sort_by = sort_by.split(",")
+            orders = await orderModel.find({user: res.locals.user}).sort({[ sort_by[0] ]: allOrders[order], [ sort_by[1] ]: allOrders[order]})
+        } else {
+            orders = await orderModel.find({user: res.locals.user}).sort({[ sort_by ]: allOrders[order]})
+        }
+    } else {
+        orders = await orderModel.find({user: res.locals.user})
+    }
+    
 
     if (Array.isArray(orders)) {
         orders = orders.map(order => ({_id: order._id, state: order.state, total_price: order.total_price, items: order.items}))
