@@ -3,8 +3,6 @@ const mongoose = require("mongoose");
 const orderModel = require("../models/orderModel");
 const orderController = require("../controllers/orderController");
 
-// jest.setTimeout(20000); // resets Jest timeout time allow for execution.
-
 // Creates mondodb connection before each testing
 beforeEach(async () => {
 	try {
@@ -425,7 +423,7 @@ describe("GETS ALL ORDERS ", () => {
 		await orderController.getOrders(req, res);
 	});
 
-	it("MAKES A REQ TO GET ALL ORDERS SORTED BY DATE", async () => {
+	it("MAKES A REQ TO GET ALL ORDERS SORTED BY DATE / PRICE", async () => {
 		const orders = await orderModel.create(
 			{
 				items: [
@@ -463,60 +461,6 @@ describe("GETS ALL ORDERS ", () => {
 
 		const query = {
 			date: "asc",
-		};
-
-		req = {
-			query,
-		};
-		res = {
-			status(status) {
-				expect(status).toBe(200);
-			},
-			json(data) {
-				expect(data.orders).toBeDefined();
-			},
-		};
-
-		await orderController.getOrders(req, res);
-	});
-
-	it("MAKES A REQ TO GET ALL ORDERS SORTED BY PRICE", async () => {
-		const orders = await orderModel.create(
-			{
-				items: [
-					{
-						name: "chicken soup",
-						price: 2500,
-						size: "m",
-						quantity: 2,
-					},
-				],
-			},
-			{
-				state: "2",
-				items: [
-					{
-						name: "Beef soup",
-						price: 1500,
-						size: "m",
-						quantity: 2,
-					},
-				],
-			},
-			{
-				state: "3",
-				items: [
-					{
-						name: "Turkey soup",
-						price: 500,
-						size: "m",
-						quantity: 5,
-					},
-				],
-			}
-		);
-
-		const query = {
 			price: "asc",
 		};
 
