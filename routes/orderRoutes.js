@@ -19,4 +19,16 @@ router
 	.route('/state')
 	.get(Auth, orderController.sortByState, orderController.getOrders);
 
+router
+	.route('/total-price')
+	.get(
+		Auth,
+		orderController.sortByTotalPrice,
+		orderController.getOrders,
+	);
+
+router
+	.route('/dateCreated')
+	.get(Auth, orderController.sortByDate, orderController.getOrders);
+
 module.exports = router;

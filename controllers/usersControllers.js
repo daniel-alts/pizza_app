@@ -18,5 +18,3 @@ exports.updateUser = Catch_Async(async (req, res) => {
 	});
 	new ResponseHandler(res, user, 200);
 });
-
-// s

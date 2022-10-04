@@ -6,8 +6,9 @@ router.route('/signup').post(auth.Register);
 
 router.route('/login').post(auth.Login);
 
-// router.route('/:id').get(userController);
-// router.route('/:id').patch(userController);
-// router.route('/:delete').patch(userController);
+router
+	.route('/:id')
+	.delete(userController.deleteUser)
+	.patch(userController.updateUser);
 
 module.exports = router;

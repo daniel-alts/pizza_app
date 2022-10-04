@@ -8,12 +8,35 @@ const Catch_Async = require('../utils/catchAsync');
 // DO NOT EDIT
 let order;
 
-// !sort by T Price
+//!	 sort by date
+exports.sortByDate = async (req, res, next) => {
+	if (req.curUser.role !== 'Admin')
+		next(
+			new AppError(
+				'Admin Privileges only, Cannot access resources',
+				403,
+			),
+		);
+
+	req.query.sort = '-created_at';
+	next();
+};
+
+// !sort by Total Price
 exports.sortByTotalPrice = async (req, res, next) => {
+	if (req.curUser.role !== 'Admin')
+		next(
+			new AppError(
+				'Admin Privileges only, Cannot access resources',
+				403,
+			),
+		);
+
 	req.query.sort = '-total_price';
 	next();
 };
 
+// ! sort by state
 exports.sortByState = async (req, res, next) => {
 	if (req.curUser.role !== 'Admin')
 		next(
