@@ -32,7 +32,7 @@ orderRouter.get('/', async (req, res) => {
 })
 
 //get one order
-orderRouter.get('/:orderId', async (req, res) => {
+orderRouter.get('/order/:orderId', async (req, res) => {
     const { orderId } = req.params;
     const order = await orderModel.findById(orderId)
 
@@ -41,6 +41,17 @@ orderRouter.get('/:orderId', async (req, res) => {
     }
 
     return res.json({ status: true, order })
+})
+
+
+//sort by total price
+orderRouter.get('/price', async(req,res)=>{
+    if (req.query.sort == "asc"){
+        const orders = await orderModel.find().sort({total_price:1})
+        return res.status(200).json({status: true, orders})
+    }
+    const orders = await orderModel.find().sort({total_price:-1})
+    return res.status(200).json({status: true, orders})
 })
 
 //create an order
