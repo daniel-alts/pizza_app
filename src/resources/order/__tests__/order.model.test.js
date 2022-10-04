@@ -13,7 +13,7 @@ describe('Order model', () => {
 			const created_at =
 				Order.schema.obj.created_at
 			expect(created_at).toEqual({
-				type: mongoose.Schema.ObjectId,
+				type: Date,
                 default: Date,
                 ref: 'user'
 			})

@@ -17,11 +17,10 @@ const createOrder =
 				.status(201)
 				.json({ data: order })
 		} catch (err) {
-			res
-				.status(500)
-				.json({
-					error: 'Error creating order',
-				})
+            console.log(err)
+			res.status(500).json({
+				error: 'Error creating order',
+			})
 		}
 	}
 
@@ -59,13 +58,30 @@ const checkAllOrder =
 					.status(403)
 					.send({ message: 'forbidden' })
 			}
-			const orders = await model.find()
-			console.log(orders)
+            const orders = await model.find()
+
+			const { price, date } = req.query
+
+            console.log('line 65 ->', price)
+			if (price || date) {
+                console.log('line 67 ->', price)
+                try{
+                    
+                    const data = orders.sortOrder(price || date)
+                    return res.status(200).json({ data: data })
+                } catch (err) {
+                    console.log(err)
+                }
+                
+                
+				// return res.status(200).json({ data: newOrder })
+			}
+
+
 			return res
 				.status(200)
 				.json({ data: orders })
 		} catch (err) {
-			console.log(err)
 			return res.status(404)
 		}
 	}
