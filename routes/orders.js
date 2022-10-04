@@ -5,9 +5,10 @@ const orderRouter = express.Router()
 
 //get all orders
 orderRouter.get('/', async (req, res) => {
-
+    
     //setting number of orderss to be shown on a page
-    const {page= 1, limit = 5}= req.query
+    const page= req.query.page
+    const limit = req.query.limit
 
     try{
         const orders = await orderModel.find()

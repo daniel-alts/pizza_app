@@ -14,9 +14,9 @@ userRouter.get('/', async(req,res) =>{
 //create user
 userRouter.post('/', async (req, res) => {
     const body = req.body
-    const emailExists = await userModel.find({ 'name.last': 'Ghost' });
+    const emailExists = await userModel.findOne({ email: `${body.email}` });
 
-    if (emailExists){
+    if (emailExists != null){
         return res.status(409).json({ status: false, message: "User already exists" })
     }
         
