@@ -54,6 +54,16 @@ orderRouter.get('/price', async(req,res)=>{
     return res.status(200).json({status: true, orders})
 })
 
+//sort by data created
+orderRouter.get('/date', async(req,res)=>{
+    if (req.query.sort == "asc"){
+        const orders = await orderModel.find().sort({created_at:1})
+        return res.status(200).json({status: true, orders})
+    }
+    const orders = await orderModel.find().sort({created_at:-1})
+    return res.status(200).json({status: true, orders})
+})
+
 //create an order
 orderRouter.post('/', async (req, res) => {
     const body = req.body;
