@@ -20,7 +20,7 @@ app.use('/orders',orderRouter);
 app.use('/users',userRouter);
 
 
-mongoose.connect('mongodb+srv://omotega:pulisic22@cluster0.7jjoo.mongodb.net/?retryWrites=true&w=majority');
+mongoose.connect(process.env.MONGO_URI);
 
 mongoose.connection.on("connected", () => {
 	console.log("Connected to MongoDB Successfully");
