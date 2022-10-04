@@ -2,7 +2,7 @@ const orderModel = require("../models/orderModel");
 const moment = require("moment");
 
 const getOrders = async (req, res, next) => {
-	const { price, state } = req.query;
+	const { price, state, date } = req.query;
 	let orders;
 	if (price) {
 		const value =
@@ -16,6 +16,17 @@ const getOrders = async (req, res, next) => {
 			.sort({ total_price: value });
 		return res.json({ status: true, orders });
 	} else if (state) {
+		const value =
+			state === "asc"
+				? 1
+				: state === "desc"
+				? -1
+				: false;
+		const orders = await orderModel
+			.find({})
+			.sort({ state: value });
+		return res.json({ status: true, orders });
+	} else if (date) {
 		const value =
 			state === "asc"
 				? 1
