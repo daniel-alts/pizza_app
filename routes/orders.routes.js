@@ -38,7 +38,7 @@ orderRoute.get("/:orderId", basicOauth, async (req, res) => {
 // get order routes
 orderRoute.get("/", basicOauth, async (req, res) => {
   // get sorting values from query params if available
-  const { price, date } = req.query;
+  const { price, date, count = 2, page_no = 0 } = req.query;
   let sortBy = {};
   let orders;
 
@@ -50,10 +50,20 @@ orderRoute.get("/", basicOauth, async (req, res) => {
     if (sortVal) sortBy = { created_at: sortVal };
   }
 
-  if (!sortBy) {
-    orders = await orderModel.find();
-  } else {
-    orders = await orderModel.find({}).sort(sortBy);
+  if (JSON.stringify(sortBy) === '{}') {
+    orders = await orderModel
+      .find()
+      .limit(parseInt(count))
+      .skip(page_no * count)
+      .exec();
+    } else {
+      orders = await orderModel
+      .find({})
+      .sort(sortBy)
+      .find()
+      .limit(parseInt(count))
+      .skip(page_no * count)
+      .exec();
   }
 
   return res.json({ status: true, orders });
