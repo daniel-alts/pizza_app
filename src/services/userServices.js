@@ -20,7 +20,7 @@ const registerUser = async (userDetails) => {
 
 
 const findByUsername = async (username) => {
-    const user = await UserModel.find({ username });
+    const user = await UserModel.findOne({ username });
     return user;
 }
     

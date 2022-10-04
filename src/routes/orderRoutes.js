@@ -9,15 +9,20 @@ const { basicAuth } = require('../middlewares/authentication');
 orderRoutes.post('/', 
     async (req, res, next) => {
         try {
-            await basicAuth(req, res, ['admin', 'user']); 
-            next();
+            const authPassed = await basicAuth(req, ['admin', 'user']); 
+            if (!authPassed) {
+                return res.status(401).json({ message: req.ERROR_MESSAGE }) //ERROR_MESSAGE was added to req object in the basicAuth middleware
+            } else {
+                next();
+            }
         } catch(error) {
             next(error);
         }
     }, 
     async (req, res, next) => {
         try {
-            await orderController.createOrder(req, res, req.body);
+            const orderDetails = req.body;
+            await orderController.createOrder(req, res, orderDetails);
         } catch(error) {
             next(error);
         }
@@ -29,8 +34,12 @@ orderRoutes.post('/',
 orderRoutes.get('/:orderId', 
     async (req, res, next) => {
         try {
-            await basicAuth(req, res, ['admin', 'user']); 
-            next();
+            const authPassed = await basicAuth(req, ['admin', 'user']); 
+            if (!authPassed) {
+                return res.status(401).json({ message: req.ERROR_MESSAGE }) //ERROR_MESSAGE was added to req object in the basicAuth middleware
+            } else {
+                next();
+            }
         } catch(error) {
             next(error);
         }
@@ -60,8 +69,12 @@ orderRoutes.get('/:orderId',
 orderRoutes.get('/',
     async (req, res, next) => {
         try {
-            await basicAuth(req, res, ['admin']); 
-            next();
+            const authPassed = await basicAuth(req, ['admin']); 
+            if (!authPassed) {
+                return res.status(401).json({ message: req.ERROR_MESSAGE }) //ERROR_MESSAGE was added to req object in the basicAuth middleware
+            } else {
+                next();
+            }
         } catch(error) {
             next(error);
         }
@@ -84,8 +97,12 @@ orderRoutes.get('/',
 orderRoutes.patch('/:id',
     async (req, res, next) => {
         try {
-            await basicAuth(req, res, ['admin']); 
-            next();
+            const authPassed = await basicAuth(req, ['admin']); 
+            if (!authPassed) {
+                return res.status(401).json({ message: req.ERROR_MESSAGE }) //ERROR_MESSAGE was added to req object in the basicAuth middleware
+            } else {
+                next();
+            }
         } catch(error) {
             next(error);
         }
@@ -124,8 +141,12 @@ orderRoutes.patch('/:id',
 orderRoutes.delete('/:id', 
     async (req, res, next) => {
         try {
-            await basicAuth(req, res, ['admin']); 
-            next();
+            const authPassed = await basicAuth(req, ['admin']); 
+            if (!authPassed) {
+                return res.status(401).json({ message: req.ERROR_MESSAGE }) //ERROR_MESSAGE was added to req object in the basicAuth middleware
+            } else {
+                next();
+            }
         } catch(error) {
             next(error);
         }

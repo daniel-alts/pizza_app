@@ -4,14 +4,13 @@ const moment = require('moment');
 
 
 const createOrder = async (orderDetails) => {
-    const { items } = orderDetails.items;
-    const total_price = items.reduce((prev, curr) => {
+    const total_price = orderDetails.items.reduce((prev, curr) => {
         prev += curr.price
         return prev
     }, 0);
 
     const order = await OrderModel.create({ 
-        items: orderDetails,
+        items: orderDetails.items,
         created_at: moment().toDate(),
         total_price
     });

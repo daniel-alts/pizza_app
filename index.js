@@ -11,8 +11,8 @@ const app = express()
 //APPLICATION LEVEL MIDDLEWARES
 app.use(express.json());
 //Routes
-app.use('/order', orderRoutes);
-app.use('/user', userRoutes);
+app.use('/orders', orderRoutes);
+app.use('/users', userRoutes);
 
 
 
@@ -24,14 +24,14 @@ app.get('/', (req, res) => {
 app.use((error, req, res, next) => {
     console.log(error);
     if (error.type == "Bad Request") {
-        res.status(400).json({ status: false, message: "An error occured."} )
+        return res.status(400).json({ status: false, message: "An error occured."} )
     }
     next();
 });
 
 
 app.get('*', (req, res) => {
-    res.status(404).json({ status: false, message: "Page Not Found"});
+    return res.status(404).json({ status: false, message: "Page Not Found"});
 });
 
 
