@@ -13,7 +13,8 @@ const getOrders = async (req, res) => {
 					: false;
 			const orders = await orderModel
 				.find({})
-				.sort({ total_price: value });
+				.sort({ total_price: value })
+				.limit(5);
 			return res.json({ status: true, orders });
 		} else if (state) {
 			const value =
@@ -24,7 +25,8 @@ const getOrders = async (req, res) => {
 					: false;
 			const orders = await orderModel
 				.find({})
-				.sort({ state: value });
+				.sort({ state: value })
+				.limit(5);
 			return res.json({ status: true, orders });
 		} else if (date) {
 			const value =
@@ -35,13 +37,16 @@ const getOrders = async (req, res) => {
 					: false;
 			const orders = await orderModel
 				.find({})
-				.sort({ state: value });
+				.sort({ state: value })
+				.limit(5);
 			return res.json({ status: true, orders });
 		}
 	}
 
 	if (!orders) {
-		const orders = await orderModel.find({});
+		const orders = await orderModel
+			.find({})
+			.limit(5);
 		return res.json({ status: true, orders });
 	}
 };

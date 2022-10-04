@@ -25,7 +25,6 @@ OrderSchema.pre("save", async function (next) {
 	await order.items.reduce((prev, curr) => {
 		prev += curr.price * curr.quantity;
 		order.total_price = prev;
-		
 		next();
 	}, 0);
 });
