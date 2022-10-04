@@ -2,7 +2,7 @@ require ("dotenv").config();
 const jwt = require("jsonwebtoken");
 
 // MIDDLEWARE FOR AUTHORIZATION (MAKING SURE THEY ARE LOGGED IN)
-const isLoggedIn = async (req, res, nest) => {
+const isLoggedIn = async (req, res, next) => {
     try {
         // check if auth header exists
         if (req.headers.authorization) {
@@ -11,7 +11,7 @@ const isLoggedIn = async (req, res, nest) => {
             if (token) {
                 const payload = await jwt.verify(token, process.env.SECRET);
                 if (payload) {
-                    // store user dats in req onject
+                    // store user data in req onject
                     req.user = payload;
                     next()
                 } else {
@@ -29,4 +29,4 @@ const isLoggedIn = async (req, res, nest) => {
 };
 
 // export custom middleware
-module.exports = {isLoggedIn,};
+module.exports = {isLoggedIn};

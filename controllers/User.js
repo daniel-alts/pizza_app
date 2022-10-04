@@ -4,10 +4,12 @@ require("dotenv").config();
 
 // imports router from express
 const { Router } = require("express");
+const { user_type } = require("./roles")
 // import bcrypt to hash passwords
 const bcrypt = require("bcryptjs");
 // import jwt to sign tokens
 const jwt = require("jsonwebtoken");
+// const { isLoggedIn } = require("./middleware");
 
 // creates router to create route bundle
 const router = Router();
@@ -45,7 +47,7 @@ router.post("/login", async (req, res) => {
     try {
         // check if user exists
         const user = await User.findOne ({
-            userName: req.body.userName 
+            username: req.body.username 
         });
         if (user) {
             //check if password matches user
@@ -54,7 +56,7 @@ router.post("/login", async (req, res) => {
             if(response) {
                 // sign token and send it in the response
                 const token = await jwt.sign (
-                    { userName: user.userName },
+                    { username: user.username },
                     SECRET
                 )
                 res.json({ token });
@@ -70,7 +72,7 @@ router.post("/login", async (req, res) => {
 });
 
 
-router.delete("/delete/:id", async (req, res) => {
+router.delete("/delete/:id", user_type, async (req, res) => {
     try {
       // First find the user admin wants to delete
       const user = await User.findById(req.params.id) // getting id from the id you put in url
@@ -85,12 +87,5 @@ router.delete("/delete/:id", async (req, res) => {
       res.sendStatus(500);
     }
   });
-// router.delete('/users/:id', async (req, res) => {
-//     const { id } = req.params;
-
-//     const deleteUser = await User.deleteOne({_id: id})
-
-//     return res.json({ status: true, deleteUser })
-// })
 
 module.exports = router

@@ -5,8 +5,9 @@ const ObjectId = Schema.ObjectId;
 
 const OrderSchema = new Schema({
   id: ObjectId,
+  uid: String,
   created_at: Date,
-  // state can be pending, inprogess, delivered
+  // state can be pending, in-progress, delivered
   state: { type: Number, default: 1 },
   items: [{
     name: String,

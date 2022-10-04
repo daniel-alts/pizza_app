@@ -6,10 +6,8 @@ const ObjectId = Schema.ObjectId;
 
 const UserSchema = new Schema ({
     id: ObjectId,
-    userName: {
+    username: {
         type: String, 
-        minLength: 7,
-        maxLength: 20,
         required: true,
         unique: true,
     },
@@ -48,7 +46,6 @@ const UserSchema = new Schema ({
         minLength: 8,
         maxLength: 100,
         required: true,
-        unique: true
     },
     user_type: {
         type: String,
@@ -56,13 +53,12 @@ const UserSchema = new Schema ({
         enum: ["admin", "user"],
         required: true
     }
-    // holds jwt web token
 }, {timestamps: true});
 
 // {timestamps: true} option creates a createdAt and updatedAt field on our models
 // that contain timestamps which will get automatically updated when our model changes. 
-UserSchema.plugin(uniqueValidator);
 const User = mongoose.model('User', UserSchema);
+UserSchema.plugin(uniqueValidator);
 module.exports = User;
 
 

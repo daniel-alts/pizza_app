@@ -2,16 +2,16 @@ require("dotenv").config() // load .env variables
 const express = require('express');
 const database = require("./database");
 const moment = require('moment');
-const mongoose = require('mongoose');
 const orderModel = require('./models/orderModel');
 const userModel = require('./models/userModel');
+const itemModel = require('./models/itemModel');
 const morgan = require("morgan") //import morgan
 const {log} = require("mercedlogger") // import mercedlogger's log function
 const cors = require("cors") // import cors
 const UserRouter = require("./controllers/User")
 const OrderRouter = require("./controllers/Order") // import Todo Routes
-// const bodyParser = require('body-parser');
 const {isLoggedIn} = require("./controllers/middleware");
+const { user_type } = require("./controllers/roles");
 const User = require("./models/userModel");
 // const { rawListeners } = require("./models/userModel");
 
@@ -38,17 +38,35 @@ app.get('/home', (req, res) => {
 
 // done
 app.use("/user", UserRouter) // send all "/user" requests to UserRouter for routing
-// app.use("/order", OrderRouter) // send all "/orders" requests to OrderRouter for routing
+app.use("/order", OrderRouter) // send all "/orders" requests to OrderRouter for routing
 
 // done
 app.get('/users', async (req, res) => {
-    const users = await userModel.find()
+    const users = await userModel.find().sort().limit(5)
 
     return res.json({ status: true, users })
 })
 
 // done
-app.post('/order', async (req, res) => {
+app.get('/pizza', async (req, res) => {
+    const items = await itemModel.find().sort()
+
+    return res.json({ status: true, items })
+})
+
+// done
+app.post('/new/pizza', isLoggedIn, async (req, res) => {
+    const body = req.body;
+
+    const items = await itemModel.create({ 
+        item: body.item
+    })
+
+    return res.json({ status: true, items })
+})
+
+// done
+app.post('/order', isLoggedIn, async (req, res) => {
     // returns the new order
     const body = req.body;
 
@@ -61,9 +79,10 @@ app.post('/order', async (req, res) => {
 
     // async request
     const order = await orderModel.create({ 
+        uid: body.uid,
         items: body.items,
         created_at: moment().toDate(),
-        total_price
+        total_price: total_price
     })
     
     return res.json({ status: true, order })
@@ -71,7 +90,7 @@ app.post('/order', async (req, res) => {
 
 
 // done
-app.get('/order/:orderId', async (req, res) => {
+app.get('/order/:orderId', isLoggedIn, async (req, res) => {
     const { orderId } = req.params;
     const order = await orderModel.findById(orderId)
 
@@ -83,15 +102,27 @@ app.get('/order/:orderId', async (req, res) => {
 })
 
 // done
-app.get('/orders', async (req, res) => {
-    const orders = await orderModel.find()
+app.get('/order', isLoggedIn, async (req, res) => {
+    const orders = await orderModel.find().sort().limit(5)
+
+    return res.json({ status: true, orders })
+})
+
+//done
+app.get('/order/uid/:uid', isLoggedIn, async (req, res) => {
+    const { uid } = req.params;
+    const orders = await orderModel.find({ uid: uid})
+    if (!orders) {
+        return res.status(404).json({ status: false, order: null })
+    }
+    
 
     return res.json({ status: true, orders })
 })
 
 
 // done
-app.patch('/order/:id', async (req, res) => {
+app.patch('/order/:id', isLoggedIn, user_type, async (req, res) => {
     const { id } = req.params;
     const { state } = req.body;
 
@@ -113,13 +144,19 @@ app.patch('/order/:id', async (req, res) => {
 })
 
 // done
-app.delete('/order/:id', async (req, res) => {
+app.delete('/order/:id', isLoggedIn, user_type, async (req, res) => {
     const { id } = req.params;
     
     const order = await orderModel.deleteOne({ _id: id})
 
     return res.json({ status: true, order })
 })
+
+// Handling Error
+// process.on("unhandledRejection", err => {
+//     console.log(`An error occurred: ${err.message}`)
+//     server.close(() => process.exit(1))
+// })
 
 app.listen(PORT, () => log.green("SERVER STATUS", `Listening on port ${PORT}`))
 

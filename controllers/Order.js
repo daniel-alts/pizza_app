@@ -4,6 +4,7 @@ const { Router } = require("express");
 const Order = require("../models/orderModel");
 // import isLoggedIn custom middleware
 const { isLoggedIn } = require("./middleware");
+const { user_type } = require("./roles")
 
 const router = Router();
 
@@ -41,20 +42,20 @@ router.get("/:id", isLoggedIn, async (req,res) => {
 router.post("/", isLoggedIn, async (req, res) => {
     const { username } = req.user; // get username from req.user property created by isLoggedIn middleware
     req.body.username = username; // add username property to req.body
-    //create new todo and send it in response
+    //create new order and send it in response
     res.json(
-      await Todo.create(req.body).catch((error) =>
+      await Order.create(req.body).catch((error) =>
         res.status(400).json({ error })
       )
     );
   });
   
   // update Route with isLoggedIn middleware
-  router.put("/:id", isLoggedIn, async (req, res) => {
+  router.put("/:id", isLoggedIn, user_type, async (req, res) => {
     const { username } = req.user; // get username from req.user property created by isLoggedIn middleware
     req.body.username = username; // add username property to req.body
     const _id = req.params.id;
-    //update todo with same id if belongs to logged in User
+    //update order with same id if belongs to logged in User
     res.json(
       await Order.updateOne({ username, _id }, req.body, { new: true }).catch(
         (error) => res.status(400).json({ error })
@@ -63,10 +64,10 @@ router.post("/", isLoggedIn, async (req, res) => {
   });
   
   // update Route with isLoggedIn middleware
-  router.delete("/:id", isLoggedIn, async (req, res) => {
+  router.delete("/:id", isLoggedIn, user_type, async (req, res) => {
     const { username } = req.user; // get username from req.user property created by isLoggedIn middleware
     const _id = req.params.id;
-    //remove todo with same id if belongs to logged in User
+    //remove order with same id if belongs to logged in User
     res.json(
       await Order.remove({ username, _id }).catch((error) =>
         res.status(400).json({ error })

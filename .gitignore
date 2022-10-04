@@ -1,1 +1,4 @@
 node_modules
+PORT=3334
+MONGODB_URI=mongodb+srv://silver:Silverobinna25@cluster0.l09gmjw.mongodb.net/pizza_app?retryWrites=true&w=majority
+SECRET=Silverobinna25
