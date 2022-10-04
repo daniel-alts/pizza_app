@@ -1,19 +1,32 @@
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
 
 const OrderSchema = new Schema({
-  id: ObjectId,
-  created_at: Date,
-  state: { type: Number, default: 1 },
+  state: { 
+    type: Number, 
+    default: 1 
+  },
   total_price: Number,
   items: [{
     name: String,
     price: Number,
-    size: { type: String, enum: ['m', 's', 'l']},
+    size: { 
+      type: String, 
+      enum: ['m', 's', 'l']
+    },
     quantity: Number,
-  }]
+  }],
+  location: {
+    type: String,
+    required: true
+  },
+  phoneNo: {
+    type: String,
+    required: true
+  },
+  created_at: Date,
+  updated_at: Date
 });
 
 const Order = mongoose.model('Order', OrderSchema);
