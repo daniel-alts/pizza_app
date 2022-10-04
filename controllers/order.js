@@ -32,7 +32,7 @@ async function getAllOrders(req, res){
         }
 
         const orders = await query;
-        res.json({ status: true, orders })
+        res.status(200).json({ status: true, orders })
         
   
    
@@ -55,7 +55,7 @@ async function getOrderById(req, res){
         return res.status(404).json({ status: false, order: null })
     }
 
-        return res.json({ status: true, order })
+        return res.status(200).json({ status: true, order })
     }catch(err){
         res.status(500).json({
         status: 'Failed',
@@ -81,7 +81,7 @@ async function addOrder(req, res){
     })
     order.save()
     
-    return res.json({ status: true, order })
+    return res.status(201).json({ status: true, order })
     }
     catch(err){
         res.status(500).json({
