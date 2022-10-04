@@ -28,7 +28,7 @@ const getOrders = async (req, res) => {
   if (sort_by == 'total_price') {
     orders = await orderModel.find().sort({ total_price: -1 });
   } else if (sort_by == 'created_at') {
-    orders = await orderModel.find().sort({ createdAt: -1 });
+    orders = await orderModel.find().sort({ created_at: -1 });
   } else if (req.query.state) {
     orders = await orderModel.find({ state });
   } else {
@@ -55,23 +55,8 @@ const getOneOrder = async (req, res) => {
 
 const updateOrder = async (req, res) => {
   const { id } = req.params;
-  // console.log(id);
-  // const body = req.body.name || req.body.price;
-  // const love = Object.keys(req.body);
-  // console.log(love.toString());
-  // const order = await orderModel.findById(req.query.order_id);
-  // console.log(order.items);
-  // for (i = 0; i < order.items.length; i++) {
-  //   if (order.items[i]['_id'] == req.query.item_id) {
-  //     order.items[i][love] = body;
-  //     order.save();
-  //   }
-  // }
-  // console.log(order);
-  // const item = order.req.query.item_id
-  // console.log(item);
+  const { state } = req.body;
   const order = await orderModel.findById(id);
-  const orderli = await orderModel.findOne({ items: items[id] });
 
   if (!order) {
     return res.status(404).json({ status: false, order: null });
