@@ -1,10 +1,10 @@
 const express = require("express");
-const OrderModel = require("../orderModel");
+const orderModel = require("../orderModel");
 const authenticate = require("../authenticate")
 
 const orderRoute = express.Router();
 
-app.post('/', (req, res) => {
+orderRoute.post('/', (req, res) => {
   authenticate (req,res)
       .then(async() => {
           const body = req.body.order;
@@ -26,7 +26,7 @@ app.post('/', (req, res) => {
       })
 })
 
-app.get('/:orderId', (req, res) => {
+orderRoute.get('/:orderId', (req, res) => {
   authenticate(req,res)
       .then(async () => {
           const { orderId } = req.params;
@@ -43,7 +43,7 @@ app.get('/:orderId', (req, res) => {
       })
   })
 
-app.patch('/:id', (req, res) => {
+  orderRoute.patch('/:id', (req, res) => {
   authenticate(req,res)
       .then(async() => {
           const { id } = req.params;
@@ -70,7 +70,7 @@ app.patch('/:id', (req, res) => {
 
 })
 
-app.delete('/:id', (req, res) => {
+orderRoute.delete('/:id', (req, res) => {
   authenticate(req,res)
       .then(async() => {
           const { id } = req.params;
