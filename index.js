@@ -17,6 +17,7 @@ app.get("/", (req, res) => {
   return res.json({ status: true });
 });
 
+// create an order
 app.post("/order", auth, async (req, res) => {
   const body = req.body;
 
@@ -31,7 +32,7 @@ app.post("/order", auth, async (req, res) => {
     total_price,
   });
 
-  return res.json({ status: true, order });
+  return res.status(201).json({ status: true, order });
 });
 
 app.get("/order/:orderId", auth, async (req, res) => {
@@ -45,7 +46,7 @@ app.get("/order/:orderId", auth, async (req, res) => {
   return res.json({ status: true, order });
 });
 
-app.get("/orders", auth, async (req, res) => {
+app.get("/orders",auth, async (req, res) => {
   console.log(req.query);
   const orders = await orderModel
     .find()
