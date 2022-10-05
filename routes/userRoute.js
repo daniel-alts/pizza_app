@@ -9,14 +9,15 @@ Router.post("/", userController.addUser);
 
 Router.use(authenticateUser);
 
-// Only the authenticated user are allowd to patch and delete
+// Only the authenticated user are allowed to patch and delete
 Router.patch("/:userId", userController.updateUser);
 
 Router.delete("/:userId", userController.deletaAllUsers);
 
-// Amin auth
+// Admin auth
 Router.use(authenticateAdmin);
 Router.get("/", userController.getAllUsers);
+d;
 
 Router.get("/:userId", userController.getAllUsersById);
 

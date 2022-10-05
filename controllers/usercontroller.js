@@ -1,12 +1,5 @@
 const usereModel = require("../models/userModel");
 
-exports.test = (req, res) => {
-  try {
-    res.status(200).json({ message: "hello" });
-  } catch (error) {
-    res.status(404).json({ mesage: "error", error });
-  }
-};
 exports.addUser = async function (req, res) {
   try {
     const userDetails = req.body;

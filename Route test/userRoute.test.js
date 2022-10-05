@@ -1,10 +1,6 @@
 const supertest = require("supertest");
 const server = require("../app");
 describe("users route", () => {
-  // it("test", async () => {
-  //   const response = await supertest(server).get("/users");
-  //   expect(response.status).toBe(200);
-  // });
   it("GET /users", async () => {
     const response = await supertest(server).get("/users");
     expect(response.status).toBe(200);

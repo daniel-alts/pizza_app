@@ -1,7 +1,6 @@
 const express = require("express");
 
 const db = require("../pizza_app/pizzaAppDb");
-const { authenticateUser } = require("../pizza_app/authorization");
 const userRouter = require("./routes/userRoute");
 const orderRouter = require("./routes/orderRoute");
 require("dotenv").config;
