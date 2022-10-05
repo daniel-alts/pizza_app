@@ -1,21 +1,29 @@
 {
   "name": "pizza_app",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start:dev": "nodemon index"
+    "dev": "nodemon index"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.1",
+    "dotenv": "^16.0.3",
     "express": "^4.18.1",
     "moment": "^2.29.4",
-    "mongoose": "^6.6.1"
-  },
-  "devDependencies": {
+    "mongoose": "^6.6.1",
+    "mongose": "^0.0.2-security",
     "nodemon": "^2.0.20"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daniel-alts/pizza_app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/daniel-alts/pizza_app/issues"
+  },
+  "homepage": "https://github.com/daniel-alts/pizza_app#readme",
+  "description": ""
 }
