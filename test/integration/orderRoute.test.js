@@ -54,18 +54,18 @@ describe("orderRoute", () => {
       .expect("content-type", /json/);
   });
 
-  // Delete order : This test deletes the id used in the previous test. that's the reason why i commented it out.
-  // it("DELETE /orders/:id", async () => {
-  //   await request(app)
-  //     .delete(`/orders/${orderId}`)
-  //     .set({ Authorization: "Basic " + userAuth })
-  //     .expect(200)
-  //     .expect("content-type", /json/);
-  // });
+  //Delete order : This test deletes the id used in the previous test (orderId) when run.
+  it("DELETE /orders/:id", async () => {
+    await request(app)
+      .delete(`/orders/${orderId}`)
+      .set({ Authorization: "Basic " + userAuth })
+      .expect(200)
+      .expect("content-type", /json/);
+  });
 });
 
 afterAll((done) => {
-  // Closing the DB connection allows Jest to exit successfully.
+  // Closing the DB connection so as to allow Jest to exit successfully.
   mongoose.connection.close();
   done();
 });
