@@ -6,8 +6,6 @@ This document outlines the request/response structure for the endpoints
 
 ### Create a user
 
-`/api/users/register` route
-
 To create a user, send a `POST` request to the `/api/users/register` route. The body will contain a json with properties indicated as following:
 
 ```json
@@ -18,8 +16,6 @@ To create a user, send a `POST` request to the `/api/users/register` route. The 
 ```
 
 ### Get all users
-
-`/api/users` route
 
 <details>
 <summary> :sunglasses: </summary>
@@ -130,64 +126,185 @@ a corresponding response:
 This route is only accessible to users with the `admin` role
 </details>
 
-Send a `GET` request to the `/api/orders/` route. An example response is:
+Send a `GET` request to the `/api/orders/` route. 
+
+By default, the api returns the first page with a limit of 5 orders per page. In order to change the page or increase/decrease the limit, you may pass addition query parameters `page` and `limit` respectively.
+
+An example response is:
 
 ```json
 {
   "status": true,
-  "orders": [
-    {
-      "created_at": "2022-09-29T03:02:27.314Z",
-      "state": 1,
-      "total_price": 16000,
-      "items": [
-        {
-          "name": "Extravaganza",
-          "price": 2500,
-          "size": "m",
-          "quantity": 1,
-          "item_id": "63350ac3b3f4277ffcf6ca52"
-        },
-        {
-          "name": "Jambalaya",
-          "price": 7000,
-          "size": "m",
-          "quantity": 1,
-          "item_id": "63350ac3b3f4277ffcf6ca53"
-        },
-        {
-          "name": "Chicken Suya",
-          "price": 6500,
-          "size": "m",
-          "quantity": 1,
-          "item_id": "63350ac3b3f4277ffcf6ca54"
-        }
-      ],
-      "id": "63350ac3b3f4277ffcf6ca51"
+  "data": {
+    "currentPage": 1,
+    "nextPage": {
+      "page": 2,
+      "limit": 5
     },
-    {
-      "created_at": "2022-09-29T03:02:49.896Z",
-      "state": 1,
-      "total_price": 9500,
-      "items": [
-        {
-          "name": "Extravaganza",
-          "price": 2500,
-          "size": "m",
-          "quantity": 1,
-          "item_id": "63350ad9b3f4277ffcf6ca58"
-        },
-        {
-          "name": "Jambalaya",
-          "price": 7000,
-          "size": "m",
-          "quantity": 1,
-          "item_id": "63350ad9b3f4277ffcf6ca59"
-        }
-      ],
-      "id": "63350ad9b3f4277ffcf6ca57"
-    }
-  ]
+    "totalPages": 2,
+    "orders": [
+      {
+        "created_at": "2022-09-29T03:02:27.314Z",
+        "state": 1,
+        "total_price": 16000,
+        "items": [
+          {
+            "name": "Extravaganza",
+            "price": 2500,
+            "size": "m",
+            "quantity": 1,
+            "item_id": "63350ac3b3f4277ffcf6ca52"
+          },
+          {
+            "name": "Jambalaya",
+            "price": 7000,
+            "size": "m",
+            "quantity": 1,
+            "item_id": "63350ac3b3f4277ffcf6ca53"
+          },
+          {
+            "name": "Chicken Suya",
+            "price": 6500,
+            "size": "m",
+            "quantity": 1,
+            "item_id": "63350ac3b3f4277ffcf6ca54"
+          }
+        ],
+        "id": "63350ac3b3f4277ffcf6ca51"
+      },
+      {
+        "created_at": "2022-09-29T03:02:49.896Z",
+        "state": 1,
+        "total_price": 9500,
+        "items": [
+          {
+            "name": "Extravaganza",
+            "price": 2500,
+            "size": "m",
+            "quantity": 1,
+            "item_id": "63350ad9b3f4277ffcf6ca58"
+          },
+          {
+            "name": "Jambalaya",
+            "price": 7000,
+            "size": "m",
+            "quantity": 1,
+            "item_id": "63350ad9b3f4277ffcf6ca59"
+          }
+        ],
+        "id": "63350ad9b3f4277ffcf6ca57"
+      },
+      {
+        "created_at": "2022-09-29T03:02:56.271Z",
+        "state": 1,
+        "total_price": 9500,
+        "items": [
+          {
+            "name": "Veggie Supreme",
+            "price": 3500,
+            "size": "m",
+            "quantity": 2,
+            "item_id": "63350ae0b3f4277ffcf6ca5d"
+          },
+          {
+            "name": "Naija Fiesta",
+            "price": 2500,
+            "size": "m",
+            "quantity": 1,
+            "item_id": "63350ae0b3f4277ffcf6ca5e"
+          }
+        ],
+        "id": "63350ae0b3f4277ffcf6ca5c"
+      },
+      {
+        "created_at": "2022-09-29T03:03:08.785Z",
+        "state": 1,
+        "total_price": 9000,
+        "items": [
+          {
+            "name": "Pepperoni Supreme",
+            "price": 4500,
+            "size": "m",
+            "quantity": 2,
+            "item_id": "63350aecb3f4277ffcf6ca62"
+          }
+        ],
+        "id": "63350aecb3f4277ffcf6ca61"
+      },
+      {
+        "created_at": "2022-09-30T21:44:58.209Z",
+        "state": 2,
+        "total_price": 6500,
+        "items": [
+          {
+            "name": "Ghost Pancho",
+            "price": 6500,
+            "size": "l",
+            "quantity": 1,
+            "item_id": "6337635a546b3674d0600f60"
+          }
+        ],
+        "id": "6337635a546b3674d0600f5f"
+      }
+    ]
+  }
+}
+```
+
+To view results from page 3 with a limit of 2 orders per page, send a request to: 
+
+```text
+/api/orders?page=3&limit=2
+```
+the corresponding response will be 
+
+```json
+{
+  "status": true,
+  "data": {
+    "previousPage": {
+      "page": 2,
+      "limit": 2
+    },
+    "currentPage": 3,
+    "nextPage": {
+      "page": 4,
+      "limit": 2
+    },
+    "totalPages": 5,
+    "orders": [
+      {
+        "created_at": "2022-09-30T21:44:58.209Z",
+        "state": 2,
+        "total_price": 6500,
+        "items": [
+          {
+            "name": "Ghost Pancho",
+            "price": 6500,
+            "size": "l",
+            "quantity": 1,
+            "item_id": "6337635a546b3674d0600f60"
+          }
+        ],
+        "id": "6337635a546b3674d0600f5f"
+      },
+      {
+        "created_at": "2022-10-01T04:26:17.560Z",
+        "state": 1,
+        "total_price": 6500,
+        "items": [
+          {
+            "name": "Chicken Tripple Decker",
+            "price": 6500,
+            "size": "l",
+            "quantity": 1,
+            "item_id": "6337c169b78508f4239d8bfe"
+          }
+        ],
+        "id": "6337c169b78508f4239d8bfd"
+      }
+    ]
+  }
 }
 ```
 
@@ -214,3 +331,58 @@ for descending order, send a GET request to
 ```text
 /api/orders?date=desc
 ```
+### Get order by ID
+
+To get an order by it's ID, send a `GET` request to the `/api/orders/order_id` route where `order_id` is the ID of the order. For example, a request to:
+
+```text
+/api/orders/63350ad9b3f4277ffcf6ca57
+```
+
+will provide a response like:
+```json
+{
+  "status": true,
+  "data": {
+    "created_at": "2022-09-29T03:02:49.896Z",
+    "state": 1,
+    "total_price": 9500,
+    "items": [
+      {
+        "name": "Extravaganza",
+        "price": 2500,
+        "size": "m",
+        "quantity": 1,
+        "item_id": "63350ad9b3f4277ffcf6ca58"
+      },
+      {
+        "name": "Jambalaya",
+        "price": 7000,
+        "size": "m",
+        "quantity": 1,
+        "item_id": "63350ad9b3f4277ffcf6ca59"
+      }
+    ],
+    "id": "63350ad9b3f4277ffcf6ca57"
+  }
+}
+```
+### Update order state by ID
+
+To update the state of an order by it's ID, send a `PATCH` request to the `/api/orders/order_id` route where `order_id` is the ID of the order. The body of the request should contain an object with a key of `state` and a value as an integer. To update the state of order with ID of '63350ad9b3f4277ffcf6ca57' from `1` to `2`, send a request to:
+
+```text
+/api/orders/63350ad9b3f4277ffcf6ca57
+```
+
+with a payload of
+
+```json
+{
+  "state": 2
+}
+```
+
+### Delete order by ID
+
+To delete an order by it's ID, send a `DELETE` request to the `/api/orders/order_id` route where `order_id` is the ID of the order.
