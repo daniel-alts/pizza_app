@@ -35,7 +35,7 @@ describe("Order Route", ()=> {
     it('create new order', async ()=> {
         const response = await supertest(app).post("/order").json(body);
         expect(response.headers["content-type"].split(';')[0]).toBe("application/json")
-        // expect(response.body).toHaveProperty('items')
-        // expect(response.body.items).toBe('price', 'name', 'quantity')
+        expect(response.body).toHaveProperty('items')
+        expect(response.body.items).toBe('price', 'name', 'quantity')
     })
 })
