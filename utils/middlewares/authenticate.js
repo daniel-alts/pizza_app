@@ -1,15 +1,17 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
-const userModel = require("../middlewares/utils/userModel");
+const userModel = require("../../userModel");
 
 const authenticate = async (req, res, next) => {
-  const authHeaders = req.header.authorization;
+  const authHeaders = req.headers.authorization;
+  console.log(authHeaders);
   if (!authHeaders) {
     return res.status(404).json({ status: "forbidden" });
   }
 
   const encoded = authHeaders.substring(6);
   const decoded = Buffer.from(encoded, "base64").toString("ascii");
+  console.log(decoded);
   const [name, password] = decoded.split(":");
 
   const authUser = await userModel.findOne({ username: name });
