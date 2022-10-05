@@ -7,7 +7,6 @@ const controller = require('../controller/orderController')
 
 
 
-
 router.route('/info').get(authenticate,controller.getOrdersInfo)
 
 

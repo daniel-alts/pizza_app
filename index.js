@@ -7,7 +7,6 @@ const connectDb = require('./middleware/db')
  
 
 
-
 dotenv.config()
 const app = express()
 

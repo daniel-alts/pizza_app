@@ -38,7 +38,4 @@ const   header = async (req,res, next) =>{
 
 
 
-
-
-
 module.exports = header
