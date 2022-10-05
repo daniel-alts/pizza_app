@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
 
 app.post('/order', (req, res) => {
     authenticate (req,res)
-        .then(() => {
+        .then(async() => {
             const body = req.body.order;
 
             const total_price = body.items.reduce((prev, curr) => {
@@ -35,7 +35,7 @@ app.post('/order', (req, res) => {
                 return prev
             }, 0);
 
-            const order = orderModel.create({ 
+            const order = await orderModel.create({ 
                 items: body.items,
                 created_at: moment().toDate(),
                 total_price
@@ -49,25 +49,25 @@ app.post('/order', (req, res) => {
 
 app.get('/order/:orderId', (req, res) => {
     authenticate(req,res)
-        .then(() => {
+        .then(async () => {
             const { orderId } = req.params;
-            const order =  orderModel.findById(orderId)
+            console.log(orderId);
+            const order = await orderModel.findById(orderId)
 
             if (!order) {
                 return res.status(404).json({ status: false, order: null })
             }
 
             return res.json({ status: true, order })
-        })
         }).catch((err) => {
             return res.json({ status: false, message: err })
         })
-    
+    })
 
 app.get('/orders', (req, res) => {
     authenticate(req,res)
-        .then(() => {
-            const orders = orderModel.find()
+        .then(async() => {
+            const orders = await orderModel.find()
 
             return res.json({ status: true, orders })
         }).catch((err) => {
@@ -77,11 +77,11 @@ app.get('/orders', (req, res) => {
 
 app.patch('/order/:id', (req, res) => {
     authenticate(req,res)
-        .then(() => {
+        .then(async() => {
             const { id } = req.params;
             const { state } = req.body.order;
 
-            const order = orderModel.findById(id)
+            const order = await orderModel.findById(id)
 
             if (!order) {
                 return res.status(404).json({ status: false, order: null })
@@ -104,10 +104,10 @@ app.patch('/order/:id', (req, res) => {
 
 app.delete('/order/:id', (req, res) => {
     authenticate(req,res)
-        .then(() => {
+        .then(async() => {
             const { id } = req.params;
 
-            const order = orderModel.deleteOne({ _id: id})
+            const order = await orderModel.deleteOne({ _id: id})
 
             return res.json({ status: true, order })
         }).catch((err) => {
