@@ -32,7 +32,9 @@ router.get('/order/:orderId', async (req, res) => {
 })
 
 router.get('/orders', async (req, res) => {
-    const orders = await orderModel.find()
+    // pagination limit
+    const pageLimit = req.query.limit || 10
+    const orders = await orderModel.find().limit(pageLimit)
 
     return res.json({ status: true, orders })
 })
@@ -56,6 +58,32 @@ router.patch('/order/:id', async (req, res) => {
     await order.save()
 
     return res.json({ status: true, order })
+})
+
+// Query By state
+router.get("/orderby/:state", async(req,res)=>{
+    const state = req.params.state;
+
+    await orderModel.find({ state})
+    .then(result =>{
+        res.status(200).json({ result})
+    })
+    .catch(err=>{
+        res.status(400).json({
+            message: err
+        })
+    })
+})
+
+// Query all orders by date
+router.get("/order/date", async (req, res)=>{
+    await orderModel.find({}).
+    then(result=>{
+            result.sort()
+    }).
+    catch(err=>{
+        res.status(401).send(err)
+    })
 })
 
 router.delete('/order/:id', async (req, res) => {
