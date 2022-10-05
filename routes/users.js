@@ -4,9 +4,17 @@ const userModel = require("../models/usersModel")
 
 const usersRoute = express.Router()
 
-usersRoute.get("/users", (req, res)=>{
-    res.status(200).json({status: true, message: " users route working"})
-})
+usersRoute.get("/", async(req, res)=>{
+        const users = await userModel.find()
+    
+        return res.json({ 
+            status: true, 
+            message: users 
+        })
+    })
+    
+
+// create new user
 
 
 module.exports = usersRoute

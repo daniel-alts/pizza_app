@@ -4,66 +4,60 @@ const orderModel = require("../models/orderModel")
 
 const orderRoute = express.Router()
 
-
-orderRoute.get('/', (req, res) => {
-    return res.json({ status: true})
- })
- 
-
 // create new order
-orderRoute.post("/order",(req, res) => {
-    const body = req.body;
-    return res.json({ status: true, body })
+orderRoute.post("/", (req, res) => {
+    const body= req.body;
+    // return res.json({ status: true, body })
    
 
-//     const total_price = body.items.reduce((prev, curr) => {
-//         prev += curr.price
-//         return prev
-//     }, 0);
+    const total_price = body.items.reduce((prev, curr) => {
+        prev += curr.price
+        return prev
+    }, 0);
 
-//     order= orderModel.create({ 
-//         items: order.items,
-//         created_at: moment().toDate(),
-//         total_price
-//     }).then(
-//         (order) =>{
-//             res.json({ status: true, order })
-//         }
-//     ).catch(
-//         (err) =>{
-//             res.status(404).send(err)
-//         }
-//     )
+    const order=  orderModel.create({ 
+        items: body.items,
+        created_at: moment().toDate(),
+        total_price
+    }).then(
+        (order) =>{
+            res.json({ status: true, message: order })
+        }
+    ).catch(
+        (err) =>{
+            res.status(404).send(err)
+        }
+    )
     
 })
 
 
 // get a specific order by ID
-orderRoute.get('/order/:orderId',(req, res) => {
+orderRoute.get('/:orderId',async (req, res) => {
     const { orderId } = req.params;
-    const order = orderModel.findById(orderId)
+    const order = await orderModel.findById(orderId)
 
     if (!order) {
         return res.status(404).json({ status: false, order: null })
     }
 
-    return res.json({ status: true, order })
+    return res.json({ status: true, message: order })
 })
 
 
 // get all orders
-orderRoute.get('/orders', async (req, res) => {
+orderRoute.get('/', async (req, res) => {
     const orders = await orderModel.find()
 
     return res.json({ status: true, orders })
 })
 
 // update state of order
-orderRoute.patch('/order/:id',(req, res) => {
+orderRoute.patch('/:id', async (req, res) => {
     const { id } = req.params;
     const { state } = req.body;
 
-    const order = orderModel.findById(id)
+    const order = await orderModel.findById(id)
 
     if (!order) {
         return res.status(404).json({ status: false, order: null })
@@ -82,10 +76,10 @@ orderRoute.patch('/order/:id',(req, res) => {
 
 
 // delete an order
-orderRoute.delete('/order/:id', (req, res) => {
+orderRoute.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
-    const order =orderModel.deleteOne({ _id: id})
+    const order = await orderModel.deleteOne({ _id: id})
 
     return res.json({ status: true, order })
 })

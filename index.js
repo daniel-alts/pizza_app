@@ -5,7 +5,6 @@ const UsersRoute = require("./routes/users")
 require("dotenv").config()
 
 
-
 const PORT = process.env.PORT
 
 const app = express()
@@ -15,7 +14,7 @@ connectToMongoDb()
 
 app.use(express.json());
 
-app.use("/order", OrderRoute)
+app.use("/", OrderRoute)
 
 app.use("/users", UsersRoute)
 
