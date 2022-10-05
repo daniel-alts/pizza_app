@@ -9,3 +9,5 @@
 </details>
 
 This is `Samson Okeji` Version of the Pizza_App API at AltSchool Africa - School of Software Engineering, Backend Engineering (NodeJS) Specialization
+
+#### Note: Do reach out to me via `engrsamsonokeji@gmail.com` for any complaint, comment, or contribution.
