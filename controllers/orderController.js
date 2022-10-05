@@ -44,7 +44,7 @@ const getAllOrders = async (req, res, next) => {
     }
     if (!orders) orders = await orderModel.find({})
 
-    return res.json({ status: true, orders })
+    return res.json({ status: true, data: orders })
   } catch (err) {
     next(err)
   }
@@ -58,9 +58,9 @@ const getOrderById = async (req, res, next) => {
     const { orderId } = req.params
     const order = await orderModel.findById(orderId)
     if (!order) {
-      return res.status(404).json({ status: false, order: null })
+      return res.status(404).json({ status: false, data: null })
     }
-    return res.json({ status: true, order })
+    return res.json({ status: true, data: order })
   } catch (err) {
     next(err)
   }
@@ -87,7 +87,7 @@ const createOrder = async (req, res, next) => {
     order
       .save()
       .then((result) => {
-        return res.status(201).json({ status: true, result })
+        return res.status(201).json({ status: true, data: result })
       })
       .catch((err) => {
         res.status(500)
@@ -115,18 +115,18 @@ const updateOrder = async (req, res, next) => {
     const order = await orderModel.findById(id)
 
     if (!order) {
-      return res.status(404).json({ status: false, order: null })
+      return res.status(404).json({ status: false, data: null })
     }
 
     if (state < order.state) {
-      return res.status(422).json({ status: false, order: null, message: 'Invalid operation' })
+      return res.status(422).json({ status: false, data: null, message: 'Invalid operation' })
     }
 
     order.state = state
 
     await order.save()
 
-    return res.json({ status: true, order })
+    return res.json({ status: true, data: order })
   } catch (err) {
     console.log(err)
     next(err)
