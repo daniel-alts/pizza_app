@@ -67,7 +67,17 @@ app.get('/order/:orderId', (req, res) => {
 app.get('/orders', (req, res) => {
     authenticate(req,res)
         .then(async() => {
-            const orders = await orderModel.find()
+            const {total_price, order, created_at} = req.query;
+            let totNum;
+            let orderNum;
+            let creNum;
+            let page = 1;
+            let maxi = 2;
+            total_price === "asc" ? totNum = 1 : totNum = -1;
+            order === "asc" ? orderNum = 1 : orderNum = -1;
+            created_at === "asc" ? creNum = 1 : creNum = -1;
+
+            const orders = await orderModel.find().sort({total_price: totNum, order: orderNum, created_at: creNum }).skip((page - 1) * maxi).limit(maxi)
 
             return res.json({ status: true, orders })
         }).catch((err) => {
