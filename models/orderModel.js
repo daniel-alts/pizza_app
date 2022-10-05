@@ -27,10 +27,13 @@ const OrderSchema = new Schema({
 OrderSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString()
+
     delete returnedObject._id
     delete returnedObject.__v
+
     returnedObject.items.forEach(item => {
       item.item_id = item._id.toString()
+      
       delete item._id
     })
   },
