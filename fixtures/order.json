@@ -2,7 +2,7 @@
     {
         "items": [{
         "name": "Pepperoni",
-        "price": 200,
+        "price": 2000,
         "size": "m",
         "quantity": 1
         }],

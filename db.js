@@ -5,7 +5,7 @@ const MONGODB_URI = process.env.MONGODB_URI
 
 // CONNECT TO MONGOOSE
 function connectToDb() {
-    mongoose.connect(process.env.MONGODB_URI)
+    mongoose.connect(MONGODB_URI)
 
     // TESTING CONNECTION
     mongoose.connection.on('connected', () => {
