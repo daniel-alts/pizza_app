@@ -22,7 +22,8 @@ const UserSchema = new Schema(
         },
         user_type: {
             type: String,
-            enum: ["customer", "admin"]
+            enum: ["customer", "admin"],
+            required: true
         }
     }
 )
