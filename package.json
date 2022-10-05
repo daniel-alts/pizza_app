@@ -1,16 +1,17 @@
 {
-  "name": "pizza_app",
+  "name": "pizzeria_api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:dev": "nodemon index"
+    "dev": "nodemon index"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.0.3",
     "express": "^4.18.1",
     "moment": "^2.29.4",
     "mongoose": "^6.6.1"
