@@ -46,12 +46,11 @@ app.get("/order/:orderId", auth, async (req, res) => {
 });
 
 app.get("/orders", auth, async (req, res) => {
-<<<<<<< HEAD
   console.log(req.query);
-  const orders = await orderModel.find().sort({total_price : 1,created_at : 1,state:1});
-=======
-  const orders = await orderModel.find();
->>>>>>> bf293d221891744c852fb0f576b6d3350814e396
+  const orders = await orderModel
+    .find()
+    .sort({ total_price: 1, created_at: 1, state: 1 })
+    .limit(1)
 
   return res.json({ status: true, orders });
 });
