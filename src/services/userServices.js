@@ -1,6 +1,6 @@
 const userModel = require('../models/userModel');
 const UserModel = require('../models/userModel');
-const { deleteUnrequiredProperty } = require('../utils');
+const { deleteUnrequiredProperty } = require('../utils/orders/services');
 
 
 

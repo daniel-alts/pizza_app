@@ -21,6 +21,7 @@ const getOrderById = async (req, res, orderId) => {
 
 const searchOrders = async (req, res, query) => {
     const orders = await orderServices.searchOrders(query);
+
     return res.json({ status: true, orders })
 }
 
@@ -34,13 +35,20 @@ const updateOrder = async (req, res, id, state) => {
         return res.status(422).json({ status: false, order: null, message: 'Invalid operation' })
     }
     const updatedOrder = await orderServices.updateOrder(order, state);
+
     return res.json({ status: true, updatedOrder });
 }
 
 
 const deleteOrder = async (req, res, id) => {
     const order = await orderServices.deleteOrder(id);
-    return res.json({ status: true, order });
+
+    if (order) {
+        return res.json({ status: true, order });
+    } else {
+        return res.status(404).json({ status: false, message: "Record does not exit." });
+    }
+    
 }
 
 

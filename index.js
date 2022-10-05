@@ -23,8 +23,8 @@ app.get('/', (req, res) => {
 
 app.use((error, req, res, next) => {
     console.log(error);
-    if (error.type) {
-        return res.status(400).json({ status: false, message: "An error occured."} )
+    if (error) {
+        return res.status(500).json({ status: false, message: "Server Error!"} )
     }
     else next();
 });
@@ -42,3 +42,7 @@ const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log('Listening on port, ', PORT)
 })
+
+
+
+module.exports = app;
