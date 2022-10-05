@@ -1,8 +1,8 @@
 const express = require('express');
 // const moment = require('moment');
 const mongoose = require('mongoose');
-const orderModel = require('./Models/orderModel');
 const orderRouter = require('./Routes/orderRoutes');
+const userRouter = require('./Routes/userRoutes')
 
 require("dotenv").config();
 const PORT = 3334 || process.env.PORT;
@@ -12,7 +12,7 @@ const app = express()
 app.use(express.json());
 
 app.use('/orders', orderRouter);
-app.use('/orders', userRouter)
+app.use('/users', userRouter)
 
 
 
