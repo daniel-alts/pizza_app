@@ -25,9 +25,13 @@ const getOrders = async (req, res) => {
   const limit = req.query.limit * 1 || 10;
   const skip = (page - 1) * limit;
   let orders;
-  if (sort_by == 'total_price') {
+  if (sort_by == 'total_price=asc') {
+    orders = await orderModel.find().sort({ total_price: 1 });
+  } else if (sort_by == 'total_price=desc') {
     orders = await orderModel.find().sort({ total_price: -1 });
-  } else if (sort_by == 'created_at') {
+  } else if (sort_by == 'created_at=asc') {
+    orders = await orderModel.find().sort({ created_at: 1 });
+  } else if (sort_by == 'created_at=desc') {
     orders = await orderModel.find().sort({ created_at: -1 });
   } else if (req.query.state) {
     orders = await orderModel.find({ state });
