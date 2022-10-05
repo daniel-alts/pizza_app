@@ -1,4 +1,5 @@
 const orderModel = require("../models/orderModel");
+const moment = require("moment");
 
 exports.getAllOrders = async (req, res) => {
   try {
@@ -55,7 +56,7 @@ exports.createOrder = async (req, res) => {
     total_cost,
   });
   console.log("Order is created successfully", order);
-  return res.json({ status: true, order });
+  return res.status(201).json({ order: order });
 };
 
 exports.getOrder = async (req, res) => {
