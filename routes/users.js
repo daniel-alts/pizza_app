@@ -1,14 +1,13 @@
 const express = require("express");
-const UserModel = require('../models/userModel')
-const moment = require('moment')
 const router = express.Router();
+const { authOrder } = require("../controllerFunctions/orderFunc");
 const {
-    getAllUsers,
-    getSingleUser,
-    createUser,
-    updateUser,
-    deleteUser
-} = require('../controllerFunctions/userFunc')
+  getAllUsers,
+  getSingleUser,
+  createUser,
+  updateUser,
+  deleteUser,
+} = require("../controllerFunctions/userFunc");
 
 router.get("/", getAllUsers);
 router.get("/:userId", getSingleUser);

@@ -11,7 +11,7 @@ const getAllUsers = async (req, res) => {
 // Get single user
 const getSingleUser = async (req, res) => {
   const { userId } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(orderId)) {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
     return res.status(404).json({ error: "No such Id" });
   }
   const users = await userModel.findById(userId);

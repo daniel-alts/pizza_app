@@ -7,7 +7,8 @@ const userSchema = new Schema({
   created_at: Date,
   username: {
     type: String,
-    rerquired: true,
+    required: true,
+    unique: true,
   },
   password: {
     type: String,
@@ -16,6 +17,8 @@ const userSchema = new Schema({
   user_type: {
     type: String,
     required: true,
+    enum: ["admin", "user"],
+    default: "user",
   },
 });
 

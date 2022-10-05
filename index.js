@@ -10,7 +10,7 @@ const app = express();
 
 app.use(express.json());
 
-app.use("/api/order", orderRoute);
+app.use("/api/orders", orderRoute);
 
 app.use('/api/users', userRoute)
 

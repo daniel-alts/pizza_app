@@ -1,22 +1,23 @@
 const express = require("express");
 const router = express.Router();
+const auth = require('../middlewares/auth')
 
 const {
   createOrder,
   getAllOrders,
-  getSingleOrder, 
-  updateOrder, 
-  deleteOrder
+  getOrderById,
+  updateOrder,
+  deleteOrder,
 } = require("../controllerFunctions/orderFunc");
 
-router.post("/", createOrder);
+router.post("/", auth, createOrder);
 
-router.get("/:orderId", getSingleOrder);
+router.get("/:orderId", getOrderById);
 
 router.get("/", getAllOrders);
 
-router.patch("/:id", updateOrder);
+router.patch("/:id", auth,  updateOrder);
 
-router.delete("/:id", deleteOrder);
+router.delete("/:id", auth, deleteOrder);
 
 module.exports = router;
