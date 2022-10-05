@@ -1,6 +1,6 @@
 # pizza_app
 This is an [altschool](altschool.com) backend (nodejs) task.
-Pizza app is an app whereby only users that are authenticated are able to access the order route (i.e get the list of available pizzas from the database , order pizza, etc). 
+Pizza app is an app whereby only authenticated users are allowed to access the order route (i.e get the list of available pizzas from the database , order pizza, etc). 
 ### In this app, i implemented the following:
 * Connected mongoose to my local host
 * Created the user and order model by defining the user and order schemas respectively
