@@ -7,7 +7,6 @@ const app = require('../../app')
 
 
 let auth = 'wendy:12345'
-let id = '633b7653befab172c796411c'
 
 describe('Order Route', () => {
 
