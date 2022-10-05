@@ -1,26 +1,12 @@
-const express = require('express');
-const moment = require('moment');
+const express = require("express");
 const mongoose = require('mongoose');
-require("dotenv").config();
-const { connectToDB } = require("./db")
+const moment = require("moment");
 
-const orderRoute = require("./routes/order")
+const orderModel = require("../models/orderModel");
 
-const orderModel = require('./models/orderModel');
-const userModel = require('./models/userModel');
+const orderRoute = express.Router();
 
-const { authenticate } = require("./authenticate");
-
-
-const PORT = process.env.PORT;
-const app = express()
-
-app.use(express.json());
-
-app.use("/order", orderRoute)
-
-
-app.get('/', (req, res) => {
+orderRoute.get('/', (req, res) => {
     authenticate(req, res, ["admin", "user"])
         .then(() => {
             return res.json({ status: true });
@@ -34,7 +20,7 @@ app.get('/', (req, res) => {
 })
 
 
-app.post('/order', async (req, res) => {
+orderRoute.post('/order', async (req, res) => {
     const body = req.body;
 
     const total_price = body.items.reduce((prev, curr) => {
@@ -51,7 +37,7 @@ app.post('/order', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-app.get('/order/:orderId', async (req, res) => {
+orderRoute.get('/order/:orderId', async (req, res) => {
     const { orderId } = req.params;
     const order = await orderModel.findById(orderId)
 
@@ -62,13 +48,13 @@ app.get('/order/:orderId', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-app.get('/orders', async (req, res) => {
+orderRoute.get('/orders', async (req, res) => {
     const orders = await orderModel.find()
 
     return res.json({ status: true, orders })
 })
 
-app.patch('/order/:id', async (req, res) => {
+orderRoute.patch('/order/:id', async (req, res) => {
     const { id } = req.params;
     const { state } = req.body;
 
@@ -89,7 +75,7 @@ app.patch('/order/:id', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-app.delete('/order/:id', async (req, res) => {
+orderRoute.delete('/order/:id', async (req, res) => {
     const { id } = req.params;
 
     const order = await orderModel.deleteOne({ _id: id})
@@ -97,18 +83,5 @@ app.delete('/order/:id', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-connectToDB()
-// mongoose.connect('mongodb://localhost:27017')
 
-// mongoose.connection.on("connected", () => {
-// 	console.log("Connected to MongoDB Successfully");
-// });
-
-// mongoose.connection.on("error", (err) => {
-// 	console.log("An error occurred while connecting to MongoDB");
-// 	console.log(err);
-// });
-
-app.listen(PORT, () => {
-    console.log('Listening on port, ', PORT)
-})
+module.exports = orderRoute
