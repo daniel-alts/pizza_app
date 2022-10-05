@@ -46,7 +46,8 @@ app.get("/order/:orderId", auth, async (req, res) => {
 });
 
 app.get("/orders", auth, async (req, res) => {
-  const orders = await orderModel.find();
+  console.log(req.query);
+  const orders = await orderModel.find().sort({total_price : 1,created_at : 1,state:1});
 
   return res.json({ status: true, orders });
 });
