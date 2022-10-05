@@ -3,21 +3,21 @@ const moment = require("moment");
 const mongoose = require("mongoose");
 const orderModel = require("./orderModel");
 const userModel = require("./userModel");
-const bcrypt = require('bcrypt')
-const auth = require("./utils/middlewares/authenticate")
+const bcrypt = require("bcrypt");
+const auth = require("./utils/middlewares/authenticate");
 
 const PORT = 3334;
 
 const app = express();
 
 app.use(express.json());
-app.use(auth)
+// app.use(auth);
 
 app.get("/", (req, res) => {
   return res.json({ status: true });
 });
 
-app.post("/order", async (req, res) => {
+app.post("/order", auth, async (req, res) => {
   const body = req.body;
 
   const total_price = body.items.reduce((prev, curr) => {
@@ -34,7 +34,7 @@ app.post("/order", async (req, res) => {
   return res.json({ status: true, order });
 });
 
-app.get("/order/:orderId", async (req, res) => {
+app.get("/order/:orderId", auth, async (req, res) => {
   const { orderId } = req.params;
   const order = await orderModel.findById(orderId);
 
@@ -45,13 +45,13 @@ app.get("/order/:orderId", async (req, res) => {
   return res.json({ status: true, order });
 });
 
-app.get("/orders", async (req, res) => {
+app.get("/orders", auth, async (req, res) => {
   const orders = await orderModel.find();
 
   return res.json({ status: true, orders });
 });
 
-app.patch("/order/:id", async (req, res) => {
+app.patch("/order/:id", auth, async (req, res) => {
   const { id } = req.params;
   const { state } = req.body;
 
@@ -74,7 +74,7 @@ app.patch("/order/:id", async (req, res) => {
   return res.json({ status: true, order });
 });
 
-app.delete("/order/:id", async (req, res) => {
+app.delete("/order/:id", auth, async (req, res) => {
   const { id } = req.params;
 
   const order = await orderModel.deleteOne({ _id: id });
@@ -86,10 +86,14 @@ app.delete("/order/:id", async (req, res) => {
 
 app.post("/user", async (req, res) => {
   try {
-    const {username,password,user_type} = req.body
-    const hashedPassword = await bcrypt.hash(password,10)
+    const { username, password, user_type } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await userModel.create({username,password:hashedPassword,user_type});
+    const user = await userModel.create({
+      username,
+      password: hashedPassword,
+      user_type,
+    });
 
     res.status("201").json({ status: "success", user });
   } catch (err) {
