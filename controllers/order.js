@@ -70,7 +70,6 @@ async function addOrder(req, res){
         const total_price = body.items.reduce((prev, curr) => {
            
         prev += (curr.price * curr.quantity)
-        console.log(prev)
         return prev
     }, 0);
        
@@ -111,7 +110,7 @@ async function updateOrder(req, res){
     
         await order.save()
     
-        return res.json({ status: true, order })
+        return res.status(200).json({ status: true, order })
     }catch(err){
         res.status(500).json({
             status: 'Failed',
@@ -126,7 +125,7 @@ async function deleteOrder(req, res){
 
         const order = await orderModel.deleteOne({ _id: id})
     
-        return res.json({ status: true, order })
+        return res.status(200).json({ status: true, order })
     }
     catch(err){
         res.status(500).json({
