@@ -40,6 +40,7 @@ OrderSchema.pre(
 			0,
 		)
 
+    // Add default created at on save
 		order.created_at.default =
 			moment.toDate()
 	},

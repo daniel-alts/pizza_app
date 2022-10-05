@@ -1,4 +1,3 @@
-const User = require("../resources/user/user.model")
 const createOrder =
 	(model) => async (req, res) => {
 		const authenticatedUser =
@@ -62,23 +61,37 @@ const checkAllOrder =
             
             let orders 
 
-			const { price, date } = req.query
+			const { price, date, p } = req.query
+
+            //pagination
+            const page = p || 1
+            const booksPerPage = 2
+
+            const orderCount = await orderModel.countDocuments();
+            const skipPage = (page-1) * booksPerPage
+            
+        
 
             //sort by price or date
             if (price) {
                 const value = price === 'asc' ? 1 : price === 'desc' ? -1 : false
                 if (value)  {
-                    orders = await model.find({}).sort({ total_price: value })
-                    return res.status(200).json({ data: orders })
+                    orders = await model.find({}).sort({ total_price: value }).skip(skipPage).limit(booksPerPage)
+                    if (skipPage < orderCount) return res.status(200).json({ data: orders })
                 }
               } else if (date) {
                 const value = date === 'asc' ? 1 : date === 'desc' ? -1 : false
                 
                 if (value)  {
-                    orders = await model.find({}).sort({ created_at: value })
-                    return res.status(200).json({ data: orders })
+                    orders = await model.find({}).sort({ created_at: value }).skip(skipPage).limit(booksPerPage)
+                    if (skipPage < orderCount) return res.status(200).json({ data: orders })
             }
               }
+
+            if (!orders) {
+                orders = await model.find({})
+                if (skipPage < orderCount) return res.status(200).json({ data: orders }).skip(skipPage).limit(booksPerPage)
+            }
 
             // console.log('line 65 ->', price)
 			// if (price || date) {
