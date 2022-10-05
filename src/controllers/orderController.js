@@ -19,8 +19,8 @@ const getOrderById = async (req, res, orderId) => {
 }
 
 
-const getAllOrders = async (req, res) => {
-    const orders = await orderServices.getAllOrders();
+const searchOrders = async (req, res, query) => {
+    const orders = await orderServices.searchOrders(query);
     return res.json({ status: true, orders })
 }
 
@@ -48,7 +48,7 @@ const deleteOrder = async (req, res, id) => {
 module.exports = {
     createOrder,
     getOrderById,
-    getAllOrders,
+    searchOrders,
     updateOrder,
     deleteOrder,
 }

@@ -23,10 +23,10 @@ app.get('/', (req, res) => {
 
 app.use((error, req, res, next) => {
     console.log(error);
-    if (error.type == "Bad Request") {
+    if (error.type) {
         return res.status(400).json({ status: false, message: "An error occured."} )
     }
-    next();
+    else next();
 });
 
 

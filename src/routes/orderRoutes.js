@@ -36,7 +36,7 @@ orderRoutes.get('/:orderId',
         try {
             const authPassed = await basicAuth(req, ['admin', 'user']); 
             if (!authPassed) {
-                return res.status(401).json({ message: req.ERROR_MESSAGE }) //ERROR_MESSAGE was added to req object in the basicAuth middleware
+                return res.status(401).json({ message: req.ERROR_MESSAGE }) 
             } else {
                 next();
             }
@@ -51,27 +51,17 @@ orderRoutes.get('/:orderId',
         } catch(error) {
             next(error);
         }
-    
-       
-    // const { orderId } = req.params;
-    // const order = await orderModel.findById(orderId)
-
-    // if (!order) {
-    //     return res.status(404).json({ status: false, order: null })
-    // }
-
-    // return res.json({ status: true, order })
     }
 )
 
 
-//Get all orders
+//Get multiple orders in a given state
 orderRoutes.get('/',
     async (req, res, next) => {
         try {
             const authPassed = await basicAuth(req, ['admin']); 
             if (!authPassed) {
-                return res.status(401).json({ message: req.ERROR_MESSAGE }) //ERROR_MESSAGE was added to req object in the basicAuth middleware
+                return res.status(401).json({ message: req.ERROR_MESSAGE }) 
             } else {
                 next();
             }
@@ -81,14 +71,11 @@ orderRoutes.get('/',
     },
     async (req, res, next) => {
         try {
-            await orderController.getAllOrders(req, res);
+            const query = req.query;
+            await orderController.searchOrders(req, res, query);
         } catch(error) {
             next(error);
         }
-       
-    // const orders = await orderModel.find()
-
-    // return res.json({ status: true, orders })
     }
 )
 
@@ -99,7 +86,7 @@ orderRoutes.patch('/:id',
         try {
             const authPassed = await basicAuth(req, ['admin']); 
             if (!authPassed) {
-                return res.status(401).json({ message: req.ERROR_MESSAGE }) //ERROR_MESSAGE was added to req object in the basicAuth middleware
+                return res.status(401).json({ message: req.ERROR_MESSAGE }) 
             } else {
                 next();
             }
@@ -115,24 +102,6 @@ orderRoutes.patch('/:id',
         } catch(error) {
             next(error);
         }
-    // const { id } = req.params;
-    // const { state } = req.body;
-
-    // const order = await orderModel.findById(id)
-
-    // if (!order) {
-    //     return res.status(404).json({ status: false, order: null })
-    // }
-
-    // if (state < order.state) {
-    //     return res.status(422).json({ status: false, order: null, message: 'Invalid operation' })
-    // }
-
-    // order.state = state;
-
-    // await order.save()
-
-    // return res.json({ status: true, order })
     }
 )
 
@@ -143,7 +112,7 @@ orderRoutes.delete('/:id',
         try {
             const authPassed = await basicAuth(req, ['admin']); 
             if (!authPassed) {
-                return res.status(401).json({ message: req.ERROR_MESSAGE }) //ERROR_MESSAGE was added to req object in the basicAuth middleware
+                return res.status(401).json({ message: req.ERROR_MESSAGE }) 
             } else {
                 next();
             }
@@ -158,12 +127,6 @@ orderRoutes.delete('/:id',
         } catch(error) {
             next(error);
         }
-        
-    // const { id } = req.params;
-
-    // const order = await orderModel.deleteOne({ _id: id})
-
-    // return res.json({ status: true, order })
     }
 )
 

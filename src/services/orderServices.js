@@ -1,5 +1,6 @@
 const OrderModel = require('../models/orderModel');
 const moment = require('moment');
+require('dotenv').config();
 
 
 
@@ -24,10 +25,25 @@ const findOrderById = async (orderId) => {
 };
 
 
-const getAllOrders = async () => {
-    const orders = await OrderModel.find();
+const searchOrders = async (query) => {
+    const sort = {};
+    if (query.sortBy) {
+        sort[query.sortBy] = query.orderBy === 'desc' ? -1 : 1;
+    }
+
+    const searchBy = query.state;
+
+    const ORDER_PAGE_LIMIT = Number(process.env.ORDER_PAGE_LIMIT);
+    const ORDER_PAGE_SKIP = Number(process.env.ORDER_SKIP);
+    const orders = await OrderModel.find()
+    .where("state").equals(searchBy)
+    .limit(ORDER_PAGE_LIMIT)
+    .skip(ORDER_PAGE_SKIP)
+    .sort(sort) //Sort by date created also in ASC
+    .exec();
     return orders;
 }
+
 
 const updateOrder = async (order, state) => {
     order.state = state;
@@ -45,7 +61,7 @@ const deleteOrder = async (id) => {
 module.exports = {
     createOrder,
     findOrderById,
-    getAllOrders,
+    searchOrders,
     updateOrder,
     deleteOrder,
 }
