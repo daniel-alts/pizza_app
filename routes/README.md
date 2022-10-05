@@ -195,22 +195,22 @@ To sort the orders by total price, pass a query parameter `price` with a value o
 
 for ascending order, send a GET request to
 ```text
-`/api/orders?price=asc`
+/api/orders?price=asc
 ```
 
 for descending order, send a GET request to
 ```text
-`/api/orders?price=desc`
+/api/orders?price=desc
 ```
 
 To sort by date created in ascending or descending order, add a query parameter `date` with values of `asc` or `desc`
 
 for ascending order, send a GET request to
 ```text
-`/api/orders?date=asc`
+/api/orders?date=asc
 ```
 
 for descending order, send a GET request to
 ```text
-`/api/orders?date=desc`
+/api/orders?date=desc
 ```
