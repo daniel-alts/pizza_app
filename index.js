@@ -1,4 +1,6 @@
 const express = require('express');
+const fs = require('fs');
+const path = require('path')
 const moment = require('moment');
 const mongoose = require('mongoose');
 const orderModel = require('./orderModel');
@@ -7,13 +9,43 @@ const PORT = 3334
 
 const app = express()
 
+
+function authentication(req, res, next){
+    let authheader = req.headers.authorization;
+    console.log(req.headers);
+
+    if(!authheader){
+        let err = new Error('Access Denied');
+        res.setHeader('WWW-Authenticate', 'Basic');
+        err.status = 401;
+        return next(err);
+    }
+
+    let auth = new Buffer.from(authheader.split(' ')[1], 'base64').toString().split(':');
+    let user = auth[0];
+    let pass = auth[1];
+
+    if(user == 'admin' && pass == 'password'){
+        // If authorized user
+        next();
+    } else {
+        let err = new Error('You are not authenticated');
+        res.setHeader('WWW-Authenticate', 'Basic');
+        err.status = 401;
+        return next(err);
+    }
+}
+
+// First step is the authentication of the element
+app.use(authentication);
+app.use(express.static(path.join(__dirname, 'public')));
+
+
 app.use(express.json());
 
-
-app.get('/', (req, res) => {
+app.get('/', isAuthenticated, (req, res) => {
     return res.json({ status: true })
 })
-
 
 app.post('/order', async (req, res) => {
     const body = req.body;
