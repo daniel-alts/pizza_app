@@ -1,3 +1,4 @@
+const User = require("../resources/user/user.model")
 const createOrder =
 	(model) => async (req, res) => {
 		const authenticatedUser =
@@ -58,29 +59,46 @@ const checkAllOrder =
 					.status(403)
 					.send({ message: 'forbidden' })
 			}
-            const orders = await model.find()
+            
+            let orders 
 
 			const { price, date } = req.query
 
-            console.log('line 65 ->', price)
-			if (price || date) {
-                console.log('line 67 ->', price)
-                try{
-                    
-                    const data = orders.sortOrder(price || date)
-                    return res.status(200).json({ data: data })
-                } catch (err) {
-                    console.log(err)
+            //sort by price or date
+            if (price) {
+                const value = price === 'asc' ? 1 : price === 'desc' ? -1 : false
+                if (value)  {
+                    orders = await model.find({}).sort({ total_price: value })
+                    return res.status(200).json({ data: orders })
                 }
+              } else if (date) {
+                const value = date === 'asc' ? 1 : date === 'desc' ? -1 : false
+                
+                if (value)  {
+                    orders = await model.find({}).sort({ created_at: value })
+                    return res.status(200).json({ data: orders })
+            }
+              }
+
+            // console.log('line 65 ->', price)
+			// if (price || date) {
+            //     console.log('line 67 ->', price)
+            //     try{
+            //         orders = model.find({}).sortOrder(price || date)
+            //         return res.status(200).json({ data: orders })
+            //     } catch (err) {
+            //         console.log(err)
+            //     }
                 
                 
 				// return res.status(200).json({ data: newOrder })
-			}
-
-
-			return res
-				.status(200)
-				.json({ data: orders })
+			// }
+            // if (!orders){
+            //     return res
+			// 	.status(200)
+			// 	.json({ data: orders })
+            // }
+		
 		} catch (err) {
 			return res.status(404)
 		}

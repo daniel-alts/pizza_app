@@ -6,11 +6,10 @@ const Schema = mongoose.Schema
 const ObjectId = Schema.ObjectId
 
 const OrderSchema = new Schema({
-	id: ObjectId,
+	// id: ObjectId,
 	created_at: {
 		type: Date,
 		default: Date,
-
 	},
 	state: { type: Number, default: 1 },
 	total_price: Number,
@@ -32,7 +31,7 @@ OrderSchema.pre(
 	async function (next) {
 		let order = this
 
-		await order.items.reduce(
+		order.items.reduce(
 			(prev, curr) => {
 				prev += curr.price * curr.quantity
 				order.total_price = prev
@@ -47,33 +46,34 @@ OrderSchema.pre(
 )
 
 
-OrderSchema.methods.sortOrder =
-	function (orderBy) {
-		const order = this
-    console.log(order)
-		const orderOfSort = (value) =>
-			value === 'asc'
-				? 1
-				: value === 'desc'
-				? -1
-				: false
-    console.log(orderOfSort('asc'))
-		if (orderBy == price) {
-			const sortByPrice =
-				orderOfSort(price)
-        console.log(sortByPrice)
-			if (sortByPrice) {
-				return order
-					.find({})
-					.sort({ total_price: sortByPrice })
-			} else if (orderBy == date) {
-				const sortByDate = orderOfSort(date)
-				return order
-					.find({})
-					.sort({ created_at: sortByDate })
-			}
-		}
-	}
+// I'd be back for you someday
+// OrderSchema.methods.sortOrder =
+// 	function (orderBy) {
+// 		const order = this
+// 		console.log(order)
+// 		const orderOfSort = (value) =>
+// 			value === 'asc'
+// 				? 1
+// 				: value === 'desc'
+// 				? -1
+// 				: false
+// 		console.log(orderOfSort('asc'))
+// 		if (orderBy == price) {
+// 			const sortByPrice =
+// 				orderOfSort(price)
+// 			console.log(sortByPrice)
+// 			if (sortByPrice) {
+// 				return order
+// 					.find({})
+// 					.sort({ total_price: sortByPrice })
+// 			} else if (orderBy == date) {
+// 				const sortByDate = orderOfSort(date)
+// 				return order
+// 					.find({})
+// 					.sort({ created_at: sortByDate })
+// 			}
+// 		}
+// 	}
 
 const Order = mongoose.model(
 	'Order',
