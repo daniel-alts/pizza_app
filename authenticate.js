@@ -3,7 +3,20 @@ const userModel = require("./models/userModel");
 
 // Validate Admin
 const validateAdmin = async (req, res, next) => {
-  const { username, password } = req.body.loginDetails;
+  const username = req.query.username;
+  const password = req.query.password;
+  if (!username) {
+    return res.status(404).json({
+      status: false,
+      message: "Please enter your username",
+    });
+  }
+  if (!password) {
+    return res.status(404).json({
+      status: false,
+      message: "Please enter your password",
+    });
+  }
 
   const user = await userModel.find({
     username: username,
@@ -30,7 +43,20 @@ const validateAdmin = async (req, res, next) => {
   next();
 };
 const validateLoginDetails = async (req, res, next) => {
-  const { username, password } = req.body.loginDetails;
+  const username = req.query.username;
+  const password = req.query.password;
+  if (!username) {
+    return res.status(404).json({
+      status: false,
+      message: "Please enter your username",
+    });
+  }
+  if (!password) {
+    return res.status(404).json({
+      status: false,
+      message: "Please enter your password",
+    });
+  }
 
   const user = await userModel.find({
     username: username,

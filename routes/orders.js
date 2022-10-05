@@ -6,7 +6,7 @@ const { validateAdmin, validateLoginDetails } = require("../authenticate");
 
 // Create an order
 ordersRouter.post("/", validateLoginDetails, async (req, res) => {
-  const body = req.body.itemsBody;
+  const body = req.body;
 
   const total_price = body.items.reduce((prev, curr) => {
     prev += curr.price;
@@ -52,7 +52,7 @@ ordersRouter.get("/", validateAdmin, async (req, res) => {
 // Update an order by id
 ordersRouter.patch("/:id", validateLoginDetails, async (req, res) => {
   const { id } = req.params;
-  const { state } = req.body.itemsBody;
+  const { state } = req.body;
 
   const order = await orderModel.findById(id);
 
