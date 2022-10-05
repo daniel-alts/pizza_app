@@ -29,22 +29,55 @@ const getOrdersInfo = async (req, res, next) => {
  */
 const getAllOrders = async (req, res, next) => {
   try {
-    let orders
+    let orders, returnObject = {}
+    
+    /**
+     * check for query parameters
+     */
+    // Pagination
+    let limitFromQuery = parseInt(req.query.limit)
+    let pageFromQuery = parseInt(req.query.page)
 
-    // check for query parameters
+    let limit = 5, page = 1 // default values
+    if (!isNaN(limitFromQuery) && limitFromQuery > 0) limit = limitFromQuery
+    
+    const numberOfOrders = await orderModel.find({}).countDocuments().exec()
+    const totalPages = Math.ceil(numberOfOrders / limit)
+    if (!isNaN(pageFromQuery) && pageFromQuery <= totalPages ) page = pageFromQuery
+    
+    const start = (page - 1) * limit
+    const end = page * limit
+    
+    // Sort by total_price/createdAt
     const { price, date } = req.query
 
     if (price) {
       const value = price === 'asc' ? 1 : price === 'desc' ? -1 : false
-      if (value) orders = await orderModel.find({}).sort({ total_price: value })
+      if (value) orders = await orderModel.find({}).sort({ total_price: value }).limit(limit).skip(start)
     } else if (date) {
       const value = date === 'asc' ? 1 : date === 'desc' ? -1 : false
-      console.log(value, '<-- value')
-      if (value) orders = await orderModel.find({}).sort({ created_at: value })
+      if (value) orders = await orderModel.find({}).sort({ created_at: value }).limit(limit).skip(start)
     }
-    if (!orders) orders = await orderModel.find({})
+    if (!orders) orders = await orderModel.find({}).limit(limit).skip(start)
 
-    return res.json({ status: true, data: orders })
+    // prepare response data
+    if (start > 0) {
+      returnObject.previousPage = {
+        page: page - 1,
+        limit: limit,
+      }
+    }
+    returnObject.currentPage = page
+    if (end < numberOfOrders) {
+      returnObject.nextPage = {
+        page: page + 1,
+        limit: limit,
+      }
+    }
+    returnObject.totalPages = totalPages
+    returnObject.orders = orders
+
+    return res.json({ status: true, data: returnObject })
   } catch (err) {
     next(err)
   }
