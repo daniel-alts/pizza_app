@@ -1,7 +1,7 @@
 const orderModel = require("../models/orderModel");
 const moment = require("moment");
 
-const userModel = require("../models/userModel");
+// create order function: POST
 
 async function createOrder(req, res) {
   const body = req.body;
@@ -37,43 +37,63 @@ const getOrderById = async (req, res, next) => {
 };
 
 async function getOrders(req, res, next) {
-  let orders;
- 
   const authenticatedUser = req.authenticatedUser;
 
-   if(!authenticatedUser){
-    return res.status(401).json({ message: 'Invalid Authentication Credentials' });
-}
+  if (!authenticatedUser) {
+    return res
+      .status(401)
+      .json({ message: "Invalid Authentication Credentials" });
+  }
 
-  if (authenticatedUser.role !== "admin"){
+  if (authenticatedUser.role !== "admin") {
     return res.status(401).send({ message: "Unauthorized" });
   }
-  const price = req.query.price
-  if (price){
-    const value = price =='asc'?1:price=='desc'?-1:false
-    if (value){
-        await orderModel.find().then((allOrders)=>{
-            res.status(200).send(allOrders)
-        }).catch((err)=>{
-
-            res.status(500).send({
-                message:'Wrong query',
-                data:err
-            })
+  let orders;
+  const price = req.query.price;
+  const date = req.query.date;
+  if (price) {
+    const value = price == "asc" ? 1 : price == "desc" ? -1 : false;
+    if (value) {
+      await orderModel
+        .find()
+        .sort({ total_price: value })
+        .then((allOrder) => {
+          orders = allOrder;
         })
+        .catch((err) => {
+          res.status(500).send(err);
+        });
+    }
+  }
+  if (date) {
+    const value = date == "asc" ? 1 : date == "desc" ? -1 : false;
+    if (value) {
+      await orderModel
+        .find()
+        .sort({ created_at: value })
+        .then((allOrder) => {
+          orders = allOrder;
+        })
+        .catch((err) => {
+          res.status(500).send(err);
+        });
     }
   }
   if (!orders) {
     await orderModel
       .find()
       .then((allOrders) => {
-        res.status(200).send(allOrders);
+        orders = allOrders;
       })
       .catch((err) => {
         res.status(500).send(err);
       });
   }
-} 
+  res.status(200).send(orders);
+
+  //   pagination
+
+}
 async function updateById(req, res) {
   const id = req.params.id;
   const { state } = req.body;
