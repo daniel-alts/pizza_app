@@ -1,7 +1,11 @@
+require("dotenv").config()
 const express = require('express');
 const moment = require('moment');
 const mongoose = require('mongoose');
 const orderModel = require('./orderModel');
+const userModel = require('./userModel');
+const jwt = require("jsonwebtoken")
+
 
 const PORT = 3334
 
