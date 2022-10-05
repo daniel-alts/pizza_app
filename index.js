@@ -3,7 +3,7 @@ const moment = require('moment');
 const mongoose = require('mongoose');
 const OrderRoute = require("./Routes/OrderRoute")
 const UserRoute = require("./Routes/UserRoute")
-const auth = require("./auth")
+const authenticate = require("./auth")
 require("dotenv").config()
 
 const PORT = 3334
@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
 })
 
 // Routes
-app.use("/", auth, OrderRoute)
+app.use("/", authenticate, OrderRoute)
 app.use("/user", UserRoute)
 
 mongoose.connect(process.env.MONGO_URI)
