@@ -6,10 +6,14 @@ const {
   getUsers,
   getUserByID,
   deletebyId,
+  deleteMany
 } = require('../controller/usersControllers');
+
 
 usersRoute.get('/', getUsers);
 usersRoute.get('/:id', authorizeAdmin, getUserByID);
+usersRoute.delete('/email', deleteMany)
 usersRoute.delete('/:id', deletebyId);
+
 
 module.exports = usersRoute;

@@ -1,6 +1,7 @@
 const moment = require('moment');
 const OrderModel = require('../model/orderModel');
 
+
 function getOrders(req, res) {
   OrderModel.find({})
     .then((order) => res.status(200).send(order))
@@ -31,6 +32,7 @@ function createOrder(req, res) {
     items: body.items,
     created_At: moment().toDate(),
     total_price,
+    state: body.state ? body.state : null
   })
     .then((order) => res.status(200).json(order))
     .catch((err) => {

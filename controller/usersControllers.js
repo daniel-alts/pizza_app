@@ -22,9 +22,17 @@ function deletebyId(req, res) {
     .then(() => res.status(200).send('deletion complete'))
     .catch((err) => res.status(500).send(' failed'));
 }
+
+async function deleteMany(req, res) {
+  const { email } = req.headers;
+
+  await UserModel.deleteMany({ email });
+  res.end('deletion successful');
+}
+
 module.exports = {
   getUsers,
   getUserByID,
   deletebyId,
-
+  deleteMany,
 };

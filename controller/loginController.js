@@ -13,8 +13,7 @@ async function loginUser(req, res) {
         return;
       }
       const { firstName, lastName, user_type } = user[0];
-      console.log(firstName, lastName);
-      res.send(`Welcome ${user_type}, ${firstName} ${lastName}`);
+      res.status(200).send(`Welcome ${user_type}, ${firstName} ${lastName}`);
     })
     .catch((err) => {
       console.log(err);
