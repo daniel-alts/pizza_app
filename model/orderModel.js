@@ -1,3 +1,5 @@
+// ********************IMPORT DEPENDENCY, DEFINE SCHEMA AND CREATE ORDER MODEL ************/
+
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
@@ -12,7 +14,7 @@ const OrderSchema = new Schema({
     name: String,
     price: Number,
     size: { type: String, enum: ['m', 's', 'l']},
-    quantity: Number,
+    quantity: Number
   }]
 });
 
