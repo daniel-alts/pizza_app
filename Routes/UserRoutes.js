@@ -44,22 +44,22 @@ userRoute.post("/", (req, res) => {
 //Put Route
 userRoute.put("/:id", (req, res) => {
   const id = req.params.id
-  const { id:id2 } = req.params;
-  console.log(id2);
-  const id3 = req.params;
-  console.log(id3);
+  // const { id:id2 } = req.params;
+  // console.log(id2);
+  // const id3 = req.params;
+  // console.log(id3);
 
-  const fruits = {
-    banana: "1",
-    mango: "2",
-    orange: "3",
-    paw_paw: "4",
-    grape: "5",
-    sour_sop: "6"
-  }
+  // const fruits = {
+  //   banana: "1",
+  //   mango: "2",
+  //   orange: "3",
+  //   paw_paw: "4",
+  //   grape: "5",
+  //   sour_sop: "6"
+  // }
 
-  const {grape, paw_paw} = fruits;
-  console.log(grape, paw_paw);
+  // const {grape, paw_paw} = fruits;
+  // console.log(grape, paw_paw);
 
   const userUpdate = req.body;
 

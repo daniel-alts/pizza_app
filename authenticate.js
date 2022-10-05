@@ -3,16 +3,16 @@ const UserModel = require("./userModel");
 function authenticate(req, res) {
   return new Promise ((resolve, reject) => {
 
-    const body = req.body;
+    const body = req.body.user;
 
     if (!body) {
           reject("No username or password provided")
     }
 
     const username = body.username;
-    const password = body.password
+    const password = body.password;
 
-    const userFound = UserModel.find({username: username}, (err, foundResults) => {  
+    UserModel.find({username: username}, (err, foundResults) => {  
     
       if (err){
         console.log(err);

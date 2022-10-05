@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
 
 
 app.post('/order', async (req, res) => {
-    const body = req.body;
+    const body = req.body.order;
 
     const total_price = body.items.reduce((prev, curr) => {
         prev += curr.price
@@ -61,7 +61,7 @@ app.get('/orders', async (req, res) => {
 
 app.patch('/order/:id', async (req, res) => {
     const { id } = req.params;
-    const { state } = req.body;
+    const { state } = req.body.order;
 
     const order = await orderModel.findById(id)
 
