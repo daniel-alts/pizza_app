@@ -6,8 +6,9 @@ const {
 	deleteOrder,
 } = require('../crud')
 const Order = require('../../resources/order/order.model')
+const User = require('../../resources/user/user.model')
 const mongoose = require('mongoose')
-const moment = require('moment')
+
 
 jest.setTimeout(20000) // resets Jest timeout time allow for execution.
 
@@ -29,6 +30,7 @@ describe('createOrder', () => {
 	it('create new order', async () => {
 		expect.assertions(5)
 
+        const user = await User.create({username: 'test', password: 'test'})
 		const body = {
 			items: [
 				{
@@ -41,6 +43,11 @@ describe('createOrder', () => {
 		}
 
 		const req = {
+            authenticatedUser: {
+                username:
+                user.username,
+            role: user.user_type,
+            },
 			body,
 		}
 
@@ -69,6 +76,7 @@ describe('createOrder', () => {
 	it('total_price was updated', async () => {
 		expect.assertions(3)
 
+        const user = await User.create({username: 'test', password: 'test'})
 		const body = {
 			items: [
 				{
@@ -81,6 +89,11 @@ describe('createOrder', () => {
 		}
 
 		const req = {
+            authenticatedUser: {
+                username:
+                user.username,
+            role: user.user_type,
+            },
 			body,
 		}
 
@@ -107,6 +120,7 @@ describe('checkOrderById', () => {
 	it('check the order by ID', async () => {
 		expect.assertions(2)
 
+        const user = await User.create({username: 'test', password: 'test'})
 		const order = await Order.create({
 			items: [
 				{
@@ -118,6 +132,11 @@ describe('checkOrderById', () => {
 			],
 		})
 		const req = {
+            authenticatedUser: {
+                username:
+                user.username,
+            role: user.user_type,
+            },
 			params: {
 				id: order._id,
 			},
@@ -143,6 +162,7 @@ describe('orderState', () => {
 	it('is order state valid', async () => {
 		expect.assertions(4)
 
+        const user = await User.create({username: 'test', password: 'test'})
 		const order = await Order.create({
 			items: [
 				{
@@ -155,6 +175,11 @@ describe('orderState', () => {
 		})
 
 		const req = {
+            authenticatedUser: {
+                username:
+                user.username,
+            role: user.user_type,
+            },
 			params: {
 				id: order._id,
 			},
@@ -183,6 +208,8 @@ describe('orderState', () => {
 
 describe('deleteOrder', () => {
 	it('should delete order', async () => {
+
+        const user = await User.create({username: 'test', password: 'test', user_type: 'admin'})
 		const order = await Order.create({
 			items: [
 				{
@@ -195,13 +222,18 @@ describe('deleteOrder', () => {
 		})
 
 		const req = {
+            authenticatedUser: {
+                username:
+                user.username,
+            role: user.user_type,
+            },
 			params: {
 				id: order._id,
 			},
 		}
 		const res = {
 			status(status) {
-				expect(status).toBe(200)
+				expect(status).toBe(204)
 				return this
 			},
 			json(result) {
@@ -219,6 +251,7 @@ describe('checkAllOrder', () => {
 	it('check that all orders were returned', async () => {
 		expect.assertions(5)
 
+        
 		const order = await Order.create([
 			{
 				items: [

@@ -175,13 +175,18 @@ const deleteOrder =
 
 		const { id } = req.params
 
-		const order = await model.deleteOne({
-			_id: id,
-		})
+        try{
+            await model.deleteOne({
+                _id: id,
+            })
+        } catch {
+            res.status(401).send({ message: 'id not found' })
+        }
+		
 
 		return res
 			.status(204)
-			.json({ data: order })
+			.send({ message: 'successfully deleted' })
 	}
 
 const crudControllers = (model) => ({
