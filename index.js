@@ -15,7 +15,7 @@ app.post("/", (req, res) =>{
 })
 
 
-mongoose.connect('mongodb://localhost:27017/pizza')
+mongoose.connect('mongodb+srv://peltastic:3123pex3123@cluster1.db16ass.mongodb.net/bookstore?retryWrites=true&w=majority')
 
 mongoose.connection.on("connected", () => {
 	console.log("Connected to MongoDB Successfully");
