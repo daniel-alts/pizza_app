@@ -17,8 +17,9 @@ const userSchema = new schema({
         unique:true
     },
     password:{
-        type:Number,
-        required:[true, 'PassWord is required']
+        type:String,
+        required:[true, 'PassWord is required'],
+        unique:true
     },
     user_type:{
         type: String,
