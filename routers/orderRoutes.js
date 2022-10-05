@@ -1,6 +1,7 @@
 const express = require('express');
 const orderController = require('../controllers/order')
-const usersController = require('../controllers/user')
+
+// ***************SET UP ROUTER, CREATE ENDPOINTS FOR ORDERS ********************//
 
 const router = express.Router()
 

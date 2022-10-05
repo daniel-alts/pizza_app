@@ -1,25 +1,29 @@
+// ********************IMPORT DEPENDENCIES AND CREATE CONTROLLER FUNCTIONS ************/
+
 const moment = require('moment');
 const orderModel = require('../model/orderModel')
 
+
+// **************GET ALL ORDERS ***************/
+
+
 async function getAllOrders(req, res){
     try{
+        const queryString = {...req.query}
 
-        //Get the query string from url
-        const queryParams = {...req.query}
+        const excludedQuery = ['page', 'sort', 'limit']
 
-        //exclude fields that may cause interference
-        const excludedFields = ['page', 'sort', 'limit']
-        excludedFields.forEach((field) => delete queryParams[field])
+        excludedQuery.forEach((field) => delete queryString[field])
 
-        //query the database
-        let query = orderModel.find(queryParams)
+        let query = orderModel.find(queryString)
 
-        //sort based on query
+        // ********** QUERY BY SORTING **************/ 
         if(req.query.sort){
             query = query.sort(`-${req.query.sort}`)
         }
 
-        //Add pagination
+    // **************ADD PAGINATION**********//
+
         if(req.query.page){
             const page = req.query.page * 1 || 1;
             const limit = req.query.limit * 1
@@ -31,11 +35,12 @@ async function getAllOrders(req, res){
             }
         }
 
+// *************RETURN ALL ORDERS *************//
+
         const orders = await query;
         res.status(200).json({ status: true, orders })
         
-  
-   
+// **********CATCH ERROR IF ANY ***************//
     }catch(err){
         res.status(404).json({
             status: false,
@@ -43,6 +48,7 @@ async function getAllOrders(req, res){
     })}
 }
 
+// **************GET ORDER BY ID ***************//
 
 async function getOrderById(req, res){
     try{
@@ -50,13 +56,12 @@ async function getOrderById(req, res){
         
         const order = await orderModel.findById(id)
         
-
         if (!order) {
         return res.status(404).json({ status: false, order: null })
     }
-
         return res.status(200).json({ status: true, order })
-    }catch(err){
+    }
+    catch(err){
         res.status(500).json({
         status: 'Failed',
         err
@@ -64,7 +69,10 @@ async function getOrderById(req, res){
     }
 }
 
+// **************CREATE ORDER BY ID ***************//
+
 async function addOrder(req, res){
+   
     try{
         const body = req.body;
         const total_price = body.items.reduce((prev, curr) => {
@@ -90,6 +98,7 @@ async function addOrder(req, res){
     }
 }
 
+// ************** UPDATE ORDER *******************//
 
 async function updateOrder(req, res){
     try{
@@ -111,13 +120,17 @@ async function updateOrder(req, res){
         await order.save()
     
         return res.status(200).json({ status: true, order })
-    }catch(err){
+    }
+    catch(err){
         res.status(500).json({
             status: 'Failed',
             err
         })
     }
 }
+
+
+// ************** DELETE ORDER **********************//
 
 async function deleteOrder(req, res){
     try{

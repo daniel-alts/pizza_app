@@ -1,3 +1,5 @@
+// ********************IMPORT DEPENDENCY, DEFINE SCHEMA AND CREATE ORDER MODEL ************/
+
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;

@@ -1,4 +1,9 @@
+// ********************IMPORT DEPENDENCIES AND CREATE CONTROLLER FUNCTIONS ************//
+
 const UserModel = require('../model/usersModel')
+
+
+// ********************* ADD A USER *********************//
 
 async function createUser(req, res){
   const userInfo = req.body
@@ -9,6 +14,7 @@ async function createUser(req, res){
   })
 }
 
+// ************GET A USER ******************//
 
 async function getUsers(req, res){
   const users = await UserModel.find()
@@ -18,10 +24,13 @@ async function getUsers(req, res){
   })
 }
 
+
+//********************* AUTHENTICATE A USER *********************//
+
 async function authenticateUser(req, res, next){
   let authHeader = await req.headers.authorization
 
-  //check headers for authorization value
+  //******************check headers for authorization value *****************//
   if(!authHeader){
    let error = new Error('You are not authenticated!')
    res.status(401).json({
@@ -30,6 +39,8 @@ async function authenticateUser(req, res, next){
    })
    return next(error)
   }
+
+// ****************GET USERNAME AND PASSWORD FROM HEADER *******************//
 
   let userAuth =  new Buffer.from(authHeader.split(" ")[1]).toString().split(":");
   let username = userAuth[0],
