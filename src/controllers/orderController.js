@@ -5,8 +5,14 @@ const Error = require("../utils/error");
 
 
 async function getAllOrder(req, res, next) {
+  const page = parseInt(req.query.page)
+  const sort = req.query.sort
+  console.log(sort)
+  const sorted = {};
+  sorted.sort = 'asc'
+  console.log(sorted)
   try {
-    const orders = await orderModel.find();
+    const orders = await orderModel.find().skip(page*2).limit(2).sort( sorted || { created_at: -1 });
 
     return res.json({ status: true, orders });
   } catch (error) {
