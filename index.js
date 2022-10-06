@@ -1,10 +1,12 @@
+
 require("dotenv").config()
 const express = require('express');
 const moment = require('moment');
 const mongoose = require('mongoose');
 const orderModel = require('./orderModel');
-const userModel = require('./userModel');
+const User = require('./userModel');
 const jwt = require("jsonwebtoken")
+const bcrypt = require("bcrypt")
 
 
 const PORT = 3334
@@ -13,11 +15,83 @@ const app = express()
 
 app.use(express.json());
 
+app.post('/signup', async (req,res)=>{
+    try{
+        const{username,password} = req.body
+
+        if(!(username && password)){
+            res.status(400).send("all fields are required")
+        }
+
+        const oldUser  = await User.findOne({username})
+
+        if(oldUser){
+            return res.status(409).send("user already exists, login or try another username")
+        }
+
+        encryptedPassword = await bcrypt.hash(password,10)
+
+        const user = await User.create({
+            username,
+            password:encryptedPassword
+        })
+
+         SECRET = process.env.SECRET
+
+        const token =  jwt.sign({ username: user.username }, SECRET,{expiresIn:"2h"});
+
+        user.token = token
+        console.log(user)
+
+        res.status(201).json(user)
+    }catch(err){
+        console.log(err)
+    }
+
+})
+
+app.post('/login', async (req,res)=>{
+
+    try{
+        const {username,password} = req.body
+        if(!(username && password)){
+            return res.status(409).send("all fields are required to proceed")
+        }
+
+        const user = await User.findOne({ email });
+
+    if (user && (await bcrypt.compare(password, user.password))) {
+      // Create token
+      const token = jwt.sign(
+        { user_id: user._id, email },
+        process.env.TOKEN_KEY,
+        {
+          expiresIn: "2h",
+        }
+      );
+
+      // save user token
+      user.token = token;
+
+      // user
+      res.status(200).json(user);
+    }
+    res.status(400).send("Invalid Credentials");
+    }catch(err){
+        console.log(err)
+    }
+
+
+
+})
+
 
 app.get('/', (req, res) => {
     return res.json({ status: true })
 })
 
+
+const auth = require("./auth");
 
 app.post('/order', async (req, res) => {
     const body = req.body;
