@@ -66,12 +66,12 @@ const updateOrder = async (req, res) => {
 
 
 
-const deleteUser = async (req, res) => {
-    const { userId } = req.params;
-
-    const user = await User.deleteOne({ _id: userId})
-
-    return res.json({ status: true, user }) 
+    const deleteOrder = async (req, res) => {
+        const { orderId } = req.params;
+    
+        const order = await Order.deleteOne({ _id: orderId})
+    
+        return res.json({ status: true, order }) 
     }
         
 

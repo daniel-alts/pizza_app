@@ -1,7 +1,7 @@
-const express =require("express");
-const mongoose = require("mongoose");
+// const express =require("express");
+// const mongoose = require("mongoose");
 const User = require("../models/userModel");
-
+const bcrypt = require("bcrypt")
 
 const getAllUsers = async(req, res) => {
     const users = await User.find()
@@ -10,65 +10,38 @@ const getAllUsers = async(req, res) => {
 
 
 
-const createUser = async (req, res ) => {
-    const body = req.body;
-    // const user = await User.create()
-    User.create(User)
-    .then((user) => {
-        res.status(201).send({
-            message: "User added successfully",
-            data: user  
+const createUser = async (req, res) => {
+    try {
+      const { username, password, email, user_type } = req.body
+      const hashedPassword = await bcrypt.hash(password, 6)
+      const userObject = {
+        username,
+        password: hashedPassword,
+        email,
+      }
+      if (user_type) userObject.user_type = user_type
+      const user = new User(userObject)
+      user
+        .save()
+        .then((result) => {
+          const { id, username, email, user_type } = result
+          const returnObj = {
+            id,
+            username,
+            email,
+            user_type,
+          }
+          return res.status(201).json({ status: true, data: returnObj })
         })
-    }).catch((err) => {
-        res.status(400).send(err)
-    })
-}
-
-
-
-const getUserById = async (req, res) => {
-    const { userId } = req.params;
-    const user = await User.findById(userId) 
-
-    if (!user) {
-        return res.status(404).json({ status: false, order: null })
+        .catch((err) => {
+          console.log('error occured', err)
+          return res.status(400).json({ status: false, message: err.message })
+        })
+    } catch (err) {
+      res.json(err)
     }
-        return res.json({ status: true, order })
-}
-
-
-
-const updateUser = async (req, res) => {
-    const { userId } = req.params;
-    const { state } = req.body;
-
-    const user = await User.findById(userId)
-
-    if (!user) {
-    return res.status(404).json({ status: false, user: null })
-    }
-
-    if (state < user.state) {
-    return res.status(422).json({ status: false, user: null, message: 'Invalid operation' })
-    }
-
-    user.state = state;
-
-    await user.save() 
-
-    return res.json({ status: true, user })
-    }
-
-
-
-    const deleteUser = async (req, res) => {
-        const { userId } = req.params;
-    
-        const user = await User.deleteOne({ _id: userId})
-    
-        return res.json({ status: true, user }) 
-    }
-        
+  }
+  
 
 
 
@@ -77,7 +50,4 @@ const updateUser = async (req, res) => {
 module.exports = {
     getAllUsers,
     createUser,
-    getUserById,
-    updateUser,
-    deleteUser
 }
