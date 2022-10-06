@@ -6,12 +6,12 @@ const Error = require("../utils/error");
 
 async function getAllOrder(req, res, next) {
   const page = parseInt(req.query.page)
+  const limit = parseInt(req.query.limit)
   const sorted = {};
   const sort = req.query.sort;
   sorted[sort] = 'asc'
-  console.log(sorted)
   try {
-    const orders = await orderModel.find().skip(page*2).limit(2).sort( sorted || { created_at: -1 });
+    const orders = await orderModel.find().skip(page*limit || page*4).limit(limit || 4).sort( sorted || { created_at: -1 });
 
     return res.json({ status: true, orders });
   } catch (error) {
