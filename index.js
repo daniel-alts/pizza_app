@@ -1,7 +1,8 @@
 const express = require('express');
-const moment = require('moment');
 const routes = require("./routes/index")
 const mongoose = require('mongoose');
+const dotenv = require("dotenv")
+dotenv.config()
 
 const PORT = 8000
 
@@ -15,7 +16,7 @@ app.post("/", (req, res) =>{
 })
 
 
-mongoose.connect('mongodb+srv://peltastic:3123pex3123@cluster1.db16ass.mongodb.net/bookstore?retryWrites=true&w=majority')
+mongoose.connect(process.env.DB_URI)
 
 mongoose.connection.on("connected", () => {
 	console.log("Connected to MongoDB Successfully");
