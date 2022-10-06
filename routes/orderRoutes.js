@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const express = require("express");
-// const router = require("mongoose").Router();
+
 const {
   getOrders,
   getOneOrder,
@@ -10,11 +10,11 @@ const {
 } = require("../controller/orderController");
 
 const requireAuth = require("../middleware/basicauth")
-// const router = mongoose.Router();
+
 const router = express.Router();
 
 //require Auth for all other
-// router.use(requireAuth)
+router.use(requireAuth)
 
 //testing out our routes route
 // router.get("/", () => {});
