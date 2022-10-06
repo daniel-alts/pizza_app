@@ -6,10 +6,9 @@ const Error = require("../utils/error");
 
 async function getAllOrder(req, res, next) {
   const page = parseInt(req.query.page)
-  const sort = req.query.sort
-  console.log(sort)
   const sorted = {};
-  sorted.sort = 'asc'
+  const sort = req.query.sort;
+  sorted[sort] = 'asc'
   console.log(sorted)
   try {
     const orders = await orderModel.find().skip(page*2).limit(2).sort( sorted || { created_at: -1 });
