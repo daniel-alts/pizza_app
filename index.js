@@ -1,10 +1,13 @@
 const express = require('express');
-const moment = require('moment');
-const orderModel = require('./orderModel');
 require('dotenv').config()
 
-const { connectDB } = require('./db/connect')
+const userRouter = require('./routes/user')
+const orderRouter = require('./routes/order');
+const connectDB  = require('./db/connect')
+const authenticateUser = require('./middleware/authenticate')
 const app = express()
+
+app.use(express.json());
 
 
 
@@ -13,24 +16,32 @@ const app = express()
 const PORT = process.env.PORT || 3334;
 const MONGO_DB_URI = process.env.MONGO_DB_URI
 
-
-//middleware
-app.use(express.json());
-const orderRouter = require('./routes/order');
-
-
 app.get('/', (req, res) => {
-    return res.json({ status: true })
+    res.json({ status: true })
 })
 
+
+
+
+//User router
+app.use('/user', userRouter)
 //order router
-app.use('/order', orderRouter );
+app.use('/order', authenticateUser, orderRouter );
+
+app.all('/', (req, res) => {
+    return res.json({ status: true })
+  })
+
+// error handler
+app.use((error,req,res, next ) =>{
+    console.log(error)
+    res.status(505).json({
+        message: error.message
+    })
+})
 
 
-
-
-
-
+//server & database connection
 const start = async() =>{
     try {
         //connect to DB
@@ -39,8 +50,8 @@ const start = async() =>{
 
        //connect to server
 
-       app.listen(PORT, () => {
-        console.log('Listening on port, ', PORT)
+     app.listen(PORT, () => {
+        console.log(`Listening on port ${PORT}`)
     })
 
     } catch (error) {
@@ -49,3 +60,4 @@ const start = async() =>{
 }
 
 start()
+
