@@ -1,95 +1,58 @@
 const express = require('express');
 const moment = require('moment');
 const mongoose = require('mongoose');
-const orderModel = require('./orderModel');
 
-const PORT = 3334
+const userModel = require('./models/userModel')
+const { success, error } = require("consola");
+
+// Bring in the app constants
+const { DB, PORT } = require("./config");
+
 
 const app = express()
 
 app.use(express.json());
 
+// Router Middleware
+app.use("/api/users", require("./routes/userRoutes"));
+
+app.use("/api", require("./routes/orderRoutes"));
+
+
 
 app.get('/', (req, res) => {
-    return res.json({ status: true })
+  return res.json({ status: true })
 })
 
 
-app.post('/order', async (req, res) => {
-    const body = req.body;
 
-    const total_price = body.items.reduce((prev, curr) => {
-        prev += curr.price
-        return prev
-    }, 0);
 
-    const order = await orderModel.create({ 
-        items: body.items,
-        created_at: moment().toDate(),
-        total_price
-    })
+const startApp = async () => {
+    try {
+      // Connection With DB
+      await  mongoose.connect(DB, {dbName: "pizza",
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+      });
+  
+      success({
+        message: `Successfully connected with the Database \n${DB}`,
+        badge: true
+      });
+  
+      // Start Listenting for the server on PORT
+      app.listen(PORT, () =>
+        success({ message: `Server started on PORT ${PORT}`, badge: true })
+      );
+    }catch(err){
+         error({
+        message: `Unable to connect with Database \n${err}`,
+        badge: true
+      });
     
-    return res.json({ status: true, order })
-})
-
-app.get('/order/:orderId', async (req, res) => {
-    const { orderId } = req.params;
-    const order = await orderModel.findById(orderId)
-
-    if (!order) {
-        return res.status(404).json({ status: false, order: null })
     }
-
-    return res.json({ status: true, order })
-})
-
-app.get('/orders', async (req, res) => {
-    const orders = await orderModel.find()
-
-    return res.json({ status: true, orders })
-})
-
-app.patch('/order/:id', async (req, res) => {
-    const { id } = req.params;
-    const { state } = req.body;
-
-    const order = await orderModel.findById(id)
-
-    if (!order) {
-        return res.status(404).json({ status: false, order: null })
-    }
-
-    if (state < order.state) {
-        return res.status(422).json({ status: false, order: null, message: 'Invalid operation' })
-    }
-
-    order.state = state;
-
-    await order.save()
-
-    return res.json({ status: true, order })
-})
-
-app.delete('/order/:id', async (req, res) => {
-    const { id } = req.params;
-
-    const order = await orderModel.deleteOne({ _id: id})
-
-    return res.json({ status: true, order })
-})
+  };
+  
+  startApp();
 
 
-mongoose.connect('mongodb://localhost:27017')
-
-mongoose.connection.on("connected", () => {
-	console.log("Connected to MongoDB Successfully");
-});
-
-mongoose.connection.on("error", (err) => {
-	console.log("An error occurred while connecting to MongoDB");
-	console.log(err);
-});
-
-app.listen(PORT, () => {
-    console.log('Listening on port, ', PORT)
-})
