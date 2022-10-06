@@ -23,24 +23,37 @@ app.get('/users', (req, res) => {
 
 app.post('/users', async (req, res) => {
     try{
+        const { username, password, user_type } = req.body
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        const user = { name: req.body.name, password: hashedPassword }
-        users.push(user);
-        res.status(201).send();
+        const user = {
+            username,
+            password: hashedPassword,
+            user_type
+        }
+        const newUser = new UserModel(user);
+        newUser.save()
+            .then((result) => {
+                return res.status(201).json({ status: true, data: result })
+            })
+            .catch((err) => {
+                console.log('An error occured', err)
+                return res.status(400).json({ status: false, message: err.message })
+            })
     } catch {
-        res.status(500).send();
+        res.json(err)
     };
 });
 
 app.post('/users/login', async (req, res) => {
-    const user = users.find((user) => user.name = req.body.name);
+    const users = await userModel.find({});
+    const user = await users.find((user) => user.name = req.body.name);
 
     if(user == null){
         return res.status(400).send('cannot find user');
     }
     try{
         if(await bcrypt.compare(req.body.password, user.password)){
-            res.send('Success')
+            res.send('Access Granted');
         } else {
             res.send('Access Denied');
         };
@@ -77,9 +90,26 @@ app.get('/order/:orderId', async (req, res) => {
     return res.json({ status: true, order });
 });
 
-app.get('/orders', async (req, res) => {
-    const orders = await orderModel.find();
+app.get('/orders?limit=20&offset=100', async (req, res) => {
 
+    let orders;
+
+    const { price, date } = req.query;
+
+    if(price) {
+        const value = price === 'asc' ? 1 : price === 'desc' ? -1 : false
+        if(value){
+            orders = await orderModel.find({}).sort({ total_price: value })
+        };
+    } else if (date) {
+        const value = date === 'asc' ? 1 : date === 'desc' ? -1 : false
+        if(value) {
+            orders = await orderModel.find({}).sort({ created_at: value })
+        };
+    };
+    if(!orders) {
+        orders = await orderModel.find({})
+    }
     return res.json({ status: true, orders });
 });
 
