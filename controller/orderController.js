@@ -4,9 +4,18 @@ const moment = require("moment");
 
 //get all order
 const getOrders = async (req, res) => {
-  const orders = await orderModel.find();
+  // const orders = await orderModel.find();
 
-  return res.json({ status: true, orders });
+  // return res.json({ status: true, orders });
+  try {
+    // Adding Pagination
+    const limitValue = req.query.limit || 10;
+    const skipValue = req.query.skip || 0;
+    const orders = await orderModel.find().limit(limitValue).skip(skipValue);
+    res.status(200).json({ status: true, orders });
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 //make a new order
