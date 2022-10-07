@@ -1,26 +1,10 @@
 const express = require("express");
-const mongoose = require('mongoose');
 const moment = require("moment");
-
-const orderModel = require("../models/orderModel");
+const authenticated = require("../authenticate");
 
 const orderRoute = express.Router();
 
-orderRoute.get('/', (req, res) => {
-    authenticate(req, res, ["admin", "user"])
-        .then(() => {
-            return res.json({ status: true });
-        }).catch((err) => {
-            res.writeHead(400)
-            res.send(JSON.stringify({
-                message: err
-            }))
-        })
-    
-})
-
-
-orderRoute.post('/order', async (req, res) => {
+orderRoute.post('/order', authenticated, async (req, res) => {
     const body = req.body;
 
     const total_price = body.items.reduce((prev, curr) => {
@@ -37,7 +21,7 @@ orderRoute.post('/order', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-orderRoute.get('/order/:orderId', async (req, res) => {
+orderRoute.get('/order/:orderId', authenticated, async (req, res) => {
     const { orderId } = req.params;
     const order = await orderModel.findById(orderId)
 
@@ -48,13 +32,13 @@ orderRoute.get('/order/:orderId', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-orderRoute.get('/orders', async (req, res) => {
+orderRoute.get('/orders', authenticated, async (req, res) => {
     const orders = await orderModel.find()
 
     return res.json({ status: true, orders })
 })
 
-orderRoute.patch('/order/:id', async (req, res) => {
+orderRoute.patch('/order/:id', authenticated, async (req, res) => {
     const { id } = req.params;
     const { state } = req.body;
 
@@ -75,7 +59,7 @@ orderRoute.patch('/order/:id', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-orderRoute.delete('/order/:id', async (req, res) => {
+orderRoute.delete('/order/:id', authenticated, async (req, res) => {
     const { id } = req.params;
 
     const order = await orderModel.deleteOne({ _id: id})

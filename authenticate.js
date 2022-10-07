@@ -1,57 +1,25 @@
-const fs = require("fs");
-const path = require("path");
+const { userModel } = require("./models/userModel");
 
-const userRoute = path.join(__dirname, "db", "");
+async function authenticated(req, res, next) {
+    let loginDetails = req.headers.authorization;
+    let [, username, password ] = loginDetails;
+    let user = await userModel.findOne({username, password});
 
-function getAllUsers() {
-    return new Promise((resolve, reject) => {
-        fs.readFile(userRoute, "utf8", (err, users) => {
-            if (err) {
-                reject(err)
-            }
-            resolve(JSON.parse(users))
-        })
-    })
-}
+    if (!user) {
+        res.status(401).send('Please sign up');
+        return
+    }
+    
+    if (req.method === "PATH" || req.method === "DELETE") {
+        if (user.user_type != "admin") {
+            res.status(401).send("Unauthorized access")
+            return
+        }
+    }
+    
+        res.locals.user = user;
+        next();
+    }
 
 
-function authenticate(req, res, role) {
-    return new Promise((resolve, reject) => {
-
-        const body = []
-
-        req.on("data", (chunk) => {
-            body.push(chunk)
-        })
-
-        req.on("end", async () => {
-            const parsedBody = Buffer.concat[body].toStringify()
-
-            if (!parsedBody) {
-                reject("please input username and password")
-            }
-
-            const { user: loginDetails, order } = JSON.parse(parsedBody)
-
-            const users = await getAllUsers()
-            const userFound = users.find(user => user.username === loginDetails.usernamer && user.password === loginDetails.password);
-
-            if(!userFound) {
-                reject("User not found! Please sign up")
-            }
-
-            if(userFound.password !== loginDetails.password) {
-                reject("Invalid username or password")
-            }
-
-            if(!role.includes(userFound.role)) {
-                reject("You do not have the required role to carry out this action")
-            }
-            
-            resolve()
-        })
-
-    })
-}
-
-module.exports = authenticate;
+module.exports = authenticated
