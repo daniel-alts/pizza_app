@@ -3,7 +3,7 @@ const { config } = require('dotenv');
 // const mongoose = require('mongoose');
 const moment = require('moment');
 const { connectMongoDB } = require('./database/connection');
-const orderModel = require('./model/orderModel'); // ('./orderModel');
+const orderModel = require('./model/orderModel');
 
 // dotenv config
 config();
@@ -13,14 +13,10 @@ connectMongoDB();
 
 const app = express();
 const PORT = process.env.PORT || 3334;
-const DB_URI = process.env.DB_URI;
 
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  return res.json({ status: true });
-});
-
+// Post
 app.post('/order', async (req, res) => {
   const body = req.body;
 
@@ -38,6 +34,7 @@ app.post('/order', async (req, res) => {
   return res.json({ status: true, order });
 });
 
+// Get by id
 app.get('/order/:orderId', async (req, res) => {
   const { orderId } = req.params;
   const order = await orderModel.findById(orderId);
@@ -49,12 +46,14 @@ app.get('/order/:orderId', async (req, res) => {
   return res.json({ status: true, order });
 });
 
-app.get('/orders', async (req, res) => {
+// Get all
+app.get('/order', async (req, res) => {
   const orders = await orderModel.find();
 
   return res.json({ status: true, orders });
 });
 
+// Patch
 app.patch('/order/:id', async (req, res) => {
   const { id } = req.params;
   const { state } = req.body;
@@ -78,6 +77,7 @@ app.patch('/order/:id', async (req, res) => {
   return res.json({ status: true, order });
 });
 
+// Delete
 app.delete('/order/:id', async (req, res) => {
   const { id } = req.params;
 
