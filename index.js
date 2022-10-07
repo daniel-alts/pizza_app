@@ -7,6 +7,7 @@ const orderModel = require('./orderModel');
 const User = require('./userModel');
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
+const auth = require("./auth");
 
 
 const PORT = 3334
@@ -91,9 +92,9 @@ app.get('/', (req, res) => {
 })
 
 
-const auth = require("./auth");
 
-app.post('/order', async (req, res) => {
+
+app.post('/order',auth, async (req, res) => {
     const body = req.body;
 
     const total_price = body.items.reduce((prev, curr) => {
