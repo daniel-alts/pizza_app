@@ -1,7 +1,7 @@
 const express = require("express");
 const moment = require('moment');
 const orderModel = require("../orderModel");
-const auth = require("../middlewares/auth");
+const{ auth } = require("../middlewares/auth");
 
 const ordersRouter = express.Router();
 

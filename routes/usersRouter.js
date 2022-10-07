@@ -1,11 +1,15 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
 const userModel = require("../userModel");
-const auth = require("../middlewares/auth");
+const { auth, jwtAuth } = require("../middlewares/auth");
+
+require("dotenv").config();
+const JWT_SECRET= process.env.JWT_SECRET;
 
 const usersRouter = express.Router();
 
 // Get all users
-usersRouter.get("/", auth , async(req, res) => {
+usersRouter.get("/", jwtAuth , async(req, res) => {
     const users = await userModel.find({})
         .then((users) => {
             res.status(200).send({users})
@@ -31,6 +35,9 @@ usersRouter.post("/", async(req, res) => {
     }
     const user = userModel.create(body)
     .then((user) => {
+        let { _id, username, user_type} = user;
+        let token = jwt.sign({ _id, username, user_type}, JWT_SECRET);
+        console.log(token)
         res.status(201).send({user});
         return
     })
