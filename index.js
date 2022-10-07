@@ -111,7 +111,7 @@ app.post('/order',auth, async (req, res) => {
     return res.json({ status: true, order })
 })
 
-app.get('/order/:orderId', async (req, res) => {
+app.get('/order/:orderId',auth, async (req, res) => {
     const { orderId } = req.params;
     const order = await orderModel.findById(orderId)
 
@@ -122,7 +122,7 @@ app.get('/order/:orderId', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-app.get('/orders', async (req, res) => {
+app.get('/orders', auth, async (req, res) => {
     const orders = await orderModel.find()
 
     return res.json({ status: true, orders })
