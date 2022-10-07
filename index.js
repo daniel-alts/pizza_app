@@ -128,7 +128,7 @@ app.get('/orders', auth, async (req, res) => {
     return res.json({ status: true, orders })
 })
 
-app.patch('/order/:id', async (req, res) => {
+app.patch('/order/:id',auth, async (req, res) => {
     const { id } = req.params;
     const { state } = req.body;
 
@@ -149,7 +149,7 @@ app.patch('/order/:id', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-app.delete('/order/:id', async (req, res) => {
+app.delete('/order/:id', auth, async (req, res) => {
     const { id } = req.params;
 
     const order = await orderModel.deleteOne({ _id: id})
