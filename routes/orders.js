@@ -1,6 +1,8 @@
 const express = require("express")
 const moment = require('moment')
 const orderModel = require("../models/orderModel")
+const {authenticate} = require("../authentication/authenticate")
+// const users = require("./routes/users")
 
 const orderRoute = express.Router()
 
@@ -37,6 +39,8 @@ orderRoute.get('/:orderId',async (req, res) => {
     const { orderId } = req.params;
     const order = await orderModel.findById(orderId)
 
+    // const order = await orderModel.find(order => order.id == id)
+
     if (!order) {
         return res.status(404).json({ status: false, order: null })
     }
@@ -46,10 +50,22 @@ orderRoute.get('/:orderId',async (req, res) => {
 
 
 // get all orders
-orderRoute.get('/', async (req, res) => {
-    const orders = await orderModel.find()
+orderRoute.get('/',(req, res) => {
 
-    return res.json({ status: true, orders })
+    authenticate (req, res)
+    .then(()=>{
+        const orders = orderModel.find()
+        return res.json({ status: true, orders })
+
+    }).catch((err)=>{
+        res.status(404).json(
+            {
+                status: false,
+                message: err
+            }
+        )
+    })
+   
 })
 
 // update state of order

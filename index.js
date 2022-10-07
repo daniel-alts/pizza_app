@@ -1,7 +1,8 @@
 const express = require('express');
-const OrderRoute = require("./routes/orders")
+const orderRoute = require("./routes/orders")
 const { connectToMongoDb } = require("./db")
-const UsersRoute = require("./routes/users")
+// const {authenticate} = require("./authentication/authenticate")
+const usersRoute = require("./routes/users")
 require("dotenv").config()
 
 
@@ -13,10 +14,11 @@ const app = express()
 connectToMongoDb()
 
 app.use(express.json());
+// app.use(bodyParser.json())
 
-app.use("/", OrderRoute)
+app.use("/order", orderRoute)
 
-app.use("/users", UsersRoute)
+app.use("/users", usersRoute)
 
 // app.get('/', (req, res) => {
 //    return res.json({ status: true})
