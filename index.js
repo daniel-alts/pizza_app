@@ -24,6 +24,14 @@ app.post('/signup', async (req,res)=>{
             res.status(400).send("all fields are required")
         }
 
+        if((typeof username) !== 'string'){
+           res.json({status:'error',error:'invalid username'})
+        }
+
+        if((password.length < 6) ){
+            res.json({status:'error',error:'password should be at least 6 characters'})
+         }
+
         const oldUser  = await User.findOne({username})
 
         if(oldUser){
@@ -44,7 +52,7 @@ app.post('/signup', async (req,res)=>{
         user.token = token
         console.log(user)
 
-        res.status(201).json(user)
+        res.status(201).json(user.token)
     }catch(err){
         console.log(err)
     }
@@ -59,13 +67,13 @@ app.post('/login', async (req,res)=>{
             return res.status(409).send("all fields are required to proceed")
         }
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ username });
 
     if (user && (await bcrypt.compare(password, user.password))) {
       // Create token
       const token = jwt.sign(
-        { user_id: user._id, email },
-        process.env.TOKEN_KEY,
+        { user_id: user._id, username },
+        process.env.SECRET,
         {
           expiresIn: "2h",
         }
