@@ -1,11 +1,11 @@
 const express = require("express");
 const moment = require('moment');
 const orderModel = require("../orderModel");
-const{ auth } = require("../middlewares/auth");
+const{ auth, jwtAuth } = require("../middlewares/auth");
 
 const ordersRouter = express.Router();
 
-ordersRouter.post('/', auth, async (req, res) => {
+ordersRouter.post('/', async (req, res) => {
     const body = req.body;
     const {items} = body;
     if(!items){
@@ -27,7 +27,7 @@ ordersRouter.post('/', auth, async (req, res) => {
     return res.status(201).json({ status: true, order })
 })
 
-ordersRouter.get('/:orderId', auth, async (req, res) => {
+ordersRouter.get('/:orderId', async (req, res) => {
     const { orderId } = req.params;
     const order = await orderModel.findById(orderId)
 
@@ -38,7 +38,7 @@ ordersRouter.get('/:orderId', auth, async (req, res) => {
     return res.json({ status: true, order })
 })
 
-ordersRouter.get('/', auth, async (req, res) => {
+ordersRouter.get('/', async (req, res) => {
     let { page=1, order="desc" } = req.query;
     let order_index;
     order === "asc" ? order_index = 1 : order_index = -1
@@ -48,7 +48,7 @@ ordersRouter.get('/', auth, async (req, res) => {
     return res.json({ status: true, orders })
 })
 
-ordersRouter.patch('/:id',auth, async (req, res) => {
+ordersRouter.patch('/:id', async (req, res) => {
     const { id } = req.params;
     const { state } = req.body;
 
@@ -69,7 +69,7 @@ ordersRouter.patch('/:id',auth, async (req, res) => {
     return res.json({ status: true, order })
 })
 
-ordersRouter.delete('/:id', auth, async (req, res) => {
+ordersRouter.delete('/:id', async (req, res) => {
     const { id } = req.params;
     try{
         const order = await orderModel.deleteOne({ _id: id})

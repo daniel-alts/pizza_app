@@ -1,7 +1,11 @@
 const express = require('express');
+const passport = require("passport"); 
 const mongoose = require('mongoose');
 const usersRouter = require("./routes/usersRouter");
 const ordersRouter = require("./routes/ordersRouter");
+const authRouter = require('./routes/authRouter');
+const { errorHandler } = require('./middlewares/error');
+require("./middlewares/jwt_auth");
 
 
 const PORT = 3334
@@ -17,10 +21,11 @@ app.get('/', (req, res) => {
 
 
 
+app.use("/", authRouter)
+app.use("/users",  passport.authenticate("jwt", {session: false}), usersRouter)
+app.use("/orders", passport.authenticate("jwt", {session: false}), ordersRouter)
 
-app.use("/users", usersRouter)
-app.use("/orders", ordersRouter)
-
+app.use(errorHandler);
 
 mongoose.connect('mongodb://localhost:27017')
 
