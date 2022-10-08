@@ -47,6 +47,7 @@ async function addOrder(req, res) {
     }, 0);
 
     const order = await orderModel.create({
+        state: body.state,
         items: body.items,
         created_at: moment().toDate(),
         total_price
