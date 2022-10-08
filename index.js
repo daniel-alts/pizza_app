@@ -1,7 +1,7 @@
 const express = require('express');
 const moment = require('moment');
 const mongoose = require('mongoose');
-const orderModel = require('./orderModel');
+const orderModel = require('./src/models/order.model');
 
 const PORT = 3334
 
@@ -32,7 +32,7 @@ app.post('/order', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-app.get('/order/:orderId', async (req, res) => {
+app.get('/:orderId', async (req, res) => {
     const { orderId } = req.params;
     const order = await orderModel.findById(orderId)
 
@@ -40,7 +40,7 @@ app.get('/order/:orderId', async (req, res) => {
         return res.status(404).json({ status: false, order: null })
     }
 
-    return res.json({ status: true, order })
+    return res.json({ status: true, order });
 })
 
 app.get('/orders', async (req, res) => {
@@ -49,34 +49,8 @@ app.get('/orders', async (req, res) => {
     return res.json({ status: true, orders })
 })
 
-app.patch('/order/:id', async (req, res) => {
-    const { id } = req.params;
-    const { state } = req.body;
 
-    const order = await orderModel.findById(id)
 
-    if (!order) {
-        return res.status(404).json({ status: false, order: null })
-    }
-
-    if (state < order.state) {
-        return res.status(422).json({ status: false, order: null, message: 'Invalid operation' })
-    }
-
-    order.state = state;
-
-    await order.save()
-
-    return res.json({ status: true, order })
-})
-
-app.delete('/order/:id', async (req, res) => {
-    const { id } = req.params;
-
-    const order = await orderModel.deleteOne({ _id: id})
-
-    return res.json({ status: true, order })
-})
 
 
 mongoose.connect('mongodb://localhost:27017')
