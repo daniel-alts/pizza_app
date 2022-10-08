@@ -3,21 +3,15 @@ const userModel = require('../models/user.model');
 
 user.post('/', (req, res) => {
 
-})
-
-user.get('/', (req, res) => {
+}).get('/', (req, res) => {
 
 })
 
-user.get('/:user_id', (req, res) => {
+user.get('/:_id', (req, res) => {
 
-})
+}).patch('/:_id', (req, res)=> {
 
-user.patch('/:user_id', (req, res)=> {
-
-})
-
-user.delete('/:user_id', (req, res) => {
+}).delete('/:_id', (req, res) => {
 
 })
 

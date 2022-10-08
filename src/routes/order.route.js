@@ -1,5 +1,4 @@
 const order = require('express').Router();
-const orderModel = require('../models/order.model');
 
 
 
@@ -57,7 +56,7 @@ order.patch('/order/:id', async (req, res) => {
     const { id } = req.params;
     const { state } = req.body;
 
-    const order = await orderModel.findById(id)
+    const order = await orderModel.findOneAndUpdate({_id},{ $set: state})
 
     if (!order) {
         return res.status(404).json({ status: false, order: null })

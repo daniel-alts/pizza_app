@@ -1,7 +1,8 @@
 const express = require('express');
 const moment = require('moment');
 const mongoose = require('mongoose');
-const orderModel = require('./src/models/order.model');
+const userRouter = require('./src/routes/user.route');
+const orderRoutes = require('./src/routes/order.route')
 
 const PORT = 3334
 
@@ -13,6 +14,10 @@ app.use(express.json());
 app.get('/', (req, res) => {
     return res.json({ status: true })
 })
+
+
+app.use('/orders', orderRouter);
+app.use('/users',userRouter);
 
 
 app.post('/order', async (req, res) => {
@@ -44,7 +49,7 @@ app.get('/:orderId', async (req, res) => {
 })
 
 app.get('/orders', async (req, res) => {
-    const orders = await orderModel.find()
+    const orders = await order
 
     return res.json({ status: true, orders })
 })
