@@ -1,7 +1,14 @@
+
+require("dotenv").config()
 const express = require('express');
 const moment = require('moment');
 const mongoose = require('mongoose');
 const orderModel = require('./orderModel');
+const User = require('./userModel');
+const jwt = require("jsonwebtoken")
+const bcrypt = require("bcrypt")
+const auth = require("./auth");
+
 
 const PORT = 3334
 
@@ -9,13 +16,93 @@ const app = express()
 
 app.use(express.json());
 
+app.post('/signup', async (req,res)=>{
+    try{
+        const{username,password} = req.body
+
+        if(!(username && password)){
+            res.status(400).send("all fields are required")
+        }
+
+        if((typeof username) !== 'string'){
+           res.json({status:'error',error:'invalid username'})
+        }
+
+        if((password.length < 6) ){
+            res.json({status:'error',error:'password should be at least 6 characters'})
+         }
+
+        const oldUser  = await User.findOne({username})
+
+        if(oldUser){
+            return res.status(409).send("user already exists, login or try another username")
+        }
+
+        encryptedPassword = await bcrypt.hash(password,10)
+
+        const user = await User.create({
+            username,
+            password:encryptedPassword
+        })
+
+         SECRET = process.env.SECRET
+
+        const token =  jwt.sign({ username: user.username }, SECRET,{expiresIn:"2h"});
+
+        user.token = token
+        console.log(user)
+
+        res.status(201).json(user.token)
+    }catch(err){
+        console.log(err)
+    }
+
+})
+
+app.post('/login', async (req,res)=>{
+
+    try{
+        const {username,password} = req.body
+        if(!(username && password)){
+            return res.status(409).send("all fields are required to proceed")
+        }
+
+        const user = await User.findOne({ username });
+
+    if (user && (await bcrypt.compare(password, user.password))) {
+      // Create token
+      const token = jwt.sign(
+        { user_id: user._id, username },
+        process.env.SECRET,
+        {
+          expiresIn: "2h",
+        }
+      );
+
+      // save user token
+      user.token = token;
+
+      // user
+      res.status(200).json(user);
+    }
+    res.status(400).send("Invalid Credentials");
+    }catch(err){
+        console.log(err)
+    }
+
+
+
+})
+
 
 app.get('/', (req, res) => {
     return res.json({ status: true })
 })
 
 
-app.post('/order', async (req, res) => {
+
+
+app.post('/order',auth, async (req, res) => {
     const body = req.body;
 
     const total_price = body.items.reduce((prev, curr) => {
@@ -32,7 +119,7 @@ app.post('/order', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-app.get('/order/:orderId', async (req, res) => {
+app.get('/order/:orderId',auth, async (req, res) => {
     const { orderId } = req.params;
     const order = await orderModel.findById(orderId)
 
@@ -43,13 +130,13 @@ app.get('/order/:orderId', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-app.get('/orders', async (req, res) => {
+app.get('/orders', auth, async (req, res) => {
     const orders = await orderModel.find()
 
     return res.json({ status: true, orders })
 })
 
-app.patch('/order/:id', async (req, res) => {
+app.patch('/order/:id',auth, async (req, res) => {
     const { id } = req.params;
     const { state } = req.body;
 
@@ -70,7 +157,7 @@ app.patch('/order/:id', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-app.delete('/order/:id', async (req, res) => {
+app.delete('/order/:id', auth, async (req, res) => {
     const { id } = req.params;
 
     const order = await orderModel.deleteOne({ _id: id})
