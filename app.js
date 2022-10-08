@@ -16,4 +16,8 @@ app.get("/", (req, res) => {
   return res.json({ status: true });
 });
 
+app.get("*", (req, res) => {
+  res.status(404).json({ message: "Not found. Check your URL and try again" });
+});
+
 module.exports = app;
