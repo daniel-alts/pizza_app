@@ -1,19 +1,17 @@
-const user = require('express').Router();
-const userModel = require('../models/user.model');
+const users = require('express').Router();
+const userController = require('../controllers/user.controller');
 
-user.post('/', (req, res) => {
 
-}).get('/', (req, res) => {
+users
+.route('/')
+.get(userController.getUsers)
+.post(userController.postUser)
 
-})
+users
+.route('/:_id')
+.get(userController.getUser)
+.patch(orderController.updatedUser)
+.delete(orderController.deleteUser)
 
-user.get('/:_id', (req, res) => {
-
-}).patch('/:_id', (req, res)=> {
-
-}).delete('/:_id', (req, res) => {
-
-})
-
-module.exports = user;
+module.exports = users;
 

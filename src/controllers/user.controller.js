@@ -2,25 +2,26 @@ const userService = require('../services/user.service')
 
 
 const postUser = async (req, res) => {
+    const user = req.body;
     const newUser = await userService.createUser();
-    res.json(newUser);
+    res.json({ status: true, newUser});
 }
 
-const patchUser =async (req, res) => {
+const updateUser =async (req, res) => {
     const { _id, state } = req.body;
-    const patchedUser =await userService.updateUser(_id, state);
-    res.json(patchedUser);
+    const updatedUser =await userService.updateUser(_id, state);
+    res.json({ status: true, updatedUser});
 }
 
 const deleteUser = async(req, res) => {
     const { _id } = req.params;
     const deletedUser = await userService.deleteUser(_id);
-    res.json(deletedUser)
+    res.json({ status: true, deletedUser})
 }
 
 const getUsers = async (req, res) => {
     const users = await userService.getUsers();
-    res.json(users)
+    res.json({ status:true, users})
 }
 
 const getUser = async (req, res) => {

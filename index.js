@@ -2,7 +2,7 @@ const express = require('express');
 const moment = require('moment');
 const mongoose = require('mongoose');
 const userRouter = require('./src/routes/user.route');
-const orderRoutes = require('./src/routes/order.route')
+const orderRouter = require('./src/routes/order.route')
 
 const PORT = 3334
 
