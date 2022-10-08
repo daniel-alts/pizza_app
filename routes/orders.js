@@ -23,7 +23,7 @@ orderRoute.post("/", (req, res) => {
         total_price
     }).then(
         (order) =>{
-            res.json({ status: true, message: order })
+            res.status(200).json({ status: true, message: order })
         }
     ).catch(
         (err) =>{
@@ -45,7 +45,7 @@ orderRoute.get('/:orderId',async (req, res) => {
         return res.status(404).json({ status: false, order: null })
     }
 
-    return res.json({ status: true, message: order })
+    return res.status(200).json({ status: true, message: order })
 })
 
 
@@ -55,7 +55,7 @@ orderRoute.get('/',(req, res) => {
     authenticate (req, res)
     .then(()=>{
         const orders = orderModel.find()
-        return res.json({ status: true, orders })
+        return res.status(200).json({ status: true, orders })
 
     }).catch((err)=>{
         res.status(404).json(
@@ -87,7 +87,7 @@ orderRoute.patch('/:id', async (req, res) => {
 
     order.save()
 
-    return res.json({ status: true, order })
+    return res.status(200).json({ status: true, order })
 })
 
 
@@ -97,7 +97,7 @@ orderRoute.delete('/:id', async (req, res) => {
 
     const order = await orderModel.deleteOne({ _id: id})
 
-    return res.json({ status: true, order })
+    return res.status(200).json({ status: true, order })
 })
 
 

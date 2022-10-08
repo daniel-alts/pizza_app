@@ -52,4 +52,30 @@ usersRoute.post("/user", (req, res)=>{
     )
 })
 
+// update a user by ID
+usersRoute.patch('/:id', async (req, res) => {
+    const { id } = req.params;
+    const { user_type } = req.body;
+    const {password} = req.body
+
+
+    const user = await userModel.findById(id)
+
+    if (!user) {
+        return res.status(404).json({ status: false, user: null })
+    }
+
+    user.user_type = user_type
+    user.password = password
+
+    user.save()
+
+    return res.status(200).json({ 
+        status: true,
+        message: user 
+    })
+})
+
+
+
 module.exports = usersRoute

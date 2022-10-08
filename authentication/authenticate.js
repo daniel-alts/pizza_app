@@ -10,7 +10,7 @@ function authenticate (req, res){
     const username = body.username
     const password = body.password
     return new Promise ((resolve, reject)=>{
-        if (!body){
+        if (!username && !password){
         //     res.status(404).json({
         //         status: false,
         //         message: "Username and password is required"
