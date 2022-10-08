@@ -13,7 +13,8 @@ const OrderSchema = new Schema({
     price: Number,
     size: { type: String, enum: ['m', 's', 'l']},
     quantity: Number,
-  }]
+  }],
+  user_id: String
 });
 
 const Order = mongoose.model('Order', OrderSchema);
