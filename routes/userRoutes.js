@@ -2,11 +2,14 @@ const express = require("express");
 const router = express.Router();
 const userModel = require("../models/userModel");
 const userController = require("../controllers/userController");
+const authController = require("../controllers/authController");
+
+router.post("/signup", authController.signup);
 
 router
   .route("/")
   .get(userController.getAllUsers)
-  .post(userController.registerUser);
+  .post(userController.createUser);
 
 router
   .route("/:id")

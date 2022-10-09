@@ -1,120 +1,110 @@
 const userModel = require("../models/userModel");
+const catchAsyncError = require("../utils/catchAsyncError");
+const AppError = require("../utils/appError");
 
-exports.authenticateUser = async (req, res, next) => {
-  try {
-    // const authHeader = req.headers.authorization;
-    const { authorization } = req.headers;
-    // console.log(req.headers);
-    // Check if the authorization header is present
-    if (!authorization) {
-      let error = new Error("You are not authenticated");
-      res.status(401).json({
-        status: "failed",
-        message: "Unauthorized",
-      });
-      return next(error);
-    }
-    // Get the credentials from the authorization header
-    let userAuth = new Buffer.from(authorization.split(" ")[1])
-      .toString()
-      .split(":");
-    // console.log(userAuth);
-
-    // checking if the credentials are present
-    let username = userAuth[0];
-    let password = userAuth[1];
-
-    // Checking if the credentials are correct
-    const user = await userModel.findOne({
-      username: username,
-      password: password,
-    });
-
-    if (!user) {
-      res.status(401).json({
-        status: "failed",
-        message: "Unauthorized, Invalid Credentials",
-      });
-      next(
-        new Error(
-          "Wrong username or password. Enter a valid username and password"
-        )
-      );
-    }
-    // If the credentials are correct, then the user is authenticated and can access the order route
-    console.log(
-      "You are auntheticated successfully. You can access the order route"
+exports.authenticateUser = catchAsyncError(async (req, res, next) => {
+  // const authHeader = req.headers.authorization;
+  const { authorization } = req.headers;
+  // console.log(req.headers);
+  // Check if the authorization header is present
+  if (!authorization) {
+    return next(
+      new AppError("You are not authorized to access this route.", 401)
     );
-    next();
-  } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ status: "error", error: error.message });
+    return next(error);
   }
-};
+  // Get the credentials from the authorization header
+  let userAuth = new Buffer.from(authorization.split(" ")[1])
+    .toString()
+    .split(":");
+  // console.log(userAuth);
 
-exports.getAllUsers = async (req, res) => {
-  try {
-    const users = await userModel.find();
-    console.log("Users", users);
-    res.status(200).json({ status: true, users });
-  } catch (error) {
-    console.log("Error:", error.message);
-    return res.status(500).json({ status: false, error: error.message });
-  }
-};
+  // checking if the credentials are present
+  let username = userAuth[0];
+  let password = userAuth[1];
 
-exports.registerUser = async (req, res) => {
-  try {
-    const body = req.body;
-    const user = await userModel.create(body);
-    console.log("User", user);
-    res.status(201).json({ status: true, user });
-  } catch (error) {
-    console.log("Error:", error.message);
-    return res.status(400).json({ status: false, error: error.message });
-  }
-};
+  // Checking if the credentials are correct
+  const user = await userModel.findOne({
+    username: username,
+    password: password,
+  });
 
-exports.getUser = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const user = await userModel.findById(id);
-    console.log("User", user);
-    res.status(200).json({ status: true, user });
-  } catch (error) {
-    console.log("Error:", error.message);
-    return res.status(500).json({ status: false, error: error.message });
+  if (!user) {
+    return next(new AppError(`Unauthorized!!! Invalid Credential❌ `, 404));
   }
-};
+  // If the credentials are correct, then the user is authenticated and can access the order route
+  console.log(
+    "You are auntheticated successfully. You can access the order route"
+  );
+  next();
+});
 
-exports.updateUser = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const body = req.body;
-    if (Object.keys(body).length === 0) {
-      return res
-        .status(400)
-        .json({ status: false, error: "Please provide data to update" });
-    }
-    const user = await userModel.findByIdAndUpdate(id, body, {
-      new: true,
-      runValidators: true,
-    });
-    console.log("User", user);
-    res.status(200).json({ status: true, user });
-  } catch (error) {
-    console.log("Error:", error.message);
-    return res.status(500).json({ status: false, error: error.message });
-  }
-};
+exports.getAllUsers = catchAsyncError(async (req, res, next) => {
+  const users = await userModel.find();
+  console.log("Users", users);
+  res.status(200).json({
+    status: "success",
+    result: users.length,
+    users: {
+      users,
+    },
+  });
+});
 
-exports.deleteUser = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const user = await userModel.findByIdAndRemove(id);
-    res.status(200).json({ status: true, user: null });
-  } catch (error) {
-    console.log("Deleted successfully");
-    return res.status(500).json({ status: false, error: error.message });
+exports.createUser = catchAsyncError(async (req, res, next) => {
+  const body = req.body;
+  const user = await userModel.create(body);
+  // console.log("User", user);
+  res.status(201).json({
+    status: "success",
+    users: {
+      user,
+    },
+  });
+});
+
+exports.getUser = catchAsyncError(async (req, res, next) => {
+  const id = req.params.id;
+  const user = await userModel.findById(id);
+  console.log("User", user);
+  res.status(200).json({
+    status: "success",
+    users: {
+      user,
+    },
+  });
+});
+
+exports.updateUser = catchAsyncError(async (req, res, next) => {
+  const id = req.params.id;
+  const body = req.body;
+
+  if (Object.keys(body).length === 0) {
+    return next(new AppError(`Please provide a data to update `, 404));
   }
-};
+
+  const user = await userModel.findByIdAndUpdate(id, body, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!user) {
+    return next(new AppError(`No user found with this specified ID `, 404));
+  }
+
+  res.status(200).json({
+    status: "success",
+    users: {
+      user,
+    },
+  });
+});
+
+exports.deleteUser = catchAsyncError(async (req, res, next) => {
+  const id = req.params.id;
+  const user = await userModel.findByIdAndRemove(id);
+  if (!user) {
+    return next(new AppError(`No user found with this specified ID `, 404));
+  }
+  res.status(201).json({ status: "success", users: user });
+});

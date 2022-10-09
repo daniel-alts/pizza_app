@@ -3,7 +3,7 @@ const request = require("supertest");
 const app = require("../../app");
 const user = require("../../models/userModel");
 
-const userId = "633d55068fe46276b6632bcc";
+const userId = "6342a1dfa9bfbacd8575fa6b";
 
 describe("userRoute", () => {
   // Get all users
@@ -16,11 +16,11 @@ describe("userRoute", () => {
     await request(app)
       .post("/users")
       .send({
-        firstName: "testing1",
-        lastName: "userRoute",
-        username: "test2",
-        password: "12345679",
-        user_type: "admin",
+        username: "testing4",
+        email: "adamma@gmail.com",
+        password: "123456789",
+        passwordConfirm: "12345679",
+        user_type: "user",
       })
       .expect(201)
       .expect("content-type", /json/);
@@ -46,12 +46,12 @@ describe("userRoute", () => {
   });
 
   //delete user : This test deletes the id used in the previous test (userId) when run.
-  it("DELETE /users/:id", async () => {
-    await request(app)
-      .delete(`/users/${userId}`)
-      .expect(200)
-      .expect("content-type", /json/);
-  });
+  // it("DELETE /users/:id", async () => {
+  //   await request(app)
+  //     .delete(`/users/${userId}`)
+  //     .expect(200)
+  //     .expect("content-type", /json/);
+  // });
 });
 
 afterAll((done) => {
