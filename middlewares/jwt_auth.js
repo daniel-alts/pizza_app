@@ -17,7 +17,7 @@ passport.use(
     new JwtStrategy(
         opts, 
         function(token, done) {
-            userModel.findOne({_id: token._id}, function(err, user) {
+            userModel.findOne({username: token.username}, function(err, user) {
                 if (err) {
                     return done(err, false);
                 }
