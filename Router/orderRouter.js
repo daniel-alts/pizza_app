@@ -13,11 +13,11 @@ const {
   deleteOrder,
 } = require("../controllers/orderController");
 
-orderRouter.get("/", getAllOrder);
+orderRouter.get("/", authenticateUser, getAllOrder);
 
 orderRouter.get("/:id", authenticateUser, getOrderById);
 
-orderRouter.post("/", authenticateUser, createOrder);
+orderRouter.post("/orders", authenticateUser, createOrder);
 
 orderRouter.patch("/:id", authenticateUser, updateOrder);
 

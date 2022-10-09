@@ -14,18 +14,18 @@ const authenticateUser = async (req, res, next) => {
 
   const decoded = Buffer.from(encoded, "base64").toString("ascii");
 
-  const [email, password] = decoded.split(":");
+  const [username, password] = decoded.split(":");
 
   // console.log(email, password);
 
-  const authenticatedUser = await userModel.findOne({ email });
+  const authenticatedUser = await userModel.findOne({ username });
 
   if (!authenticatedUser) {
     return res.status(404).send({ message: "User not found" });
   }
 
   if (authenticatedUser.password !== password) {
-    return res.status(404).send({ message: "User not found" });
+    return res.status(404).send({ message: "password is incorrect" });
   }
 
   //   req.authenticatedUser = authenticatedUser;
