@@ -2,7 +2,7 @@
   "name": "pizza_app",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "test": "jest",
     "jest":"jest --detectOpenHandles",
@@ -14,11 +14,22 @@
   "dependencies": {
     "express": "^4.18.1",
     "moment": "^2.29.4",
-    "mongoose": "^6.6.1"
+    "mongoose": "^6.6.1",
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.2",
+    "dotenv": "^16.0.0",
+    "ejs": "^3.1.6",
+    "express-session": "^1.17.2",
+    "jsonwebtoken": "^8.5.1",
+    "passport": "^0.5.2",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0",
+    "passport-local-mongoose": "^7.0.0"
   },
   "devDependencies": {
     "jest": "^29.0.3",
     "nodemon": "^2.0.20",
     "supertest": "^6.2.4"
+    
   }
 }

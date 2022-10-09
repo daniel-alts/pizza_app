@@ -1,6 +1,5 @@
 const orderModel = require("../models/orderModel");
 module.exports =  getOrderParams = async( {req, res ,total_price, created_at, state}) => {
-  console.log(total_price)
   if (total_price && !created_at){
     if(state){
       const orders = await orderModel.find({state}).sort('total_price')
