@@ -16,6 +16,8 @@ const OrderSchema = new Schema({
   }]
 });
 
-const Order = mongoose.model('Order', OrderSchema);
+const db = mongoose.connection.useDb('Altschool')
+
+const Order = db.model('Order', OrderSchema);
 
 module.exports = Order;
