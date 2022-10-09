@@ -16,8 +16,11 @@ app.get("/", (req, res) => {
   return res.json({ status: true });
 });
 
-app.get("*", (req, res) => {
-  res.status(404).json({ message: "Not found. Check your URL and try again" });
+// Catching all undefined route
+app.all("*", (req, res, next) => {
+  res
+    .status(404)
+    .json({ message: `Can't find ${req.originalUrl} on this server` });
 });
 
 module.exports = app;
