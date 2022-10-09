@@ -1,5 +1,4 @@
 const express = require('express');
-const moment = require('moment');
 const mongoose = require('mongoose');
 const {orderRouter} = require('./Router/orderRouter')
 const {userRouter} = require('./Router/userRouter')
@@ -11,16 +10,12 @@ const app = express()
 require("dotenv").config();
 
 app.use(express.json());
+app.use("/user", userRouter)
+app.use("/order", modelRouter) 
 
 // app.get('/', (req, res) => {
 //     return res.json({ status: true })
 // })
-
-
-app.use("/order", orderRouter);
-app.use("/users", userRouter);
-
-
 
 mongoose.connect('mongodb+srv://Arthur_2002:1234arthur@cluster0.tzk9r.mongodb.net/?retryWrites=true&w=majority')
 
