@@ -28,7 +28,7 @@ app.post('/login', async (req, res, next) => {
     try {
       console.log( user);
       if (error) {
-        return next(error)
+        return next(error);
       };
       if (!user) {
         const error = new Error('user name or password is incorrects');
