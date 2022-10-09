@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const bcrypt = require('bcrypt');
 const Schema = mongoose.Schema;
 const UserId = Schema.ObjectId;
 
@@ -16,6 +16,21 @@ user_type: { type: String, enum: ['admin','user']},
   age: Number,
  
 });
+UserSchema.pre(
+  'save',
+  async function(next){
+    const user= this;
+    const hashp = await bcrypt.hash(this.password,10);
+    this.password = hashp;
+    next();
+  }
+);
+
+UserSchema.methods.isValidPasswor = async function(password) {
+  const user= this;
+  const compare = await bcrypt.compare(password,user.password);
+  return compare;
+}
 
 const User = mongoose.model('User', UserSchema);
 
