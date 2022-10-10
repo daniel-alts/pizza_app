@@ -7,13 +7,16 @@ const UserSchema = new Schema({
   id: ObjectId,
   username: {
     type: String,
-    required: true,
+    required: [true, "Please provide name"],
+    maxlength: 50,
+    minlength: 3,
+    unique: true,
   },
   password: {
     type: String,
     required: true,
   },
-  user_types: {
+  user_type: {
     type: String,
     enum: ["admin", "user"],
     default: "user",

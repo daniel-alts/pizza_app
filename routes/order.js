@@ -12,9 +12,9 @@ const {
   deleteOrder,
 } = require("../controller/order");
 
-const authenticateUser = require("../middleware/authentication");
+// const { authenticateUser } = require("../middleware/authentication");
 
-router.route("/").post(authenticateUser, createOrder).get(getAllOrders);
+router.route("/").post(createOrder).get(getAllOrders);
 
 router.get("/tp", getOrdersTotalPrice);
 router.get("/time", getOrdersTime);
