@@ -15,20 +15,6 @@ const orderSchema = new Schema({
         quantity: Number,
     }, ],
 });
-// *convert id to String
-// *Remove id object from response
-// *Remove _v from response
-orderSchema.set("toJSON", {
-    transform: (document, returnedObject) => {
-        returnedObject.id = returnedObject._id.toString();
-        delete returnedObject._id;
-        delete returnedObject.__v;
-        returnedObject.items.forEach((item) => {
-            item.item_id = item._id.toString();
-            delete item._id;
-        });
-    },
-});
 
 const order = mongoose.model("order", orderSchema);
 
