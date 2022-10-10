@@ -1,26 +1,5 @@
 const orderModel = require("../models/orderModel");
 const moment = require("moment");
-const userModel = require("../models/users");
-
-const accessingOrder = async (req, res, next) => {
-  try {
-    const id = req.body.id
-    
-    const users = await userModel.find()
-    const user = users.find(user => user.id === id)
-
-    if (!user) {
-      return res.status(404).json({
-        message: "cant perform operation"
-      })
-    }
-    next()
-  } catch (error) {
-    error.message = "token not passed or access denied";
-    error.status = 404;
-    next(error);
-  }
-}
 
 const getOrders = async (req, res, next) => {
   try {
@@ -136,7 +115,6 @@ const deleteOrder = async (req, res, next) => {
 };
 
 module.exports = {
-  accessingOrder,
   addOrders,
   getOrders,
   getOrdersById,

@@ -1,14 +1,16 @@
-const express = require("express")
-const userModel = require("../models/users")
-const moment = require('moment');
-const { addUser, getUser } = require("../controller/user");
+const express = require("express");
+const passport = require("passport");
+const jwt = require("jsonwebtoken");
+const { RegisterUser, loginUser, getUsersById, updateUser, deleteUser } = require("../controller/user_controller");
+require("dotenv").config();
 
-const userRouter = express.Router()
+const userRouter = express.Router();
 
-userRouter.get("", getUser)
+userRouter.post("/register", RegisterUser);
 
-userRouter.post("", addUser)
+userRouter.post("/login", loginUser);
 
-module.exports = {
-    userRouter
-}
+userRouter.get("/getuserinfo",passport.authenticate("jwt",{session: false}),getUsersById)
+userRouter.put("/updateuser", passport.authenticate("jwt", {session: false}), updateUser)
+userRouter.delete("/deleteUser/:userid", passport.authenticate("jwt", {session: false}), deleteUser)
+module.exports = { userRouter };
