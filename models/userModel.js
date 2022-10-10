@@ -6,6 +6,12 @@ const UserSchema = new Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   user_type: { type: String, default: 'user', enum: ['admin', 'user'] },
+  orders: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
 })
 
 /**

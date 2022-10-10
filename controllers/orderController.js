@@ -1,4 +1,5 @@
-const orderModel = require('../models/orderModel')
+const Order = require('../models/orderModel')
+const User = require('../models/userModel')
 
 /**
  * Get information about all orders
@@ -10,7 +11,7 @@ const getOrdersInfo = async (req, res, next) => {
       return res.status(401).send({ message: 'Unauthorised' })
     }
 
-    const orders = await orderModel.find({})
+    const orders = await Order.find({})
     const resObj = {}
     resObj.numberOfOrders = orders.length
     resObj.states = orders.reduce((obj, x) => {
@@ -41,7 +42,7 @@ const getAllOrders = async (req, res, next) => {
     let limit = 5, page = 1 // default values
     if (!isNaN(limitFromQuery) && limitFromQuery > 0) limit = limitFromQuery
     
-    const numberOfOrders = await orderModel.find({}).countDocuments().exec()
+    const numberOfOrders = await Order.find({}).countDocuments().exec()
     const totalPages = Math.ceil(numberOfOrders / limit)
     if (!isNaN(pageFromQuery) && pageFromQuery <= totalPages ) page = pageFromQuery
     
@@ -53,12 +54,12 @@ const getAllOrders = async (req, res, next) => {
 
     if (price) {
       const value = price === 'asc' ? 1 : price === 'desc' ? -1 : false
-      if (value) orders = await orderModel.find({}).sort({ total_price: value }).limit(limit).skip(start)
+      if (value) orders = await Order.find({}).sort({ total_price: value }).limit(limit).skip(start)
     } else if (date) {
       const value = date === 'asc' ? 1 : date === 'desc' ? -1 : false
-      if (value) orders = await orderModel.find({}).sort({ created_at: value }).limit(limit).skip(start)
+      if (value) orders = await Order.find({}).sort({ created_at: value }).limit(limit).skip(start)
     }
-    if (!orders) orders = await orderModel.find({}).limit(limit).skip(start)
+    if (!orders) orders = await Order.find({}).limit(limit).skip(start)
 
     // prepare response data
     if (start > 0) {
@@ -89,7 +90,7 @@ const getAllOrders = async (req, res, next) => {
 const getOrderById = async (req, res, next) => {
   try {
     const { orderId } = req.params
-    const order = await orderModel.findById(orderId)
+    const order = await Order.findById(orderId)
     if (!order) {
       return res.status(404).json({ status: false, data: null })
     }
@@ -105,6 +106,7 @@ const getOrderById = async (req, res, next) => {
 const createOrder = async (req, res, next) => {
   try {
     const body = req.body
+    const user = await User.findById(req.body.userId)
 
     const total_price = body.items.reduce((prev, curr) => {
       return (prev += curr.quantity * curr.price)
@@ -114,19 +116,15 @@ const createOrder = async (req, res, next) => {
       items: body.items,
       created_at: new Date(),
       total_price,
+      user: user._Id
     }
 
-    const order = new orderModel(orderObject)
-    order
-      .save()
-      .then((result) => {
-        return res.status(201).json({ status: true, data: result })
-      })
-      .catch((err) => {
-        res.status(500)
-        console.log('Error creating order', err.message)
-        return res.json({ error: 'Error creating order' })
-      })
+    const order = new Order(orderObject)
+    const savedOrder = await order.save()
+    user.orders = user.orders.concat(savedOrder._id)
+    await user.save()
+
+    return res.status(201).json({ status: true, data: savedOrder })
   } catch (err) {
     next(err)
   }
@@ -145,7 +143,7 @@ const updateOrder = async (req, res, next) => {
     const { id } = req.params
     const { state } = req.body
 
-    const order = await orderModel.findById(id)
+    const order = await Order.findById(id)
 
     if (!order) {
       return res.status(404).json({ status: false, data: null })
@@ -178,7 +176,7 @@ const deleteOrder = async (req, res, next) => {
 
     const { id } = req.params
 
-    const order = await orderModel.findOne({ _id: id })
+    const order = await Order.findOne({ _id: id })
     const deleted = await order.remove()
     if (deleted) {
       return res.status(204).json({ status: true })
