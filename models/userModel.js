@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 const validator = require("validator");
+const bcrypt = require("bcrypt");
 
 const userSchema = new Schema({
   username: {
@@ -24,6 +25,12 @@ const userSchema = new Schema({
   passwordConfirm: {
     type: String,
     required: [true, "Please confirm your password"],
+    validate: {
+      validator: function (el) {
+        return el === this.password;
+      },
+      message: "Passwords are not the same",
+    },
   },
   user_type: {
     type: String,
@@ -34,6 +41,18 @@ const userSchema = new Schema({
     type: Date,
     default: Date.now(),
   },
+});
+
+// middleware for encrypting or hashing the password on the userSchema using bcrypt
+userSchema.pre("save", async function (next) {
+  // we can only hash passwords if passwords are newly created or modified
+  if (!this.isModified("password")) return next();
+
+  // hash the password with cost of 10 which is the default. it can be higher depending on CPU power
+  this.password = await bcrypt.hash(this.password, 10);
+  // delete the passwordConfirm field from the database
+  this.passwordConfirm = undefined;
+  next();
 });
 
 const User = mongoose.model("User", userSchema);
