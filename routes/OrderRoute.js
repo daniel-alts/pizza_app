@@ -4,7 +4,6 @@ const moment = require("moment");
 const orderModel = require("../models/orderModel");
 
 orderRoute.post("/order", async (req, res) => {
-  console.log(req.body);
   const body = req.body;
 
   const total_price = body.items.reduce((prev, curr) => {
