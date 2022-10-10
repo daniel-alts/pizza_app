@@ -1,16 +1,25 @@
 const express = require("express")
 const moment = require('moment');
-const orderModel = require('../models/orderModel');
-const { authenticateUser } = require("../middleware/auth")
+const orderModel = require('../models/orderModel')
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
-exports.createOrder =  async(req, res) => {
+// ...
+//const authenticatedUser  = require("../middleware/auth")
+
+
+const router = express.Router()
+
+
+router.post('/',  async(req, res) => {
     try{
-        await authenticateUser(req, res, ["admin", "user"], orderModel)
+       
         const body = req.body;
 
         const total_price = body.items.reduce((prev, curr) => {
-            prev += curr.price;
             prev += curr.price * curr.quantity;
+           // prev += curr.price * curr.quantity;
             return prev;
         }, 0)
         const order = await orderModel.create({ 
@@ -18,19 +27,27 @@ exports.createOrder =  async(req, res) => {
             created_at: moment().toDate(),
             total_price
         })
-        
+        await order.save()
         return res.json({ status: true, order })
     } catch (error) {
+        console.log(error)
         res.json({
             status: false,
             message: error
         })
     }
 
-}
+})
 
-exports.getaSingleOrder = async (req, res) => {
+
+
+router.get('/:id', async (req, res) => {
     try {
+      //  const authenticatedUser = req.authenticatedUser
+        // 
+          //  if (authenticatedUser) {
+           //   return res.status(200)
+          //  }
         const { orderId } = req.params;
         const order = await orderModel.findById(orderId)
     
@@ -46,26 +63,94 @@ exports.getaSingleOrder = async (req, res) => {
         })
     }
 }
-
-exports.getAllOrder =  async (req, res) => {
+)
+router.get('/',  async (req, res) => {
     try {
-        await authentication(req, res, ["admin"], orderModel);
-        
-    const orders = await orderModel.find()
+//         // check for authenticated user
+//     const authenticatedUser = req.authenticatedUser
+// // 
+//     if (authenticatedUser) {
+//       return res.status(200)
+//     }
 
-    return res.json({ status: true, orders })
+   // let orders
+
+        const { state, sort } = req.query
+        const queryObject = {}
+
+        if(state) {
+            queryObject.state = state
+        }
+  //  const orders = await orderModel.find()
+
+    if(sort) {
+        res.json(sort)
+    }
+
+    
+  //sorting,querying and pagination
+  let query = {};
+//  const { state } = req.query;
+  if (state) {
+    query = { state };
+  }
+
+  const { created_at } = req.query;
+  const { total_price } = req.query;
+  const { limit } = req.query;
+ 
+
+  let totalPrice = {};
+  let createdAt = {};
+  let limitOrders = {};
+
+  if (created_at === "asc") {
+    createdAt = { created_at: 1 };
+  } else if (created_at === "desc") {
+    createdAt = { created_at: -1 };
+  }
+  if (!created_at) {
+    createdAt = {};
+  }
+
+  if (total_price === "asc") {
+    totalPrice = { total_price: 1 };
+  } else if (total_price === "desc") {
+    totalPrice = { total_price: -1 };
+  }
+  if (!total_price) {
+    totalPrice = {};
+  }
+
+  if (limit) {
+    limitOrders = { limit: parseInt(limit) };
+  }
+  if (!limit) {
+    limitOrders = {};
+  }
+
+
+  const orders = await orderModel.find(query).sort(totalPrice).sort(createdAt).limit(limitOrders.limit);
+    return res.json({ status: true, orders });
+
+   
     } catch (error){
+        console.log(error)
         res.json({
             status: false,
             message: error
         })
     } 
-}
+})
 
 
-exports.updateOrder = async (req, res) => {
+router.patch ('/', async (req, res) => {
     try{
-        await authenticateUser(req, res, ["admin", "user"], orderModel)
+        const authenticatedUser = req.authenticatedUser
+        // 
+            if (authenticatedUser) {
+              return res.status(200)
+            }  
         const { id } = req.params;
         const { state } = req.body;
     
@@ -91,11 +176,11 @@ exports.updateOrder = async (req, res) => {
 ,
         })
     }
-}
+})
 
-exports.cancelOrder=  async (req, res) => {
-   await authenticateUser(req, res, ["admin"], orderModel);
-   try {
+router.delete('/', async (req, res) => {
+    try {
+        
     const { id } = req.params;
 
     const order = await orderModel.deleteOne({ _id: id})
@@ -108,3 +193,5 @@ exports.cancelOrder=  async (req, res) => {
     })
    }
 }
+)
+module.exports = router;
