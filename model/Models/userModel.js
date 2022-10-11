@@ -10,17 +10,20 @@ function validateEmail(email) {
 const userSchema = new Schema({
   username: {
     type: String,
-    required: [true, 'Hey, username is required'],
+    required: [true, 'Username is required'],
     unique: true,
     lowercase: true,
-    maxlength: 15,
+    maxlength: [15, 'Hey, your username must be 15 characters or less'],
     trim: true,
   },
   password: {
     type: String,
-    required: [true, 'Password is required, of course!'],
-    minlength: 8,
-    maxlength: 100,
+    required: [true, 'Password is required, of course! :)'],
+    minlength: [8, "Heads up, your password can't be less than 8 characters"],
+    maxlength: [
+      100,
+      "Wow! Your password is impressive! Alas, we can't afford more than 100 characters for password",
+    ],
   },
   userType: {
     type: String,
@@ -48,14 +51,20 @@ const userSchema = new Schema({
     type: String,
     required: [true, 'First name is required'],
     lowercase: true,
-    maxlength: 30,
+    maxlength: [
+      30,
+      "Sorry, we can't afford more than 30 characters for your first name",
+    ],
     trim: true,
   },
 
   lastName: {
     type: String,
     lowercase: true,
-    maxlength: 30,
+    maxlength: [
+      30,
+      "Sorry, we can't afford more than 30 characters for your last name",
+    ],
     trim: true,
   },
 
