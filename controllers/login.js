@@ -2,10 +2,13 @@ const router = require('express').Router()
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const User = require('../models/userModel')
+const getToken = require('../middleware/getToken')
 
-router.route('/').post(async (req, res, next) => {
+router.route('/').post(getToken, async (req, res, next) => {
   try {
-    const { username, password } = req.body
+    const encoded = req.token
+    const decoded = Buffer.from(encoded, 'base64').toString('ascii')
+    const [username, password] = decoded.split(':')
     const user = await User.findOne({ username })
     const correctPassword = user === null ? false : await bcrypt.compare(password, user.password)
 
