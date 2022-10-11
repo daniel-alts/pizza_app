@@ -1,30 +1,60 @@
 const userModel = require("./models/userModel")
-const auth = require("basic-auth")
+const passport = require("passport")
+const localStrategy = require("passport-local").Strategy
+const ExtractJwt = require("passport-jwt").ExtractJwt
+const jwtStrategy = require("passport-jwt").Strategy
+require("dotenv").config()
 
 
-const Auth = async(req, res, next)=>{
-    const {name , pass} = auth(req)
+passport.use(
+    new jwtStrategy(
+        {
+            secretOrKey: process.env.SECRET_KEY,
+            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
+        },async(token,done)=>{
+            try{
+                return done(null,token.user)
+            }catch(err){
+                done(err)
+            }
 
-    if(!(name || pass)){
-        // res.setHeader('WWW-Authenticate', 'Basic realm="example"')
-        return res.status(400).send({message: "input username and password in header"})
+        }
+    )
+)
+
+passport.use("signup",
+new localStrategy(
+    async(username, password, done)=>{
+        try{
+            const user = await userModel.create({username,password})
+            console.log(user)
+            return done(null,user)
+        }
+        catch(error){
+            done(error)
+        } 
+    }
+))
+
+passport.use("login",
+new localStrategy(
+    async (username,password,done)=>{
+        try{
+            const user = await userModel.findOne({username})
+            if(!user){
+                return done(null,false,{message:"Username not found "})
+            }
+            const validate = await user.isValidPassword(password)
+            if(!validate){
+                return done(null, false, {message: "incorect password "})
+
+            }
+
+            return done(null, user, {message :"Logged i successfuly"})
+            
+        }catch(error){
+            done(error)
+        }
     }
 
-    
-
-    const allusers = await userModel.find()
-    const findUser = allusers.find(user => user.username == name && user.password == pass)
-    
-
-    if(findUser){
-        return next()
-
-    }
-    else{
-        res.status(401).send({message: "invalid login"})
-    }
-
-
-}
-
-module.exports = Auth
+))
