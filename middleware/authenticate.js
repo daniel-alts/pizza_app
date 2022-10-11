@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt')
 
 module.exports = async (req, res, next) => {
   // get basic authentication from header
-  const authorization = req.headers.authorization
+  const authorization = req.get('authorization')
   try {
     if (!authorization) return res.status(403).send({ message: 'Forbidden' })
     if (authorization) {
@@ -15,7 +15,7 @@ module.exports = async (req, res, next) => {
       // get the user object from database
       const authenticatedUser = await userModel.findOne({ username })
       // compare the password
-      const match = await bcrypt.compare(password, authenticatedUser.password)
+      const match = authenticatedUser === null ? false : await bcrypt.compare(password, authenticatedUser.password)
       if (!match) return res.status(403).send({ message: 'Forbidden' })
       // if successful, store the details in the request
       if (match) {
@@ -27,7 +27,6 @@ module.exports = async (req, res, next) => {
     }
     next()
   } catch (err) {
-    console.log(err)
-    return res.status(500).send({ message: 'Error occurred' })
+    next(err)
   }
 }
