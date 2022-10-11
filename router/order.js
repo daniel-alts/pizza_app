@@ -6,11 +6,12 @@ const orderModel = require("../model/orderModel")
 const userModel = require("../model/userModel")
 
 orderRoute.use(async(req,res,next)=>{
+    
     const password = req.query.password
-   
-    const user = await userModel.find({status:password})
-    console.log(user, "user")
+    console.log("password", password)
+    const user = await userModel.find({password: password})
     if (user.length>0) {
+        console.log("truee", user, "user")
         next()
     }else{
         res.status(401).send({message: "unauthorized", data:"please register as a user"})
