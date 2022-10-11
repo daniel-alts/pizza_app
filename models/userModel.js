@@ -21,6 +21,7 @@ const userSchema = new Schema({
     type: String,
     required: [true, "Please provide a password"],
     minLength: [8, "Your password should not be less than 8 characters"],
+    select: false, // password will not show while fetching all users from db
   },
   passwordConfirm: {
     type: String,
@@ -54,6 +55,15 @@ userSchema.pre("save", async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
+
+// To check that he user trying to log have the correct credentials
+userSchema.methods.isCorrectPassword = async function (
+  candidatePassword,
+  userPassowrd
+) {
+  const comparePassword = await bcrypt.compare(candidatePassword, userPassowrd);
+  return comparePassword;
+};
 
 const User = mongoose.model("User", userSchema);
 
