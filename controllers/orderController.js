@@ -6,11 +6,6 @@ const User = require('../models/userModel')
  */
 const getOrdersInfo = async (req, res, next) => {
   try {
-    // check for authenticated user's role
-    if (req.authenticatedUser.role !== 'admin') {
-      return res.status(401).send({ message: 'Unauthorised' })
-    }
-
     const orders = await Order.find({})
     const resObj = {}
     resObj.numberOfOrders = orders.length
@@ -31,7 +26,7 @@ const getOrdersInfo = async (req, res, next) => {
 const getAllOrders = async (req, res, next) => {
   try {
     let orders, returnObject = {}
-    
+
     /**
      * check for query parameters
      */
@@ -41,14 +36,14 @@ const getAllOrders = async (req, res, next) => {
 
     let limit = 5, page = 1 // default values
     if (!isNaN(limitFromQuery) && limitFromQuery > 0) limit = limitFromQuery
-    
+
     const numberOfOrders = await Order.find({}).countDocuments().exec()
     const totalPages = Math.ceil(numberOfOrders / limit)
     if (!isNaN(pageFromQuery) && pageFromQuery <= totalPages ) page = pageFromQuery
-    
+
     const start = (page - 1) * limit
     const end = page * limit
-    
+
     // Sort by total_price/createdAt
     const { price, date } = req.query
 

@@ -1,16 +1,15 @@
 const express = require('express')
 const router = express.Router()
-const orderModel = require('../models/orderModel')
-const authenticate = require('../middleware/authenticate')
 const controller = require('../controllers/orderController')
-
-router.use(authenticate)
+const getToken = require('../middleware/getToken')
+const getUser = require('../middleware/getUser')
+const authorize = require('../middleware/authorize')
 
 /**
  * Get information about all orders
  */
 router.route('/info')
-  .get(controller.getOrdersInfo)
+  .get(getToken, getUser, authorize, controller.getOrdersInfo)
 
 /**
  * Get all orders
