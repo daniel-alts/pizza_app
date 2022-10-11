@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
+const bcrypt = require("bcrypt");
+const ObjectId =  mongoose.Schema.ObjectId
 
-const userModel = new Schema({
+
+const UserSchema = new mongoose.Schema({
     id: ObjectId,
-    created_at: Date,
     username: {
         type: String,
         required: true,
@@ -37,8 +37,29 @@ const userModel = new Schema({
         required: true,
     }
 
-})
+}, 
+{timestamps: true}
+)
 
-const User = mongoose.model("user", userModel);
+UserSchema.pre(
+    'save',
+    async function (next) {
+        const user = this;
+        const hash = await bcrypt.hash(this.password, 10);
 
-module.exports = User
+        this.password = hash;
+        next();
+    }
+);
+
+// You will also need to make sure that the user trying to log in has the correct credentials. Add the following new method:
+UserSchema.methods.isValidPassword = async function(password) {
+    const user = this;
+    const compare = await bcrypt.compare(password, user.password);
+  
+    return compare;
+  }
+
+const UserModel = mongoose.model("user", UserSchema);
+
+module.exports = UserModel;
