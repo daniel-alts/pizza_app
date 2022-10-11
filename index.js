@@ -1,40 +1,47 @@
-const express = require('express');
-const moment = require('moment');
-const mongoose = require('mongoose');
-const orderModel = require('./models/orderModel');
-const OrderRoute = require("./routes/orderRoutes");
-const UserRoute = require("./routes/userRoutes");
-const OrderControl = require("./controls/orderController");
-const UserControl = require("./controls/userController");
-const authenticateUser = require("./middleware/auth");
-require('dotenv').config()
+require("dotenv").config();
+const express = require("express");
+const mongoose = require("mongoose");
+const app = express();
+const passport = require("passport");
+const bodyParser = require("body-parser");
 
-const PORT = process.env.PORT || 3000;
-
-const app = express()
-
+const userController = require("./controls/userController");
+const orderController = require("./controls/orderController");
+const auth = require("./middleware/auth");
 app.use(express.json());
 
-app.use("/", OrderRoute);
-app.use("/", UserRoute);
 
-app.get('/', (req, res) => {
-    return res.json({ status: true })
-})
+app.use(bodyParser.urlencoded({ extended: false }));
 
-const MONGO_URI = process.env.MONGO_URI
+app.use("/", userController);
+app.use(
+  "/orders",
+  passport.authenticate("jwt", { session: false }),
+  orderController
+);
 
-mongoose.connect(MONGO_URI)
+// Handle errors.
+app.use(function (err, req, res, next) {
+  console.log(err);
+  res.status(err.status || 500);
+  res.json({ error: err.message });
+});
+
+const PORT = process.env.PORT || 3787;
+
+const MONGO_URI = process.env.MONGO_URI;
+
+mongoose.connect(MONGO_URI);
 
 mongoose.connection.on("connected", () => {
-	console.log("Connected to MongoDB Successfully");
+  console.log("Connected to MongoDB Successfully");
 });
 
 mongoose.connection.on("error", (err) => {
-	console.log("An error occurred while connecting to MongoDB");
-	console.log(err);
+  console.log("An error occurred while connecting to MongoDB");
+  console.log(err);
 });
 
 app.listen(PORT, () => {
-    console.log('Listening on port, ', PORT)
-})
+  console.log(`Server running on port ${PORT}`);
+});

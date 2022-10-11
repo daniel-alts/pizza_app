@@ -1,9 +1,16 @@
 const express = require("express");
 const moment = require("moment");
 const orderModel = require("../models/orderModel");
-const authenticatedUser = require("../middleware/auth");
+const passport = require("passport");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
-exports.createOrder = async (req, res) => {
+// ...
+//const authenticatedUser  = require("../middleware/auth")
+
+const router = express.Router();
+
+router.post("/", async (req, res) => {
   try {
     const body = req.body;
 
@@ -20,15 +27,21 @@ exports.createOrder = async (req, res) => {
     await order.save();
     return res.json({ status: true, order });
   } catch (error) {
+    console.log(error);
     res.json({
       status: false,
       message: error,
     });
   }
-};
+});
 
-exports.getaSingleOrder = async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
+    //  const authenticatedUser = req.authenticatedUser
+    //
+    //  if (authenticatedUser) {
+    //   return res.status(200)
+    //  }
     const { orderId } = req.params;
     const order = await orderModel.findById(orderId);
 
@@ -43,10 +56,10 @@ exports.getaSingleOrder = async (req, res) => {
       message: error,
     });
   }
-};
-
-exports.getAllOrder = async (req, res) => {
+});
+router.get("/", async (req, res) => {
   try {
+
     const { state, sort } = req.query;
     const queryObject = {};
 
@@ -112,10 +125,15 @@ exports.getAllOrder = async (req, res) => {
       message: error,
     });
   }
-};
+});
 
-exports.updateOrder = async (req, res) => {
+router.patch("/", async (req, res) => {
   try {
+    const authenticatedUser = req.authenticatedUser;
+    //
+    if (authenticatedUser) {
+      return res.status(200);
+    }
     const { id } = req.params;
     const { state } = req.body;
 
@@ -142,9 +160,9 @@ exports.updateOrder = async (req, res) => {
       message: error,
     });
   }
-};
+});
 
-exports.cancelOrder = async (req, res) => {
+router.delete("/", async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -157,4 +175,5 @@ exports.cancelOrder = async (req, res) => {
       message: error,
     });
   }
-};
+});
+module.exports = router;
