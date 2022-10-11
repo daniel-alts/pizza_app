@@ -48,37 +48,133 @@ async function getOrders(req, res, next) {
   if (authenticatedUser.role !== "admin") {
     return res.status(401).send({ message: "Unauthorized" });
   }
+
+  // pagination
+
   let orders;
-  const price = req.query.price;
-  const date = req.query.date;
-  if (price) {
-    const value = price == "asc" ? 1 : price == "desc" ? -1 : false;
-    if (value) {
+
+  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit);
+  if (page && limit) {
+    const results = {};
+
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    if (endIndex < (await orderModel.countDocuments().exec())) {
+      results.next = {
+        page: page + 1,
+        limit: await orderModel.countDocuments().exec()-limit,
+      };
+    }
+
+    if (startIndex > 0) {
+      results.previous = {
+        page: page - 1,
+        limit:  await orderModel.countDocuments().exec()-limit,
+      };
+    }
+    const price = req.query.price;
+    const date = req.query.date;
+    let value;
+    if (price == "asc") {
+      value = 1;
+      if (value) {
+        await orderModel
+          .find()
+          .sort({ total_price: value })
+          .limit(limit)
+          .skip(startIndex)
+          .exec()
+          .then((segment) => {
+            orders = {
+              results: results,
+              segment: segment,
+            };
+          })
+          .catch((err) => {
+            res.status(500).send(err);
+          });
+      }
+    } else if (price == "desc") {
+      value = -1;
+      if (value) {
+        await orderModel
+          .find()
+          .sort({ total_price: value })
+          .limit(limit)
+          .skip(startIndex)
+          .exec()
+          .then((segment) => {
+            orders = {
+              results: results,
+              segment: segment,
+            };
+          })
+          .catch((err) => {
+            res.status(500).send(err);
+          });
+      }
+    }
+
+    if (date == "asc") {
+      value = 1;
+      if (value) {
+        await orderModel
+          .find()
+          .sort({ created_at: value })
+          .limit(limit)
+          .skip(startIndex)
+          .exec()
+          .then((segment) => {
+            orders = {
+              results: results,
+              segment: segment,
+            };
+          })
+          .catch((err) => {
+            res.status(500).send(err);
+          });
+      }
+    } else if (date == "desc") {
+      value = -1;
+      if (value) {
+        await orderModel
+          .find()
+          .sort({ created_at: value })
+          .limit(limit)
+          .skip(startIndex)
+          .exec()
+          .then((segment) => {
+            orders = {
+              results: results,
+              segment: segment,
+            };
+          })
+          .catch((err) => {
+            res.status(500).send(err);
+          });
+      }
+    }
+    if (!price && !date) {
       await orderModel
         .find()
-        .sort({ total_price: value })
-        .then((allOrder) => {
-          orders = allOrder;
+        .limit(limit)
+        .skip(startIndex)
+        .exec()
+        .then((segment) => {
+          orders = {
+            results: results,
+            segment: segment,
+          };
         })
         .catch((err) => {
-          res.status(500).send(err);
+          res.status(500).json({ message: err.message });
         });
     }
   }
-  if (date) {
-    const value = date == "asc" ? 1 : date == "desc" ? -1 : false;
-    if (value) {
-      await orderModel
-        .find()
-        .sort({ created_at: value })
-        .then((allOrder) => {
-          orders = allOrder;
-        })
-        .catch((err) => {
-          res.status(500).send(err);
-        });
-    }
-  }
+  
+  // Sorting and filtering
+
   if (!orders) {
     await orderModel
       .find()
@@ -89,10 +185,8 @@ async function getOrders(req, res, next) {
         res.status(500).send(err);
       });
   }
+
   res.status(200).send(orders);
-
-  //   pagination
-
 }
 async function updateById(req, res) {
   const id = req.params.id;
