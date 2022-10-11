@@ -12,14 +12,18 @@ const {
   deleteOrder,
 } = require("../controller/order");
 
-// const { authenticateUser } = require("../middleware/authentication");
+const authenticateUser = require("../middleware/basicAuth");
 
-router.route("/").post(createOrder).get(getAllOrders);
+router.route("/").post(authenticateUser, createOrder).get(getAllOrders);
 
 router.get("/tp", getOrdersTotalPrice);
 router.get("/time", getOrdersTime);
 router.get("/state", getOrdersState);
 
-router.route("/:id").get(getOrder).patch(updateOrder).delete(deleteOrder);
+router
+  .route("/:id")
+  .get(getOrder)
+  .patch(authenticateUser, updateOrder)
+  .delete(authenticateUser, deleteOrder);
 
 module.exports = router;

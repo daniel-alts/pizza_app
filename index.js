@@ -7,10 +7,10 @@ const app = express();
 
 // Middleware
 require("./middleware/passportAuth");
+require("./middleware/basicAuth");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 
 // Test LocalHost link
 app.get("/", (req, res) => {
