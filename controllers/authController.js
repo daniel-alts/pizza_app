@@ -29,7 +29,7 @@ exports.signup = catchAsyncError(async (req, res, next) => {
   });
 });
 
-exports.login = async (req, res, next) => {
+exports.login = catchAsyncError(async (req, res, next) => {
   const { email, password } = req.body;
   // Checking if email & password exist
   if (!email || !password) {
@@ -55,4 +55,4 @@ exports.login = async (req, res, next) => {
     status: "success",
     token,
   });
-};
+});
