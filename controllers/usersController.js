@@ -6,8 +6,7 @@ const bcrypt = require('bcrypt')
  */
 const getAllUsers = async (req, res, next) => {
   try {
-    const users = await userModel.find({}, { password: 0 }).populate('orders', { items: 1, total_price: 1 })
-
+    const users = await userModel.find({}).populate('orders', { items: 1, total_price: 1 })
     return res.json({ status: true, users })
   } catch (err) {
     next(err)
