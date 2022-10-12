@@ -1,19 +1,19 @@
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
+const { Schema } = mongoose;
+const { ObjectId } = Schema;
 
 const OrderSchema = new Schema({
   id: ObjectId,
-  created_at: Date,
+  createdAt: Date,
   state: { type: Number, default: 1 },
-  total_price: Number,
+  totalPrice: Number,
   items: [{
     name: String,
     price: Number,
-    size: { type: String, enum: ['m', 's', 'l']},
+    size: { type: String, enum: ['m', 's', 'l'] },
     quantity: Number,
-  }]
+  }],
 });
 
 const Order = mongoose.model('Order', OrderSchema);
