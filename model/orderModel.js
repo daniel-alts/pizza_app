@@ -1,3 +1,4 @@
+//Defining Schema for the order model on our database
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
