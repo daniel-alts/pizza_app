@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt")
 const { Schema, model } = require("mongoose");
 const {isEmail} = require("validator").default;
 
@@ -31,6 +32,20 @@ userSchema.virtual("fullName")
         [this.firstName, this.lastName] = v.split(" ")
     })
 
+
+// Hash password before storing it to the database
+userSchema.pre("save", async function(next) {
+    const hash = await bcrypt.hash(this.password, 10)
+    this.password = hash
+    next()
+})
+
+// Validate stored password
+userSchema.methods.validatePassword = async function(password) {
+    const storedHash = this.password
+    const isValid = bcrypt.compare(password, storedHash)
+    return isValid
+}
 
 const User = model("User", userSchema)
 

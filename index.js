@@ -1,11 +1,13 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const orderModel = require("./models/order");
+const passport = require("passport")
 
+
+const orderModel = require("./models/order");
 const orderRouter = require("./routes/order");
 const userRouter = require("./routes/user");
 
-const authenticate = require("./auth");
+const authenticate = require("./auth/basic");
 const { connectDB } = require("./db");
 
 const PORT = 3334;
@@ -17,6 +19,7 @@ app.set("views", "./views")
 
 app.use("/public", express.static("public"))
 app.use(express.json());
+
 
 app.get("/", (req, res) => {
     return res.json({ status: true });
@@ -37,10 +40,10 @@ app.use(
             next()
         } else {
             // Make sure user is authenticated
-            const user = req.body.user;
+            const {username, password} = req.body.user;
             let authenticated = false;
             let error;
-            await authenticate(user)
+            await authenticate(username, password)
                 .then(() => (authenticated = true))
                 .catch((err) => (error = err));
                 
@@ -56,7 +59,35 @@ app.use(
 );
 
 // Handle user routes
-app.use("/user", userRouter);
+app.use(
+    "/user", 
+    async (req, res, next) => {
+        if (req.method === "POST") {
+
+            next()
+        }
+        // Make sure only admins can read, update and delete users
+        else {
+            const authHeader = req.headers.authorization
+            // Parse username and password from `Basic` authentication header
+            const [username, password] = Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':')
+   
+            let userType
+            let error;
+            await authenticate(username, password)
+                .then((user) => {
+                    userType = user.user_type
+                })
+                .catch((err) => (error = err));
+
+            if (error) res.status(400).send(error.toString())
+            else if (userType !== "admin") res.status(400).send("You must be an admin to access this route")
+            else next()
+        }
+
+    }, 
+    userRouter
+);
 
 app.get((req, res) => {
     res.status(404).json({ error: "Route not found" });
