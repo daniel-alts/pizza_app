@@ -112,7 +112,7 @@ Start server
 npm run start:dev
 ```
 
-> NOTE: Go to `./config/dbConfig.js` and `./index.js` files and uncomment the lines with `console.log()`` to begin local development or testing of the API. Also, the `.env` is important as it is needed for authentication processes.
+> NOTE: Go to `./config/dbConfig.js` and `./index.js` files and uncomment the lines with `console.log()` to begin local development or testing of the API. Also, the `.env` is important as it is needed for authentication processes.
 
 ## My process
 
