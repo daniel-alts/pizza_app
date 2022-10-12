@@ -17,7 +17,7 @@ router.route('/info')
  * Create new orders
  */
 router.route('/')
-  .get(controller.getAllOrders)
+  .get(getToken, getUser, controller.getAllOrders)
   .post(getToken, getUser, controller.createOrder)
 
 /**

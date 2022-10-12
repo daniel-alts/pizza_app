@@ -26,7 +26,7 @@ const getOrdersInfo = async (req, res, next) => {
 const getAllOrders = async (req, res, next) => {
   try {
     let orders, returnObject = {}
-
+    const filter = req.authenticatedUser.user_type === 'admin' ? {} : { user: req.authenticatedUser._id }
     /**
      * check for query parameters
      */
@@ -37,7 +37,7 @@ const getAllOrders = async (req, res, next) => {
     let limit = 5, page = 1 // default values
     if (!isNaN(limitFromQuery) && limitFromQuery > 0) limit = limitFromQuery
 
-    const numberOfOrders = await Order.find({}).countDocuments().exec()
+    const numberOfOrders = await Order.find(filter).countDocuments().exec()
     const totalPages = Math.ceil(numberOfOrders / limit)
     if (!isNaN(pageFromQuery) && pageFromQuery <= totalPages ) page = pageFromQuery
 
@@ -49,12 +49,12 @@ const getAllOrders = async (req, res, next) => {
 
     if (price) {
       const value = price === 'asc' ? 1 : price === 'desc' ? -1 : false
-      if (value) orders = await Order.find({}).sort({ total_price: value }).limit(limit).skip(start)
+      if (value) orders = await Order.find(filter).sort({ total_price: value }).limit(limit).skip(start)
     } else if (date) {
       const value = date === 'asc' ? 1 : date === 'desc' ? -1 : false
-      if (value) orders = await Order.find({}).sort({ created_at: value }).limit(limit).skip(start)
+      if (value) orders = await Order.find(filter).sort({ created_at: value }).limit(limit).skip(start)
     }
-    if (!orders) orders = await Order.find({}).limit(limit).skip(start)
+    if (!orders) orders = await Order.find(filter).limit(limit).skip(start)
 
     // prepare response data
     if (start > 0) {
