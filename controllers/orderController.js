@@ -83,8 +83,8 @@ const getAllOrders = async (req, res, next) => {
  */
 const getOrderById = async (req, res, next) => {
   try {
-    const { orderId } = req.params
-    const order = await Order.findById(orderId)
+    const { id } = req.params
+    const order = await Order.findById(id)
     if (!order) {
       return res.status(404).json({ status: false, data: null })
     }
@@ -130,11 +130,6 @@ const createOrder = async (req, res, next) => {
  */
 const updateOrder = async (req, res, next) => {
   try {
-    // check for authenticated user's role
-    if (req.authenticatedUser.role !== 'admin') {
-      return res.status(401).send({ message: 'Unauthorised' })
-    }
-
     const { id } = req.params
     const { state } = req.body
 
@@ -164,11 +159,6 @@ const updateOrder = async (req, res, next) => {
  */
 const deleteOrder = async (req, res, next) => {
   try {
-    // check for authenticated user's role
-    if (req.authenticatedUser.role !== 'admin') {
-      return res.status(401).send({ message: 'Unauthorised' })
-    }
-
     const { id } = req.params
 
     const order = await Order.findOne({ _id: id })
