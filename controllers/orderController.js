@@ -101,7 +101,7 @@ const getOrderById = async (req, res, next) => {
 const createOrder = async (req, res, next) => {
   try {
     const body = req.body
-    const user = await User.findById(req.body.userId)
+    const user = await User.findById(req.authenticatedUser.id)
 
     const total_price = body.items.reduce((prev, curr) => {
       return (prev += curr.quantity * curr.price)
@@ -111,7 +111,7 @@ const createOrder = async (req, res, next) => {
       items: body.items,
       created_at: new Date(),
       total_price,
-      user: user._Id
+      user: user.id
     }
 
     const order = new Order(orderObject)

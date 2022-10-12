@@ -18,7 +18,7 @@ router.route('/info')
  */
 router.route('/')
   .get(controller.getAllOrders)
-  .post(controller.createOrder)
+  .post(getToken, getUser, controller.createOrder)
 
 /**
  * Get order by id
