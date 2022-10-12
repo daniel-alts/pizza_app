@@ -35,7 +35,7 @@ From our last live class, we created a mini pizza ordering app. What we want you
 - Add query params to the `/orders` route, we want to:
   - Sort the `total_price` from ascending to descending
   - Sort the `date` created from asc to desc
-  - Query by a state
+  - Query by a `state`
   - Add pagination to the `GET /orders` route
 
 **Bonus**
@@ -112,7 +112,7 @@ Start server
 npm run start:dev
 ```
 
-> NOTE: Go to `./config/dbConfig.js` and `./index.js` files and uncomment the lines with console.log() to begin local development or testing of the API. Also, the `.env` is important as it is needed for authentication processes.
+> NOTE: Go to `./config/dbConfig.js` and `./index.js` files and uncomment the lines with `console.log()`` to begin local development or testing of the API. Also, the `.env` is important as it is needed for authentication processes.
 
 ## My process
 
