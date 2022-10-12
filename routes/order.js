@@ -4,8 +4,10 @@ const moment = require("moment");
 
 const orderRouter = express.Router();
 
-orderRouter.post("/order", async (req, res) => {
+orderRouter.post("/", async (req, res) => {
   const body = req.body;
+
+  console.log(body.items);
 
   const total_price = body.items.reduce((prev, curr) => {
     prev += curr.price;
@@ -21,7 +23,7 @@ orderRouter.post("/order", async (req, res) => {
   return res.json({ status: true, order });
 });
 
-orderRouter.get("/order/:orderId", async (req, res) => {
+orderRouter.get("/:orderId", async (req, res) => {
   const { orderId } = req.params;
   const order = await orderModel.findById(orderId);
 
@@ -32,13 +34,13 @@ orderRouter.get("/order/:orderId", async (req, res) => {
   return res.json({ status: true, order });
 });
 
-orderRouter.get("/orders", async (req, res) => {
+orderRouter.get("/", async (req, res) => {
   const orders = await orderModel.find();
 
   return res.json({ status: true, orders });
 });
 
-orderRouter.patch("/order/:id", async (req, res) => {
+orderRouter.patch("/:id", async (req, res) => {
   const { id } = req.params;
   const { state } = req.body;
 
@@ -61,10 +63,12 @@ orderRouter.patch("/order/:id", async (req, res) => {
   return res.json({ status: true, order });
 });
 
-orderRouter.delete("/order/:id", async (req, res) => {
+orderRouter.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   const order = await orderModel.deleteOne({ _id: id });
 
   return res.json({ status: true, order });
 });
+
+module.exports = orderRouter;
