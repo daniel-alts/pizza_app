@@ -22,5 +22,5 @@ app.use('/orders', orderRouter);
 app.use('/users', userRouter);
 
 app.listen(PORT, () => {
-  console.log('Server listening on port, ', PORT);
+  // console.log('Server listening on port, ', PORT);
 });

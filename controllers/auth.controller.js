@@ -12,9 +12,9 @@ require('dotenv').config();
  * If password is incorrect, return Incorrect password!
  */
 async function login(req, res) {
-  const authheader = req.headers.authorization;
+  const authHeader = req.headers.authorization;
 
-  if (!authheader) {
+  if (!authHeader) {
     const err = new Error('You are not authenticated!');
     res.setHeader('WWW-Authenticate', 'Basic');
     err.status = 401;
@@ -23,13 +23,15 @@ async function login(req, res) {
       message: 'Provide login credentials',
     });
   }
- 
+
   // Get user details
-  const auth = new Buffer.from(authheader.split(' ')[1],
-  'base64').toString().split(':');
+  const auth = new Buffer
+    .From(authHeader.split(' ')[1], 'base64')
+    .toString()
+    .split(':');
   const username = auth[0];
   const password = auth[1];
-  
+
   // Find user in database
   const user = await userModel.findOne({ username });
 
@@ -48,13 +50,11 @@ async function login(req, res) {
       message: 'Incorrect password!',
     });
   }
-  
+
   // If user's password is correct
-  const token = generateToken()
+  const token = generateToken();
   process.env.TOKEN = token;
   process.env.USER_TYPE = user.userType;
-  
-  console.log(process.env.USER_TYPE)
 
   return res.json({
     status: true,

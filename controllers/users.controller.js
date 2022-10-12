@@ -15,16 +15,16 @@ async function createUser(req, res) {
     password,
     userType,
   } = req.body;
-  
+
   const usernameExist = await userModel.findOne({ username });
-  
-  if(usernameExist) {
+
+  if (usernameExist) {
     return res.status(401).json({
       status: false,
       message: 'Username exist!',
     });
   }
-  
+
   const user = await userModel.create({
     name,
     username,
