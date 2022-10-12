@@ -1,5 +1,4 @@
 const Order = require('../models/orderModel')
-const User = require('../models/userModel')
 
 /**
  * Get information about all orders
@@ -49,12 +48,12 @@ const getAllOrders = async (req, res, next) => {
 
     if (price) {
       const value = price === 'asc' ? 1 : price === 'desc' ? -1 : false
-      if (value) orders = await Order.find(filter).sort({ total_price: value }).limit(limit).skip(start)
+      if (value) orders = await Order.find(filter).populate('user', { username: 1 }).sort({ total_price: value }).limit(limit).skip(start)
     } else if (date) {
       const value = date === 'asc' ? 1 : date === 'desc' ? -1 : false
-      if (value) orders = await Order.find(filter).sort({ created_at: value }).limit(limit).skip(start)
+      if (value) orders = await Order.find(filter).populate('user', { username: 1 }).sort({ created_at: value }).limit(limit).skip(start)
     }
-    if (!orders) orders = await Order.find(filter).limit(limit).skip(start)
+    if (!orders) orders = await Order.find(filter).populate('user', { username: 1 }).limit(limit).skip(start)
 
     // prepare response data
     if (start > 0) {
@@ -101,7 +100,7 @@ const getOrderById = async (req, res, next) => {
 const createOrder = async (req, res, next) => {
   try {
     const body = req.body
-    const user = await User.findById(req.authenticatedUser.id)
+    const user = req.authenticatedUser
 
     const total_price = body.items.reduce((prev, curr) => {
       return (prev += curr.quantity * curr.price)
@@ -111,11 +110,12 @@ const createOrder = async (req, res, next) => {
       items: body.items,
       created_at: new Date(),
       total_price,
-      user: user.id
+      user: user._id
     }
 
     const order = new Order(orderObject)
     const savedOrder = await order.save()
+
     user.orders = user.orders.concat(savedOrder._id)
     await user.save()
 

@@ -9,7 +9,7 @@ const UserSchema = new Schema({
   orders: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'Order',
     },
   ],
 })
