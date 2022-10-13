@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const { promisify } = require("util");
 const userModel = require("../models/userModel");
 const catchAsyncError = require("../utils/catchAsyncError");
 const AppError = require("../utils/appError");
@@ -49,10 +50,39 @@ exports.login = catchAsyncError(async (req, res, next) => {
     return next(new AppError(`Incorrect Email or Password!`, 401));
   }
 
-  // if everything is ok, send token to client
+  // Sending token to client if everything is ok
   const token = signToken(user._id);
   res.status(200).json({
     status: "success",
     token,
   });
+});
+
+exports.protectRoute = catchAsyncError(async (req, res, next) => {
+  // Getting token and checking if it exists
+  let token;
+  // Checking if the authorization header is present
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+  }
+  // console.log(token);
+  if (!token) {
+    return next(new AppError(`You are not logged in. Please login`, 401));
+  }
+  const verifiedToken = await promisify(jwt.verify)(token, JWT_SECRET);
+  console.log(verifiedToken);
+
+  // Checking if user still exists
+  const currentUser = await userModel.findById(verifiedToken.id);
+  if (!currentUser) {
+    return next(new AppError(`This user no longer exists`, 401));
+  }
+
+  // Protecting the route
+  req.user = currentUser;
+
+  next();
 });
