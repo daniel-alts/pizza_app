@@ -9,7 +9,6 @@ const Order = require('../../resources/order/order.model')
 const User = require('../../resources/user/user.model')
 const mongoose = require('mongoose')
 
-
 jest.setTimeout(20000) // resets Jest timeout time allow for execution.
 
 // Creates mondodb connection before each testing
@@ -30,7 +29,10 @@ describe('createOrder', () => {
 	it('create new order', async () => {
 		expect.assertions(5)
 
-        const user = await User.create({username: 'test', password: 'test'})
+		const user = await User.create({
+			username: 'test',
+			password: 'test',
+		})
 		const body = {
 			items: [
 				{
@@ -43,11 +45,10 @@ describe('createOrder', () => {
 		}
 
 		const req = {
-            authenticatedUser: {
-                username:
-                user.username,
-            role: user.user_type,
-            },
+			authenticatedUser: {
+				username: user.username,
+				role: user.user_type,
+			},
 			body,
 		}
 
@@ -76,7 +77,10 @@ describe('createOrder', () => {
 	it('total_price was updated', async () => {
 		expect.assertions(3)
 
-        const user = await User.create({username: 'test', password: 'test'})
+		const user = await User.create({
+			username: 'test',
+			password: 'test',
+		})
 		const body = {
 			items: [
 				{
@@ -89,11 +93,10 @@ describe('createOrder', () => {
 		}
 
 		const req = {
-            authenticatedUser: {
-                username:
-                user.username,
-            role: user.user_type,
-            },
+			authenticatedUser: {
+				username: user.username,
+				role: user.user_type,
+			},
 			body,
 		}
 
@@ -120,7 +123,10 @@ describe('checkOrderById', () => {
 	it('check the order by ID', async () => {
 		expect.assertions(2)
 
-        const user = await User.create({username: 'test', password: 'test'})
+		const user = await User.create({
+			username: 'test',
+			password: 'test',
+		})
 		const order = await Order.create({
 			items: [
 				{
@@ -132,11 +138,10 @@ describe('checkOrderById', () => {
 			],
 		})
 		const req = {
-            authenticatedUser: {
-                username:
-                user.username,
-            role: user.user_type,
-            },
+			authenticatedUser: {
+				username: user.username,
+				role: user.user_type,
+			},
 			params: {
 				id: order._id,
 			},
@@ -162,7 +167,10 @@ describe('orderState', () => {
 	it('is order state valid', async () => {
 		expect.assertions(4)
 
-        const user = await User.create({username: 'test', password: 'test'})
+		const user = await User.create({
+			username: 'test',
+			password: 'test',
+		})
 		const order = await Order.create({
 			items: [
 				{
@@ -175,11 +183,10 @@ describe('orderState', () => {
 		})
 
 		const req = {
-            authenticatedUser: {
-                username:
-                user.username,
-            role: user.user_type,
-            },
+			authenticatedUser: {
+				username: user.username,
+				role: user.user_type,
+			},
 			params: {
 				id: order._id,
 			},
@@ -208,8 +215,11 @@ describe('orderState', () => {
 
 describe('deleteOrder', () => {
 	it('should delete order', async () => {
-
-        const user = await User.create({username: 'test', password: 'test', user_type: 'admin'})
+		const user = await User.create({
+			username: 'test',
+			password: 'test',
+			user_type: 'admin',
+		})
 		const order = await Order.create({
 			items: [
 				{
@@ -222,11 +232,10 @@ describe('deleteOrder', () => {
 		})
 
 		const req = {
-            authenticatedUser: {
-                username:
-                user.username,
-            role: user.user_type,
-            },
+			authenticatedUser: {
+				username: user.username,
+				role: user.user_type,
+			},
 			params: {
 				id: order._id,
 			},
@@ -237,7 +246,7 @@ describe('deleteOrder', () => {
 				return this
 			},
 			json(result) {
-				expect(`${result.data._id}`).toBe(
+				expect(`${result.data}`).toBe(
 					'undefined',
 				)
 			},
@@ -249,9 +258,12 @@ describe('deleteOrder', () => {
 
 describe('checkAllOrder', () => {
 	it('check that all orders were returned', async () => {
-		expect.assertions(5)
+		expect.assertions(4)
 
-        
+		const user = User.create({
+			username: 'test',
+			password: 'test',
+		})
 		const order = await Order.create([
 			{
 				items: [
@@ -287,7 +299,16 @@ describe('checkAllOrder', () => {
 
 		const prices = [3000, 4500, 7500]
 
-		const req = {}
+		const req = {
+			authenticatedUser: {
+				username: user.username,
+				role: user.user_type,
+			},
+			query: {
+				p: 1,
+                price: 'asc'
+			},
+		}
 
 		const res = {
 			status(status) {
@@ -295,11 +316,153 @@ describe('checkAllOrder', () => {
 				return this
 			},
 			json(results) {
-				expect(results.data).toHaveLength(3)
 				results.data.forEach((result, i) =>
 					expect(
 						`${order[i].total_price}`,
 					).toBe(`${prices[i]}`),
+				)
+			},
+		}
+
+		await checkAllOrder(Order)(req, res)
+	})
+	it('check that pagination is working', async () => {
+		expect.assertions(2)
+
+		const user = User.create({
+			username: 'test',
+			password: 'test',
+		})
+		await Order.create([
+			{
+				items: [
+					{
+						name: 'peperoni',
+						price: 1500,
+						size: 's',
+						quantity: 2,
+					},
+				],
+			},
+			{
+				items: [
+					{
+						name: 'peperoni',
+						price: 1500,
+						size: 's',
+						quantity: 3,
+					},
+				],
+			},
+			{
+				items: [
+					{
+						name: 'peperoni',
+						price: 1500,
+						size: 's',
+						quantity: 5,
+					},
+				],
+			},
+		])
+
+		const req = {
+			authenticatedUser: {
+				username: user.username,
+				role: user.user_type,
+			},
+			query: {
+				p: 1,
+                price: 'asc'
+			},
+		}
+
+		const res = {
+			status(status) {
+				expect(status).toBe(200)
+				return this
+			},
+			json(results) {
+				expect(results.data).toHaveLength(2)
+			},
+		}
+
+		await checkAllOrder(Order)(req, res)
+	})
+
+	it('check if order returned is sorted by price', async () => {
+		expect.assertions(5)
+
+		const user = User.create({
+			username: 'test',
+			password: 'test',
+		})
+		const order = await Order.create([
+			{
+				items: [
+					{
+						name: 'peperoni',
+						price: 1500,
+						size: 's',
+						quantity: 2,
+					},
+				],
+			},
+			{
+				items: [
+					{
+						name: 'peperoni',
+						price: 1500,
+						size: 's',
+						quantity: 3,
+					},
+				],
+			},
+			{
+				items: [
+					{
+						name: 'peperoni',
+						price: 1500,
+						size: 's',
+						quantity: 5,
+					},
+				],
+			},
+		])
+
+		const prices = [3000, 4500, 7500]
+
+		const req = {
+			authenticatedUser: {
+				username: user.username,
+				role: user.user_type,
+			},
+			query: {
+                p: 1,
+				price: 'asc' || 'desc',
+			},
+		}
+
+		const res = {
+			status(status) {
+				expect(status).toBe(200)
+				return this
+			},
+			json(results) {
+				results.data.forEach(
+					(result, i) => {
+						let j = i + 1
+						expect(
+							`${
+								order[j].total_price >
+								order[j - 1].total_price
+							}` ||
+								`${
+									order[j].total_price <
+									order[j - 1].total_price
+								}`,
+						).toBeTruthy()
+					},
 				)
 			},
 		}

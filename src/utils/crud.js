@@ -67,11 +67,11 @@ const checkAllOrder =
             const page = p || 1
             const booksPerPage = 2
 
-            const orderCount = await orderModel.countDocuments();
+            const orderCount = await model.countDocuments();
             const skipPage = (page-1) * booksPerPage
             
         
-
+           
             //sort by price or date
             if (price) {
                 const value = price === 'asc' ? 1 : price === 'desc' ? -1 : false
@@ -180,13 +180,13 @@ const deleteOrder =
                 _id: id,
             })
         } catch {
-            res.status(401).send({ message: 'id not found' })
+            res.status(401).json({ message: 'id not found' })
         }
 		
 
 		return res
 			.status(204)
-			.send({ message: 'successfully deleted' })
+			.json({ message: 'successfully deleted' })
 	}
 
 const crudControllers = (model) => ({
