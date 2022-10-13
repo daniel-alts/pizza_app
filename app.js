@@ -23,7 +23,13 @@ app.use(
 	orderRoute
 );
 
-app.use("/users", userRoute);
+app.use(
+	"/users",
+	passport.authenticate("jwt", {
+		session: false,
+	}),
+	userRoute
+);
 
 app.get("/", (req, res) => {
 	return res.send("Welcome to the Pizza API");

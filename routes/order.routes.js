@@ -1,5 +1,4 @@
 const express = require("express");
-const { authenticateUser, authorize } = require("../utils/auth.utils");
 const {
 	createOrder,
 	getOrderById,
