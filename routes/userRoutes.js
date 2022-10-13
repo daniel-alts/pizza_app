@@ -8,9 +8,14 @@ const userRoute = express.Router();
 userRoute.post(
     '/signup',
     passport.authenticate('signup', { session: false }), async (req, res, next) => {
+        // const {password, ...rest} = req.user;
+        const body = { id: req.user.id, username: req.user.username };
+        const token = jwt.sign({ user: body }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
         res.json({
             message: 'Signup successful',
-            user: req.user
+            user: req.user,
+            token: token
         });
     }
 );
@@ -32,7 +37,7 @@ userRoute.post(
                     async (error) => {
                         if (error) return next(error);
 
-                        const body = { id: user.id, firstname: user.firstname, lastname: user.lastname, gender: user.gender, username: user.username };
+                        const body = { id: user.id, username: user.username };
                         //You store the id and email in the payload of the JWT. 
                         // You then sign the token with a secret or key (JWT_SECRET), and send back the token to the user.
                         // DO NOT STORE PASSWORDS IN THE JWT!

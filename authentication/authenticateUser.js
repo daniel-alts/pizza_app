@@ -1,6 +1,6 @@
 const passport = require('passport');
 const localStrategy = require('passport-local').Strategy;
-const userModel = require('../models/userModel');
+const UserModel = require('../models/UserModel');
 
 const JWTstrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;
@@ -9,8 +9,8 @@ passport.use(
     new JWTstrategy( 
         {
             secretOrKey: process.env.JWT_SECRET,
-            jwtFromRequest: ExtractJWT.fromUrlQueryParameter('secret_token')
-            // jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken() // Use this if you are using Bearer token
+            // jwtFromRequest: ExtractJWT.fromUrlQueryParameter('secret_token')
+            jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken() // Use this if you are using Bearer token
         },
         async (token, done) => {
             try {
@@ -29,15 +29,12 @@ passport.use(
     'signup',
     new localStrategy(
         {
-            firstnameField: 'firstname',
-            lastnameField: 'lastname',
-            genderField: 'gender',
             usernameField: 'username',
             passwordField: 'password'
         },
-        async (firstname, lastname, gender, username, password, done) => {
+        async (username, password, done) => {
             try {
-                const user = await userModel.create({ firstname, lastname, gender, username, password });
+                const user = await UserModel.create({ username, password });
 
                 return done(null, user);
             } catch (error) {
@@ -59,7 +56,7 @@ passport.use(
         },
         async (username, password, done) => {
             try {
-                const user = await userModel.findOne({ username });
+                const user = await UserModel.findOne({ username });
 
                 if (!user) {
                     return done(null, false, { message: 'User not found' });

@@ -5,7 +5,8 @@ const bodyParser = require('body-parser');
 const pizzaRoute = require("./routes/orderRoutes");
 const userRoute = require("./routes/userRoutes");
 
-const { connectToMongoDB } = require("./db");
+require("./db").connectToMongoDB();
+
 require("dotenv").config();
 
 require('./authentication/authenticateUser');
@@ -18,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.use("/", userRoute)
-app.use('/order', passport.authenticate('jwt', { session: false }), pizzaRoute);
+app.use('/pizza', passport.authenticate('jwt', { session: false }), pizzaRoute);
 
 app.get("/", (req, res) => {
     res.send("Welcome to the World of Pizza!")
