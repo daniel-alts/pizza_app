@@ -1,49 +1,73 @@
-  
-  const userModel = require('../models/userModel')
-  
-  function authentication(req, res, ) {
-       new Promise(async(resolve,reject)=>{
-        const {username, password, userType} = req.body
-        if(!username || !password){
-            reject("invalid username or password")
+const passport = require('passport');
+const localStrategy = require('passport-local').Strategy;
+const UserModel = require('../models/userModel');
 
-            const user = await userModel.findOne({username: username, password: password})
-            if(!user){
-                reject("user not found")
+const JWTstrategy = require('passport-jwt').Strategy;
+const ExtractJWT = require('passport-jwt').ExtractJwt;
+
+
+
+passport.use(
+    new JWTstrategy(
+        {
+            secretOrKey: process.env.JWT_SECRET,
+            jwtFromRequest: ExtractJWT.fromUrlQueryParameter('secret_token')
+       
+        },
+        async (token, done) => {
+            try {
+                return done(null, token.user);
+            } catch (error) {
+                done(error);
             }
         }
-        if(userType !== "admin"){
-            reject("you are not authorised to access this resource")
+    )
+);
+
+passport.use(
+    'signup',
+    new localStrategy(
+        {
+            usernameField: 'username',
+            passwordField: 'password'
+        },
+        async (username, password, done) => {
+            try {
+                const user = await UserModel.create({ username, password });
+
+                return done(null, user);
+            } catch (error) {
+                done(error);
+            }
         }
-        else resolve("authorised")
-    })
-  }
+    )
+);
 
+passport.use(
+    'login',
+    new localStrategy(
+        {
+            usernameField: 'username',
+            passwordField: 'password'
+        },
+        async (username, password, done) => {
+            try {
+                const user = await UserModel.findOne({ username });
 
-module.exports = { authentication }
+                if (!user) {
+                    return done(null, false, { message: 'User not found' });
+                }
 
-// require("dotenv").config()
-// // console.log(process.env.API_KEY)
-// const TOKEN = process.env.API_KEY
+                const validate = await user.isValidPassword(password);
 
-// function authenticateUser(req, res) {
-//     console.log(req.headers)
-//     return new Promise((resolve, reject) => {
-//         let token = req.headers.authorization
-//         token = token.split(' ')[1]
-//         if (!token) {
-//             reject("no token provided")
-//         }
-//         // console.log(token)
-//         if (token !== TOKEN) {
-//             reject("invalid token")
-//         }
-//         resolve()
-//     })
-// }
+                if (!validate) {
+                    return done(null, false, { message: 'Wrong Password' });
+                }
 
-
-
-// module.exports = {
-//     authenticateUser
-// }
+                return done(null, user, { message: 'Logged in Successfully' });
+            } catch (error) {
+                return done(error);
+            }
+        }
+    )
+);
