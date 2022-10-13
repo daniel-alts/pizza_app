@@ -3,13 +3,13 @@ const moment = require('moment');
 
 
 const orderModel = db.Order;
+const userModel = db.User
 
 
-
-const createOrder = async (req, res, next) => {
+async function createOrder (req, res, next){
+    const body = req.body
     try {
-        const body = req.body
-
+        
         const total_price = body.items.reduce((prev, curr) => {
             prev += (curr.quantity * curr.price)
             return prev
@@ -33,7 +33,8 @@ const createOrder = async (req, res, next) => {
 };
 
 const getOrder = async (req, res, next) => {
-    const authenticatedUser = req.authenticateUser;
+    
+    // const authenticatedUser = req.authenticateUser;
     const page = parseInt(req.query.page) 
     const limit = parseInt(req.query.limit)
     const skip = Math.abs((page - 1) * limit);
@@ -43,13 +44,7 @@ const getOrder = async (req, res, next) => {
     }
     
     try {
-        if (!authenticatedUser) {
-            return res.status(403).json({message: "Forbidden.."})
-        }
-
-        if (authenticatedUser.role !== "admin"){
-            return res.status(401).json({message: "Unauthorized"})
-        }
+        
         const pizOrder = await orderModel.find();
         let orderLength = pizOrder.length;
 
@@ -63,6 +58,7 @@ const getOrder = async (req, res, next) => {
             })
         }
         if (!page || !limit){
+            const order = await orderModel.find()
             return res.status(200).json({
                 status: true,
                 order
@@ -76,23 +72,20 @@ const getOrder = async (req, res, next) => {
     }
 }
 
-
-
 const getOrderById = async (req, res, next) => {
  
-    const authenticatedUser = req.authenticateUser;
+    // const authenticatedUser = req.authenticateUser;
     const orderId = req.params.orderId;
     
     try {
-        if (!authenticatedUser) {
-            return res.status(403).json({message: "Forbidden"})
-        }
+        // if (!authenticatedUser) {
+        //     return res.status(403).json({message: "Forbidden"})
+        // }
 
         const order = await orderModel.findById(orderId);
         if(!order) {
             return res.status(404).json({status: false, order: null})
         }
-        console.log(`User: ${authenticatedUser.username} is getting order with id: ${orderId}`)
         return res.status(200).json({status: true, order});
 
     } catch (error) {
@@ -102,15 +95,9 @@ const getOrderById = async (req, res, next) => {
 };
 
 const patchOrder =  async (req, res, next) => {
-    const authenticatedUser = req.authenticateUser;
     const id = req.params.id;
-    const state = req.body;
-
+    const {state} = req.body;
     try {
-        
-        if (!authenticatedUser) {
-            return res.status(403).json({message: "Forbidden"})
-        }
         
         const order= await orderModel.findById(id)
 
@@ -143,15 +130,15 @@ const patchOrder =  async (req, res, next) => {
 };
 
 const deleteOrderbyId = async (req, res, next) => {
-    const authenticatedUser = req.authenticateUser;
+    // const authenticatedUser = req.authenticateUser;
     const id = req.params.id;
 
-    if (!authenticatedUser) {
-        return res.status(403).json({message: "Forbidden"})
-    }
-    if (authenticatedUser.role !== "admin"){
-        return res.status(401).json({message: "Unauthorized"})
-    }
+    // if (!authenticatedUser) {
+    //     return res.status(403).json({message: "Forbidden"})
+    // }
+    // if (authenticatedUser.role !== "admin"){
+    //     return res.status(401).json({message: "Unauthorized"})
+    // }
     try {
         const order = await orderModel.deleteOne({_id: id})
         return res.status(200).json({ status: true, order})

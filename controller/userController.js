@@ -5,38 +5,38 @@ const moment = require('moment');
 const userModel = db.User
 
 // Creating User
-const createUser = async (req, res, next) => {
-    try {
-        const {username, password, phoneNumber,address} = req.body;
-        const userObj = {
-            username, password, 
-            phoneNumber,address
-        }
+// const createUser = async (req, res, next) => {
+//     try {
+//         const {username, password, phoneNumber,address} = req.body;
+//         const userObj = {
+//             username, password, 
+//             phoneNumber,address
+//         }
 
-        const user = await userModel.create(userObj);
-        return res.status(201).json({
-            status: true,
-            message: "User successfully created!",
-        })
+//         const user = await userModel.create(userObj);
+//         return res.status(201).json({
+//             status: true,
+//             message: "User successfully created!",
+//         })
 
-    } catch (error) {
-        console.log(error)
-        next(error)
-    }      
-}
+//     } catch (error) {
+//         console.log(error)
+//         next(error)
+//     }      
+// }
 
 // READ
 const getAllUser = async(req, res, next) => {
-    const authenticatedUser = req.authenticateUser
+    // const authenticatedUser = req.authenticateUser
     try {
-        if(!authenticatedUser){
-            return res.status(403).json({message: "Forbidden"})
-        }
-        if(authenticatedUser.role !== 'admin') {
-            return res.status(401).json({
-                message: 'Unauthorized'
-            })
-        }
+        // if(!authenticatedUser){
+        //     return res.status(403).json({message: "Forbidden"})
+        // }
+        // if(authenticatedUser.role !== 'admin') {
+        //     return res.status(401).json({
+        //         message: 'Unauthorized'
+        //     })
+        // }
         const user = await userModel.find()
 
         return res.status(200).json({status: true, user });
@@ -49,14 +49,14 @@ const getAllUser = async(req, res, next) => {
 
 // Getting User by ID
 const getUserById =  async(req, res, next) => {
-    const authenticatedUser = req.authenticateUser
+    // const authenticatedUser = req.authenticateUser
     const id = req.params.id
     try {
-        if (!authenticatedUser) {
-            return res.status(403).json({
-                message: "Forbidden"
-            })
-        }
+        // if (!authenticatedUser) {
+        //     return res.status(403).json({
+        //         message: "Forbidden"
+        //     })
+        // }
         
         const user = await userModel.findById({_id: id})
 
@@ -77,17 +77,17 @@ const getUserById =  async(req, res, next) => {
 
 // Updating User details
 const updateUserById = async(req, res, next) => {
-    const authenticatedUser = req.authenticatedUser
+    // const authenticatedUser = req.authenticatedUser
     const id = req.params.id
     const bodyToUpdate = req.body;
 
     try {
         
-       if (!authenticatedUser){
-           return res.status(403).json({
-               message: 'Forbidden'
-           })
-       }
+    //    if (!authenticatedUser){
+    //        return res.status(403).json({
+    //            message: 'Forbidden'
+    //        })
+    //    }
         bodyToUpdate.lastUpdateAt = moment().toDate();
 
         const user = userModel.findByIdAndUpdate(id, bodyToUpdate, {new: true});
@@ -109,19 +109,19 @@ const updateUserById = async(req, res, next) => {
 
 // Deleting user
 const deleteUserById = async (req, res, next) => {
-    const authenticatedUser = req.authenticatedUser;
+    // const authenticatedUser = req.authenticatedUser;
     const id = req.params.id
     try {
-        if(!authenticatedUser) {
-            return res.staus(403).json({
-                message: "Forbidden"
-            })
-        }
-        if (authenticatedUser.role !== 'admin') {
-            return res.status(401).json({
-                message: "Unauthourized"
-            })
-        }
+        // if(!authenticatedUser) {
+        //     return res.staus(403).json({
+        //         message: "Forbidden"
+        //     })
+        // }
+        // if (authenticatedUser.role !== 'admin') {
+        //     return res.status(401).json({
+        //         message: "Unauthourized"
+        //     })
+        // }
         const user = await userModel.findByIdAndDelete({_id: id})
 
         return res.status(201).json({
@@ -134,10 +134,9 @@ const deleteUserById = async (req, res, next) => {
         next(error)
     }
 };
-
+// createUser,
 
 module.exports = {
-    createUser,
     getAllUser,
     getUserById,
     updateUserById,
