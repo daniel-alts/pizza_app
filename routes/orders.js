@@ -1,6 +1,6 @@
 const express = require('express')
 const orderModel = require('../model/orderModel')
-const authenticateUser =  require('../controller/auth')
+const authenticateUser =  require('../auth/auth')
 const moment = require('moment');
 const orderRouter = express.Router()
 

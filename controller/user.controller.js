@@ -1,29 +1,11 @@
-const express = require('express')
-const userController = require('../controller/user.controller')
+const userModel = require('../model/userModel')
 
-const userRouter = express.Router()
-
-
-userRouter.get('/', userController.getAllUsers)
-
-userRouter.get('/:id', boookController.getBookByID)
-
-userRouter.post('/',userController.createUser)
-
-
-bookRouter.delete('/:id', userController.deleteUser)
-
-
-//get all user
-userRouter.get('/', async(req,res) =>{
+async function getAllUsers(req,res){
     const users = await userModel.find()
-
     return res.json({ status: true, users })
-})
+}
 
-
-//create user
-userRouter.post('/', async (req, res) => {
+async function createUser(req,res){
     const body = req.body
     const emailExists = await userModel.find({ email: `${body.email}` });
 
@@ -39,17 +21,17 @@ userRouter.post('/', async (req, res) => {
     })
 
     return res.status(201).json({ status: true, user })
-})
+}
 
-//delete user
-userRouter.delete('/:id', async (req,res) =>{
+async function deleteUser(req,res){
     const {id} =  req.params
-
     const user = await userModel.deleteOne({_id: id})
 
     return res.json({status: true, user})
-})
+}
 
-
-
-module.exports = userRouter
+module.exports={
+    getAllUsers,
+    createUser,
+    deleteUser
+}
