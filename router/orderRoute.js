@@ -13,7 +13,7 @@ const {
   deleteOrder,
 } = require("../controllers/order");
 
-orderRouter.get("/", getAllOrder);
+orderRouter.get("/", authenticateUser, getAllOrder);
 
 orderRouter.get("/:id", authenticateUser, getOrderById);
 
