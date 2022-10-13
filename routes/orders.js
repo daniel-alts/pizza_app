@@ -1,33 +1,10 @@
 const express = require("express");
 const orderModel = require("../models/orderModel");
 const orderRouter = express.Router();
-const {
-  authenticateUser,
-  authorizeUser,
-} = require("../authentication/authenticate");
+
 
 // Get all Orders
 orderRouter.get("/", async (req, res, next) => {
-  await authenticateUser(req, res, next);
-
-  const authenticatedUser = req.authenticatedUser;
-
-  if (!authenticatedUser) {
-    return res
-      .status(403)
-      .json({ status: false, message: "Username or Password is incorrect" });
-  }
-
-  await authorizeUser(["admin"], authenticatedUser, req);
-
-  const haveAccess = req.access;
-
-  if (!haveAccess) {
-    return res.status(401).json({
-      status: false,
-      message: "You are not authorized to access this resource",
-    });
-  }
 
   let orders;
   console.log(req.query);
@@ -75,26 +52,6 @@ orderRouter.get("/", async (req, res, next) => {
 orderRouter.get("/:orderId", async (req, res, next) => {
   try {
     const { orderId } = req.params;
-    await authenticateUser(req, res, next);
-
-    const authenticatedUser = req.authenticatedUser;
-
-    if (!authenticatedUser) {
-      return res
-        .status(403)
-        .json({ status: false, message: "Username or Password is incorrect" });
-    }
-
-    await authorizeUser(["user", "admin"], authenticatedUser, req);
-
-    const haveAccess = req.access;
-
-    if (!haveAccess) {
-      return res.status(401).json({
-        status: false,
-        message: "You are not authorized to access this resource",
-      });
-    }
 
     const order = await orderModel.findById(orderId);
 
@@ -110,28 +67,10 @@ orderRouter.get("/:orderId", async (req, res, next) => {
 
 // Make an Order
 orderRouter.post("/", async (req, res, next) => {
-  await authenticateUser(req, res, next);
-
-  const authenticatedUser = req.authenticatedUser;
-
-  if (!authenticatedUser) {
-    return res
-      .status(403)
-      .json({ status: false, message: "Username or Password is incorrect" });
-  }
-
-  await authorizeUser(["user", "admin"], authenticatedUser, req);
-
-  const haveAccess = req.access;
-
-  if (!haveAccess) {
-    return res.status(401).json({
-      status: false,
-      message: "You are not authorized to access this resource",
-    });
-  }
-
+  
+  console.log(req);
   const body = req.body;
+  console.log(body);
 
   const total_price = body.items.reduce((prev, curr) => {
     const quantity = curr.quantity;
@@ -154,26 +93,7 @@ orderRouter.post("/", async (req, res, next) => {
 
 // Edit an Order
 orderRouter.patch("/:id", async (req, res, next) => {
-  await authenticateUser(req, res, next);
-
-  const authenticatedUser = req.authenticatedUser;
-
-  if (!authenticatedUser) {
-    return res
-      .status(403)
-      .json({ status: false, message: "Username or Password is incorrect" });
-  }
-
-  await authorizeUser(["user", "admin"], authenticatedUser, req);
-
-  const haveAccess = req.access;
-
-  if (!haveAccess) {
-    return res.status(401).json({
-      status: false,
-      message: "You are not authorized to access this resource",
-    });
-  }
+  
 
   const { id } = req.params;
   const { state } = req.body;
@@ -204,26 +124,7 @@ orderRouter.patch("/:id", async (req, res, next) => {
 // Delete an Order
 orderRouter.delete("/:id", async (req, res, next) => {
   try {
-    await authenticateUser(req, res, next);
-
-    const authenticatedUser = req.authenticatedUser;
-
-    if (!authenticatedUser) {
-      return res
-        .status(403)
-        .json({ status: false, message: "Username or Password is incorrect" });
-    }
-
-    await authorizeUser(["user", "admin"], authenticatedUser, req);
-
-    const haveAccess = req.access;
-
-    if (!haveAccess) {
-      return res.status(401).json({
-        status: false,
-        message: "You are not authorized to access this resource",
-      });
-    }
+    
     const { id } = req.params;
 
     const order = await orderModel.deleteOne({ _id: id });

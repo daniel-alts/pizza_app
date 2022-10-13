@@ -1,36 +1,44 @@
 const express = require("express");
-const { connectToMongoDB } = require("./db");
-require("dotenv").config();
+const passport = require("passport");
+const bodyParser = require('body-parser');
+require('dotenv').config()
 
+// routes
 const ordersRoute = require("./routes/orders");
 const usersRoute = require("./routes/users");
 
-const PORT = process.env.PORT;
+// connect to mongodb
+require('./db').connectToMongoDB() // Connect to MongoDB
+
+require("./authentication/authenticate") 
+
+
+const PORT = process.env.PORT || 5000;
 
 const app = express();
 
-// Connect to MongoDB Instance/Database
-connectToMongoDB();
+// parsing the body
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json())
 
-app.use(express.json());
-
-app.use("/api/users", usersRoute);
-app.use("/api/orders", ordersRoute);
+app.use('/', usersRoute);
+app.use('/orders', passport.authenticate('jwt', { session: false }), ordersRoute);
 
 app.get("/", (req, res) => {
   return res.status(200).send({
-    message: "You are welcome",
+    message: "Welcom to the Pizza Store",
     status: true,
   });
 });
 
-app.get("*", (req, res) => {
-  return res.status(400).send({
-    message: "Route does not exist",
-  });
+// Handle errors.
+app.use(function (err, req, res, next) {
+  console.log(err);
+  res.status(err.status || 500);
+  res.json({ error: err.message });
 });
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(`Listening on port: https://localhost:${PORT}`);
+  console.log(`Listening on: https://localhost:${PORT}`);
 });

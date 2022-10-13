@@ -1,110 +1,50 @@
-const express = require("express");
-const userModel = require("../models/userModel");
+const express = require('express');
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+
 const userRouter = express.Router();
-const bcrypt = require("bcrypt");
 
-//  Get all users
-userRouter.get("/", async (req, res) => {
-  try {
-    await userModel
-      .find({})
-      .then((users) => {
-        return res.status(200).json({
-          status: true,
-          users,
+userRouter.post(
+    '/signup',
+    passport.authenticate('signup', { session: false }), async (req, res, next) => {
+        res.json({
+            message: 'Signup successful',
+            user: req.user
         });
-      })
-      .catch((err) => {
-        console.log(err);
-        return res.status(404).json(err);
-      });
-  } catch (err) {
-    console.log(err);
-  }
-});
-
-//  Get user by ID
-userRouter.get("/:id", async (req, res) => {
-  const userID = req.params.id;
-  try {
-    const user = await userModel.findById(userID);
-
-    if (!user) {
-      return res
-        .status(404)
-        .json({ status: false, user: null, message: "User not found" });
     }
+);
 
-    return res.json({ status: true, user });
-  } catch (err) {
-    console.log(err);
-  }
-});
+userRouter.post(
+    '/login',
+    async (req, res, next) => {
+        passport.authenticate('login', async (err, user, info) => {
+            try {
+                if (err) {
+                    return next(err);
+                }
+                if (!user) {
+                    const error = new Error('Username or password is incorrect');
+                    return next(error);
+                }
 
-//  Create a new user
-userRouter.post("/", async (req, res) => {
-  const user = req.body;
-  const password = user.password;
+                req.login(user, { session: false },
+                    async (error) => {
+                        if (error) return next(error);
 
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    user.password = hashedPassword;
+                        const body = { _id: user._id, email: user.email };
+                  
+                        const token = jwt.sign({ user: body }, process.env.JWT_SECRET);
 
-    userModel
-      .create(user)
-      .then((user) => {
-        return res.status(201).send({
-          status: true,
-          user,
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        return res.status(400).send(err);
-      });
-  } catch (err) {
-    console.log(err);
-  }
-});
-
-// Update a user detail
-userRouter.put("/:id", async (req, res) => {
-  const id = req.params.id;
-  const user = req.body;
-  const { password } = user;
-
-  // hash password in case of a password change
-  if (password) {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    user.password = hashedPassword;
-  }
-
-  try {
-    userModel
-      .findByIdAndUpdate(id, user, { new: true })
-      .then((user) => {
-        res.status(200).send(user);
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(400).send(err);
-      });
-  } catch (err) {
-    console.log(err);
-  }
-});
-
-// Delete a user
-userRouter.delete("/:id", async (req, res) => {
-  const id = req.params.id;
-
-  try {
-    const user = await userModel.deleteOne({ _id: id });
-
-    return res.json({ status: true, user });
-  } catch (err) {
-    console.log(err);
-  }
-});
+                        return res.json({ token });
+                    }
+                );
+            } catch (error) {
+                return next(error);
+            }
+        }
+        )(req, res, next);
+    }
+);
 
 module.exports = userRouter;

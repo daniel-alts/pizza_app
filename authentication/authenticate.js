@@ -1,47 +1,74 @@
-const bcrypt = require("bcrypt");
-const userModel = require("../models/userModel");
+const passport = require('passport');
+const localStrategy = require('passport-local').Strategy;
+const UserModel = require('../models/userModel');
+require('dotenv').config()
 
-async function authenticateUser(req, res, next) {
-  try {
-    const authorization = req.headers.authorization;
-    const [username, password] = authorization.split(" ");
+const JWTstrategy = require('passport-jwt').Strategy;
+const ExtractJWT = require('passport-jwt').ExtractJwt;
 
-    // get the user object from database
-    const user = await userModel.findOne({ username });
+passport.use(
+    new JWTstrategy(
+        {
+            secretOrKey: process.env.JWT_SECRET,
+            // jwtFromRequest: ExtractJWT.fromUrlQueryParameter('secret_token')
+            jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken() // Use this if you are using Bearer token
+        },
+        async (token, done) => {
+            try {
+                return done(null, token.user);
+            } catch (error) {
+                done(error);
+            }
+        }
+    )
+);
 
-    // exit if user is not found
-    if (!user) {
-      return;
-    }
+passport.use(
+    'signup',
+    new localStrategy(
+        {
+            usernameField: 'username',
+            passwordField: 'password',
+            // user_typeField: 'user_type',
+        },
+        async (username, password, done) => {
+            try {
+                const user = await UserModel.create({ username, password });
 
-    // compare the password
-    const isMatch = await bcrypt.compare(password, user.password);
+                return done(null, user);
+            } catch (error) {
+                console.log(error);
+                return error
+            }
+        }
+    )
+);
 
-    if (isMatch) {
-      req.authenticatedUser = {
-        username: user.username,
-        role: user.user_type,
-      };
-    }
-  } catch (err) {
-    console.log(err);
-  }
-}
+passport.use(
+    'login',
+    new localStrategy(
+        {
+            usernameField: 'username',
+            passwordField: 'password'
+        },
+        async (username, password, done) => {
+            try {
+                const user = await UserModel.findOne({ username });
 
-async function authorizeUser(roles, authenticatedUser, req) {
-  try {
-    if (roles.includes(authenticatedUser.role)) {
-      // user's role is authorized
-      req.access = {
-        message: "You are authorized to access this resource",
-      };
-      return;
+                if (!user) {
+                    return done(null, false, { message: 'User not found' });
+                }
 
-      // authentication and authorization successful
-    }
-  } catch (err) {
-    console.log(err);
-  }
-}
+                const validate = await user.isValidPassword(password);
 
-module.exports = { authenticateUser, authorizeUser };
+                if (!validate) {
+                    return done(null, false, { message: 'Wrong Password' });
+                }
+
+                return done(null, user, { message: 'Logged in Successfully' });
+            } catch (error) {
+                return done(error);
+            }
+        }
+    )
+);
