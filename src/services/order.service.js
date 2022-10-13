@@ -1,7 +1,17 @@
 const Order = require('../models/order.model')
 
 const createOrder = async (newOrder) => {
-    const order = new Order.model(newOrder)
+    const total_price = await newOrder.items.reduce((total, item) => {
+        total += item.price;
+        return total;
+    }, 0)
+    
+    const order = new Order.model({ 
+        items: newOrder.items, 
+        total_price,
+        created_at: moment().toDate(),
+        created_by: req.user.id
+                    })
     await order.save(); 
     return order;
 }

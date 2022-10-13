@@ -9,7 +9,10 @@ const UserSchema = new Schema({
   id: ObjectId,
   username: {
     type: String,
-    required: true
+    required: true,
+    index: {
+      unique: true
+    }
   }, 
   password: { 
     type: String, 
@@ -25,8 +28,11 @@ const UserSchema = new Schema({
     timestamps: true
    });
 
-UserSchema.pre('save', function(){
+UserSchema.pre('save', async function save(next){
 
+  const salt = await bcrypt.genSalt(12);
+  this.password = await bcrypt.hash(this.password, salt)
+  return next();
 
 
 })

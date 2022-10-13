@@ -1,7 +1,7 @@
 const User = require('../models/user.model');
 
 const createUser = async (newUser) => {
-    const user = new User.model(newUser);
+    const user = new User(newUser);
     await user.save();
     return user;
 }
@@ -24,4 +24,9 @@ const getUser = async (_id) => {
 const getUsers = async () => {
     const users = await User.find({});
     return users;
+}
+
+module.exports = {
+
+    createUser
 }

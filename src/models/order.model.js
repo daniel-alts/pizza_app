@@ -5,6 +5,11 @@ const ObjectId = Schema.ObjectId;
 
 const OrderSchema = new Schema({
   id: ObjectId,
+  created_by :{ 
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
   created_at: Date,
   state: { type: Number, default: 1 },
   total_price: Number,
@@ -12,8 +17,7 @@ const OrderSchema = new Schema({
     name: String,
     price: Number,
     size: { type: String, enum: ['m', 's', 'l']},
-    quantity: Number,
-  }]
+    quantity: Number  }]
 });
 
 const Order = mongoose.model('Order', OrderSchema);
