@@ -1,95 +1,86 @@
-const express = require('express');
-const moment = require('moment');
-const mongoose = require('mongoose');
-const orderModel = require('./orderModel');
+const express = require("express");
+const passport = require("passport")
 
-const PORT = 3334
 
-const app = express()
+const orderRouter = require("./routes/order");
+const userRouter = require("./routes/user");
 
+const authenticate = require("./auth/basic");
+const { connectDB } = require("./db");
+require("./auth/jwt")
+
+const PORT = 3334;
+
+const app = express();
+
+app.set("view engine", "ejs")
+app.set("views", "./views")
+
+app.use("/public", express.static("public"))
 app.use(express.json());
 
 
-app.get('/', (req, res) => {
-    return res.json({ status: true })
-})
-
-
-app.post('/order', async (req, res) => {
-    const body = req.body;
-
-    const total_price = body.items.reduce((prev, curr) => {
-        prev += curr.price
-        return prev
-    }, 0);
-
-    const order = await orderModel.create({ 
-        items: body.items,
-        created_at: moment().toDate(),
-        total_price
-    })
-    
-    return res.json({ status: true, order })
-})
-
-app.get('/order/:orderId', async (req, res) => {
-    const { orderId } = req.params;
-    const order = await orderModel.findById(orderId)
-
-    if (!order) {
-        return res.status(404).json({ status: false, order: null })
-    }
-
-    return res.json({ status: true, order })
-})
-
-app.get('/orders', async (req, res) => {
-    const orders = await orderModel.find()
-
-    return res.json({ status: true, orders })
-})
-
-app.patch('/order/:id', async (req, res) => {
-    const { id } = req.params;
-    const { state } = req.body;
-
-    const order = await orderModel.findById(id)
-
-    if (!order) {
-        return res.status(404).json({ status: false, order: null })
-    }
-
-    if (state < order.state) {
-        return res.status(422).json({ status: false, order: null, message: 'Invalid operation' })
-    }
-
-    order.state = state;
-
-    await order.save()
-
-    return res.json({ status: true, order })
-})
-
-app.delete('/order/:id', async (req, res) => {
-    const { id } = req.params;
-
-    const order = await orderModel.deleteOne({ _id: id})
-
-    return res.json({ status: true, order })
-})
-
-
-mongoose.connect('mongodb://localhost:27017')
-
-mongoose.connection.on("connected", () => {
-	console.log("Connected to MongoDB Successfully");
+app.get("/", (req, res) => {
+    return res.json({ status: true });
 });
 
-mongoose.connection.on("error", (err) => {
-	console.log("An error occurred while connecting to MongoDB");
-	console.log(err);
+// Handle order routes
+app.get(
+    "/order", 
+    /**
+     * Allow everyone to view orders without authentication
+     * because I can't modify the request object from browsers.
+     * 
+     * This route is best viewed on browser because I return html 
+     * with some stylings and thunder client can't view that properly
+     */
+    orderRouter
+)
+app.use(
+    "/order",
+    // Authenticate remaining routes using jwt token
+    passport.authenticate("jwt", {session: false}),
+    orderRouter
+);
+
+
+// Handle user routes
+app.use(
+    "/user", 
+    async (req, res, next) => {
+        if (req.method === "POST") {
+            next()
+        }
+        // Make sure only admins can read, update and delete users
+        else {
+            const authHeader = req.headers.authorization
+            // Parse username and password from `Basic` authentication header
+            const [username, password] = Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':')
+   
+            let userType
+            let error;
+            await authenticate(username, password)
+                .then((user) => {
+                    userType = user.user_type
+                })
+                .catch((err) => (error = err));
+
+            if (error) res.status(400).send(error.toString())
+            else if (userType !== "admin") res.status(400).send("You must be an admin to access this route")
+            else next()
+        }
+
+    }, 
+    userRouter
+);
+
+app.use((req, res) => {
+    res.status(404).json({ error: "Route not found" });
 });
+
+// Connect to mongo atlas instance
+connectDB();
 
 app.listen(PORT, () => {
-    console.log('Listening on port, ', PORT)
-})
+    console.log("Listening on port, ", PORT);
+});

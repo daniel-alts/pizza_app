@@ -1,0 +1,11 @@
+{"_id":{"$oid":"6346ecd98251362259942058"},"username":"test1","password":"$2b$10$MV1eQnDKIr0wtHCeqF3cL.ACQRRCxC.HN58fuzkJKuW3jvt2i852S","user_type":"user","__v":0}
+{"_id":{"$oid":"6346f1e06aabba3a1cb49a59"},"username":"admin","password":"$2b$10$3qmW07IZZyIyuPOUirKCQOW/5J.i35nYz.F45msrUdtFBHaz5PUPm","user_type":"admin","__v":0}
+{"_id":{"$oid":"6346f1eb6aabba3a1cb49a5b"},"username":"admin1","password":"$2b$10$hoocR1I9a4qbCopXVpgL6.8P.O8t0Z5vwHZy6YUEn3gB1NsAVhkNi","user_type":"admin","__v":0}
+{"_id":{"$oid":"63487bc99383c75303601dc1"},"username":"jwtuser1","password":"$2b$10$FueorNF4/ZpctRrElNzOiOeQIQMRHwR/Y9uOX1ZDqChJ48JFZNOIW","user_type":"admin","__v":0}
+{"_id":{"$oid":"63487bcc9383c75303601dc3"},"username":"jwtuser1","password":"$2b$10$99hp5DaFKmBqGedxRYLCN.xXVaWRtU81r8b0LUn8VTl56iaOAjBAi","user_type":"admin","__v":0}
+{"_id":{"$oid":"63487bce9383c75303601dc5"},"username":"jwtuser1","password":"$2b$10$60f02yzZEmfN5YRUj4Zyte0QNbrHgJu4Oe83HyrVE5.mdq4412PtO","user_type":"admin","__v":0}
+{"_id":{"$oid":"63487bd19383c75303601dc7"},"username":"jwtuser1","password":"$2b$10$nxzYNWu5F4H21ueGEKpfou46UJdIJ0PBaw2hCnTnRJo09un1NbM9K","user_type":"admin","__v":0}
+{"_id":{"$oid":"63487c0f9e41c60c8d29da6c"},"username":"jwtuser1","password":"$2b$10$RkCVZ0kX6EzAVoeg0ivEj.U28q1aXyribn8JhFDj66vcE7OxmzWsq","user_type":"admin","__v":0}
+{"_id":{"$oid":"63487c598e1cf51781060a1a"},"username":"jwtuser1","password":"$2b$10$J9tkgkrpFSAkXemfw0XNv.8FcpBIIw2noWQgNz.BpkT/RDgtr29a6","user_type":"admin","__v":0}
+{"_id":{"$oid":"63487cae639995566c2fcfaf"},"username":"jwtuser1","password":"$2b$10$dcLAqflFT4wi5KGJBDXUUuw71a1HGN5GHCBgId4B1cz7UO4FqKP52","user_type":"admin","__v":0}
+{"_id":{"$oid":"63487d8c1e0e1eabcab9f64c"},"username":"jwtuser2","password":"$2b$10$Lp6kXgkLw/XtX5bruAE5G.bxUws6/yZtPxqUATkrXmT0Wfz4I1Me.","user_type":"admin","__v":0}
