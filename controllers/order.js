@@ -4,69 +4,61 @@ const moment = require("moment");
 
 //GET ALL ORDERS
 const getAllOrder = async (req, res) => {
-  //PAGINATION
-  const page = req.query.page || 0;
-  const orderPerPage = 2;
+  try {
+    // console.log(req.query);
+    //BUILD THE STATE QUERY
+    const queryByState = { ...req.query };
+    // console.log(queryByState);
 
-  //SORTING ORDERS
-  const price = req.query.price;
-  const date = req.query.date;
+    const excludedFields = ["page", "sort", "limit"];
+    excludedFields.forEach((el) => {
+      delete queryByState[el];
+    });
 
-  let value;
+    // console.log(queryByState);
 
-  //SORING ORDERS BY PRICE IN ASCENDING OR DESCENDING ORDER
-  if (price) {
-    value = price;
+    let query = orderModel.find(queryByState);
 
-    if (value === "asc") {
-      value = 1;
+    //SORTING BY TOTAL PRICE AND DATE CREATED FROM ASC TO DESC
 
-      const orders = await orderModel
-        .find()
-        .sort({ total_price: value })
-        .skip(page * orderPerPage)
-        .limit(orderPerPage);
-      return res.status(200).json({ status: true, orders });
-    } else if (value === "desc") {
-      value = -1;
-
-      const orders = await orderModel
-        .find()
-        .sort({ total_price: value })
-        .skip(page * orderPerPage)
-        .limit(orderPerPage);
-      return res.status(200).json({ status: true, orders });
-    }
-    //SORTING ORDERS BY DATE IN ASCENDING OR DESCENDING ORDER
-  } else if (date) {
-    value = date;
-    if (value === "asc") {
-      value = 1;
-
-      const orders = await orderModel
-        .find()
-        .sort({ total_price: value })
-        .skip(page * orderPerPage)
-        .limit(orderPerPage);
-      return res.status(200).json({ status: true, orders });
-    } else if (value === "desc") {
-      value = -1;
-
-      const orders = await orderModel
-        .find()
-        .sort({ total_price: value })
-        .skip(page * orderPerPage)
-        .limit(orderPerPage);
-      return res.status(200).json({ status: true, orders });
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(",").join(" ");
+      query = query.sort(sortBy);
+      // query = query.sort;
     }
 
-    //IF USER DOESNT PASS A PRICE OR DATE OF THE ORDER THEN ALL ORDERS SHOULD BE RETURNED
-  } else {
-    const orders = await orderModel
-      .find()
-      .skip(page * orderPerPage)
-      .limit(orderPerPage);
-    return res.status(200).json({ status: true, orders });
+    //PAGINATION
+
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 2;
+    const skip = (page - 1) * limit;
+
+    query = query.skip(skip).limit(limit);
+
+    //CHECK IF THE NUMBER OF PAGES IS MORE THAN THE NUMBER OF ENTRY
+    if (req.query.page) {
+      const numOrder = await orderModel.countDocuments();
+      // console.log(numOrder);
+      if (skip >= numOrder) {
+        throw new Error("This page does not exist");
+      }
+    }
+
+    //EXECUTE THE QUERY
+    const order = await query;
+
+    res.status(200).json({
+      status: "success",
+
+      data: {
+        order,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: "false",
+      message: err,
+    });
   }
 };
 
@@ -115,7 +107,10 @@ const updateOrder = async (req, res) => {
   const { id } = req.params;
   const { state } = req.body;
 
-  const order = await orderModel.findById(id);
+  console.log(typeof id);
+  console.log(typeof state);
+
+  const order = await orderModel.findById({ _id: id });
 
   if (!order) {
     return res.status(404).json({ status: false, order: null });
