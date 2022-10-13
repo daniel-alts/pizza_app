@@ -18,10 +18,8 @@ orderRouter.post('/', async (req, res) => {
         }, 0);
         
         await order.save()
-        console.log(order)
         return res.json({ status: true, order })
     } catch (err) {
-        console.log(err)
         return res.status(400).send(err)
     }
 })
