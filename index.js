@@ -50,7 +50,7 @@ app.post('/signup', async (req,res)=>{
         const token =  jwt.sign({ username: user.username }, SECRET,{expiresIn:"2h"});
 
         user.token = token
-        console.log(user)
+        //console.log(user)
 
         res.status(201).json(user.token)
     }catch(err){
@@ -130,10 +130,19 @@ app.get('/order/:orderId',auth, async (req, res) => {
     return res.json({ status: true, order })
 })
 
-app.get('/orders', auth, async (req, res) => {
-    const orders = await orderModel.find()
+app.get('/orders', async (req, res) => {
+    /*const orders = await orderModel.find()
 
-    return res.json({ status: true, orders })
+    return res.json({ status: true, orders })*/
+
+    try{
+        const Limit = req.body.limit //req.body.limit || 10 would work
+    const Skip = req.body.skip // req.body.skip || 0 would work
+    const Orders = await orderModel.find().limit(Limit||10).skip(Skip||0)
+    return res.json({ status: true, Orders })
+    }catch(err){
+      console.log(err)
+    }
 })
 
 app.patch('/order/:id',auth, async (req, res) => {
