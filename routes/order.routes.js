@@ -1,5 +1,5 @@
 const express = require("express");
-const { authenticateUser, authorize } = require("../utils/authenticate.utils");
+const { authenticateUser, authorize } = require("../utils/auth.utils");
 const {
 	createOrder,
 	getOrderById,
@@ -10,14 +10,14 @@ const {
 
 const orderRoute = express.Router();
 
-orderRoute.post("/", authenticateUser, authorize(["user", "admin"]), createOrder);
+orderRoute.post("/", createOrder);
 
-orderRoute.get("/:orderId", authenticateUser, authorize(["user", "admin"]),  getOrderById);
+orderRoute.get("/:orderId", getOrderById);
 
-orderRoute.get("/", authenticateUser, authorize(["user", "admin"]), getAllOrders);
+orderRoute.get("/", getAllOrders);
 
-orderRoute.patch("/:id", authenticateUser, authorize(["admin"]), updateOrder);
+orderRoute.patch("/:id", updateOrder);
 
-orderRoute.delete("/:id", authenticateUser, authorize(["admin"]), deleteOrder);
+orderRoute.delete("/:id", deleteOrder);
 
 module.exports = orderRoute;

@@ -16,6 +16,8 @@
 
 - [x] add pagination to the GET /orders route
 
+- [x] Using Passport(npm package), implement JWT authentication and authorisation strategy on the Pizza app
+
 **Bonus**
 - [x] Write integration tests for all the routes
 - [x] Refactor the code such that we have routers for orders and users
