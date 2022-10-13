@@ -1,8 +1,8 @@
 const { Router } = require('express');
-const {} = require;
+const { signupLogic } = require('../business_logic/signupLogic');
 
 const router = Router();
 
-router.post('/', (req, res) => {});
+router.post('/', signupLogic);
 
 module.exports = { router };
