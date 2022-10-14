@@ -1,3 +1,5 @@
+// this is like my auth.js file
+
 const express = require("express")
 const moment = require('moment')
 const { authenticate } = require("../authentication/authenticate")
@@ -55,11 +57,13 @@ usersRoute.post("/user", (req, res)=>{
 // update a user by ID
 usersRoute.patch('/:id', async (req, res) => {
     const { id } = req.params;
-    const { user_type } = req.body;
-    const {password} = req.body
+    const { user_type, password } = req.body;
+    
+    
+    // before update can happen, the username and password must be authenticated
 
 
-    const user = await userModel.findById(id)
+    const user = await userModel.findByIdAndUpdate(id)
 
     if (!user) {
         return res.status(404).json({ status: false, user: null })
@@ -74,6 +78,26 @@ usersRoute.patch('/:id', async (req, res) => {
         status: true,
         message: user 
     })
+})
+
+usersRoute.delete("/:id", async(req, res)=>{
+    const id = req.body
+
+    const user = await userModel.findByIdAndRemove(id)
+
+    if (!user){
+        return res.status(404).json({
+            status: false,
+            message: " User not found"
+        })
+    }
+
+    return res.status(200).json({
+        status: true,
+        message: "user deleted",
+        user
+    })
+
 })
 
 

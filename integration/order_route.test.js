@@ -9,7 +9,7 @@ describe("Order Route", ()=>{
     })
 
     it("GET /order?id works", async ()=>{
-        const response = await supertest(server).get("/order?id=1")
+        const response = await supertest(server).get("/order?id=1") // get a id to use here
         expect(response.status).toBe(200)
         expect(response.body.name).toBe("Alexander Chosen")
         expect(response.body.size).toBe("l")
@@ -37,14 +37,14 @@ describe("Order Route", ()=>{
             "state": 4
         }
 
-        const response = await supertest(server).patch("/order?id=2").send(order2Update)
+        const response = await supertest(server).patch("/order?id=2").send(order2Update) // get a id to use here
         expect(response.status).toBe(200)
         expect(response.body.state).toBe(4)
 
     })
 
     it("DELETE /order?id works", async ()=>{
-        const response = await supertest(server).delete("/order?id=4")
+        const response = await supertest(server).delete("/order?id=4") // get a id to use here
         expect(response.status).toBe(200)
         expect(response.body.status).toBe(true)
 
