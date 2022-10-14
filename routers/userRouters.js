@@ -1,31 +1,41 @@
 const express = require("express");
-const userRouter = express.Router();
+const authUserRouter = express.Router();
 const USERS = require("../model/userModel");
+const jwt = require("jsonwebtoken");
+const passport = require("passport");
+require("dotenv").config();
 
-userRouter.post("/", async (req, res) => {
-  const { userName, Password, userType } = req.body;
-  if (!(userName || Password))
-    return res
-      .status(400)
-      .send({ message: "User names and passwords are required" });
-  try {
-    const Allusers = await USERS.find();
-    const User = Allusers.find((user) => user.UserName === userName);
-    // checking if user already exsis in the databases
-    if (User) return res.status(409).send("User Already Exist");
-    const newUser = await USERS.create({
-      UserName: userName,
-      Password: Password,
-      User_Type: userType,
+authUserRouter.post(
+  "/signup",
+  passport.authenticate("signup", { session: false }),
+  async (req, res, next) => {
+    res.json({
+      message: "SignUp Successful",
+      user: req.user,
     });
-    res.status(201).send({ Data: newUser });
-  } catch (error) {
-    console.log(error.message);
-    res.status(409).send(error.message);
   }
+);
+
+authUserRouter.post("/login", async (req, res, next) => {
+  passport.authenticate("login", async (err, user, info) => {
+    try {
+      if (err || !user) {
+        const error = new Error("An error occurred.");
+        return next(error.message);
+      }
+      req.logIn(user, { session: false }, async (error) => {
+        if (error) return next(error.message);
+        const body = { _id: user._id, username: user.UserName };
+        const token = jwt.sign({ user: body }, process.env.JWT_SECRET);
+        return res.send({ token });
+      });
+    } catch (error) {
+      return next(error);
+    }
+  })(req, res, next);
 });
 
-userRouter.get("/", async (req, res) => {
+authUserRouter.get("/", async (req, res) => {
   try {
     const Users = await USERS.find();
     const allUsers = Users.map((user) => {
@@ -41,24 +51,4 @@ userRouter.get("/", async (req, res) => {
   }
 });
 
-// userRouter.post('/', async (req, res) => {
-//     const {userName,Password,userType} = req.body
-//     if(!(userName||Password)) return res.status(400).send({message: "User names and passwords are required"})
-//     try {
-//         const Allusers = await USERS.find()
-//         const User = Allusers.find((user) => user.UserName === userName);
-//         // checking if user already exsis in the databases
-//         if (User) return res.status(409).send('User Already Exist. Please Login');
-//         const newUser = await USERS.create({
-//                 UserName:userName,
-//                 Password:Password,
-//                 User_Type:userType
-//         })
-//         res.status(201).send({Data:newUser})
-//     } catch (error) {
-//         console.log(error.message);
-//         res.status(409).send(error.message)
-//     }
-// })
-
-module.exports = userRouter;
+module.exports = authUserRouter;
