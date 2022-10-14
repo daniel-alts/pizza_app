@@ -2,13 +2,17 @@ const express = require('express');
 require('dotenv').config();
 const moment = require('moment');
 const mongoose = require('mongoose');
+var passport = require('passport')
+var session = require("express-session")
+
 const authenticate = require('./authenticate')
 const orderRoute = require('./routes/orderRoute')
+const userRoute = require('./routes/userRoute')
+const config = require('./config')
 
+const PORT = config.port
 
-const PORT = process.env.PORT
-
-mongoose.connect(process.env.DB_URL)
+mongoose.connect(config.mongoUrl)
 
 mongoose.connection.on("connected", () => {
 	console.log("Connected to MongoDB Successfully");
@@ -23,6 +27,15 @@ const app = express()
 
 app.use(express.json());
 
+app.use(session({
+	name: "session-id",
+	secret: config.secretKey,
+	saveUninitialized: false,
+	resave: false,
+  }));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.get('/', (req, res) => {
     return res.json({ status: true })
@@ -30,6 +43,7 @@ app.get('/', (req, res) => {
 
 
 app.use('/orders', orderRoute)
+app.use('/users', userRoute)
 
 
 app.listen(PORT, () => {

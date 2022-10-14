@@ -10,10 +10,14 @@ orderRouter.use(bodyParser.json());
 
 
 orderRouter.route('/')
-.get(authenticate, (req, res) => {
+.get(authenticate.verifyUser, (req, res) => {
+    const page = req.params.p || 0
+    const ordersPerPage = 10
+
     Orders.find({})
     .sort({total_price: 1, created_at: 1, })
-    .limit(10)
+    .skip(page * ordersPerPage)
+    .limit(ordersPerPage)
     .then((orders)=>{
         if(!orders){
             return res.status(400).json({status:false, orders:null})
@@ -22,7 +26,7 @@ orderRouter.route('/')
         res.status(200).json({status:true, orders})
     })
 })
-.post(authenticate, async (req, res) => {
+.post(authenticate.verifyUser, async (req, res) => {
     const body = req.body;
 
     const total_price = body.items.reduce((prev, curr) => {
@@ -41,7 +45,7 @@ orderRouter.route('/')
 
 
 orderRouter.route('/:orderId')
-.get(authenticate, async (req, res) => {
+.get(authenticate.verifyUser, async (req, res) => {
     const { orderId } = req.params;
     const order = await Orders.findById(orderId)
 
@@ -52,7 +56,7 @@ orderRouter.route('/:orderId')
     return res.json({ status: true, order })
 })
 
-.patch(authenticate, async (req, res) => {
+.patch(authenticate.verifyUser, async (req, res) => {
     const { orderId } = req.params;
     const { state } = req.body;
 
@@ -73,7 +77,7 @@ orderRouter.route('/:orderId')
     return res.json({ status: true, order })
 })
 
-.delete(authenticate, async (req, res) => {
+.delete(authenticate.verifyUser, async (req, res) => {
     const { orderId } = req.params;
 
     const order = await Orders.deleteOne({ _id: orderId})
