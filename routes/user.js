@@ -1,18 +1,7 @@
 const express = require('express')
-const userController = require('../controller/user.controller')
-
+const userModel = require('../model/userModel')
+const moment = require('moment');
 const userRouter = express.Router()
-
-
-userRouter.get('/', userController.getAllUsers)
-
-userRouter.get('/:id', boookController.getBookByID)
-
-userRouter.post('/',userController.createUser)
-
-
-bookRouter.delete('/:id', userController.deleteUser)
-
 
 //get all user
 userRouter.get('/', async(req,res) =>{
@@ -25,7 +14,7 @@ userRouter.get('/', async(req,res) =>{
 //create user
 userRouter.post('/', async (req, res) => {
     const body = req.body
-    const emailExists = await userModel.find({ email: `${body.email}` });
+    const emailExists = await userModel.findOne({ email: `${body.email}` });
 
     if (emailExists != null){
         return res.status(409).json({ status: false, message: "User already exists" })
