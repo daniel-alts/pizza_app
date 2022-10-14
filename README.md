@@ -4,11 +4,6 @@
 - email (unique)
 - phone number
 - timestamps (createdAt and updatedAt)
-  
-2. Used basic authentication (username and password) to protect the order route. 
-- Only the "admin" will be able to "Get" all orders
-- An account must be created "Post" before order can be created, get, updated, or deleted 
-- (SEE image FOLDER FOR BODY FORMAT)
 
 2. Used Passport local-strategy to implement JWT authorization to protect the order route
 
