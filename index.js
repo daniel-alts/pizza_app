@@ -5,10 +5,16 @@ const usersRoute = require('./routes/users')
 const loginRoute = require('./controllers/login')
 const errorHandler = require('./middleware/errHandler')
 const connectDb = require('./middleware/db')
+const passport = require('passport')
 
 const app = express()
 
 app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+
+// Use passport middleware
+app.use(passport.initialize())
+require('./config/passport')(passport)
 
 app.use('/api/login', loginRoute)
 app.use('/api/orders', ordersRoute)
