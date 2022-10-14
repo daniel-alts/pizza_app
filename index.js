@@ -1,26 +1,43 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const passport = require('passport');
 const orderRouter = require('./routes/orderRoutes');
+const authRouter = require('./routes/authRouter');
 const userRouter = require('./routes/userRoutes');
 
-const PORT = 3334;
+require('./db/database')();
+require('dotenv').config();
+
+require('./utilities/passport-jwt');
+
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 
-app.use(express.json());
+app.set('view-engine', 'ejs');
 
-app.use('/orders', orderRouter);
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(passport.initialize());
+
+app.use('/', authRouter);
+
+app.use(
+  '/orders',
+  passport.authenticate('jwt', { session: false }),
+  orderRouter
+);
 app.use('/users', userRouter);
 
-mongoose.connect('mongodb://localhost:27017');
-
-mongoose.connection.on('connected', () => {
-  console.log('Connected to MongoDB Successfully');
+app.get('/', (req, res) => {
+  res.render('index.ejs');
 });
 
-mongoose.connection.on('error', (err) => {
-  console.log('An error occurred while connecting to MongoDB');
-  console.log(err);
+app.get('/login', (req, res) => {
+  res.render('Login.ejs');
+});
+
+app.get('/signup', (req, res) => {
+  res.render('Signup.ejs');
 });
 
 app.listen(PORT, () => {
