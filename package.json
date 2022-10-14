@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index"
+    "dev": "NODE_ENV=development nodemon index"
   },
   "keywords": [],
   "author": "",

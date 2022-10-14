@@ -1,10 +1,10 @@
-require('dotenv').config()
+const CONFIG = require('./config/config')
 const express = require('express')
 const ordersRoute = require('./routes/orders')
 const usersRoute = require('./routes/users')
 const loginRoute = require('./controllers/login')
 const errorHandler = require('./middleware/errHandler')
-const connectDb = require('./middleware/db')
+const connectDb = require('./utils/db')
 const passport = require('passport')
 
 const app = express()
@@ -29,12 +29,12 @@ app.use(errorHandler)
 /**
  * Connect to database
  */
-connectDb()
+connectDb(CONFIG.MONGODB_URI)
 
 /**
  * Start server
  */
-const PORT = process.env.PORT || 5555
+const PORT = CONFIG.PORT || 5555
 app.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
 })
