@@ -2,13 +2,12 @@ const express = require("express");
 const passport = require("passport");
 const bodyParser = require("body-parser");
 const authRoute = require("./routes/authRoute");
+const userRoute = require("./routes/userRoute");
 
 require("./db").connectToMongoDB(); // Connect to MongoDB
 require("dotenv").config();
 require("./authentication/auth");
 const orderRoute = require("./routes/orderRoute");
-
-// const { auth, admin } = require("./middlewares");
 
 const PORT = process.env.PORT;
 
@@ -24,11 +23,10 @@ app.get("/", (req, res) => {
 
 app.use("/", authRoute);
 app.use("/", passport.authenticate("jwt", { session: false }), orderRoute);
+app.use("/", passport.authenticate("jwt", { session: false }), userRoute);
 
-// app.use("/api/order", [auth, admin], orderRoute);
-
-app.listen(PORT, () => {
-  console.log("Listening on port, ", PORT);
-});
+// app.listen(PORT, () => {
+//   console.log(`Server started on PORT: http://localhost:${PORT}`);
+// });
 
 module.exports = app;

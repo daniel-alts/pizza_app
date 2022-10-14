@@ -1,36 +1,65 @@
+process.env.MONGODB_URI = "mongodb://localhost:27017/pizza-app-test";
+
 const request = require("supertest");
 const app = require("../../index");
-const mongoose = require("mongoose");
+const orderModel = require("../../models/orderModel");
+const moment = require("moment");
 
-let token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjYzNDE4NjQyYzdiN2NkYjI3MjBjMWYzNCIsImVtYWlsIjoic2FtbXk0NEBnbWFpbC5jb20ifSwiaWF0IjoxNjY1MjQ0OTU4fQ.4nCkmgpmkJDTCSQL7_lueyJPYL9q05wYzIUONvZuPQo";
-const orderId = "6344225bb160c63365136cfe";
+const orderId = "6348834cbd87bd6aebb8b075";
+const header = {
+  Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjYzNDQ5N2E3NzBmNDRkZjE1N2E0MzI3MCIsImVtYWlsIjoiaGVkb25zaXRAZ21haWwuY29tIn0sImlhdCI6MTY2NTQzOTc1NX0.CSaJCb8FMLBnwTnSBfkWkH4ylPlwXKVr_RyU3h1vw5M`,
+};
+
+// Clean Up Our Collections
+const cleanup = async () => {
+  await orderModel.deleteMany();
+};
 
 // Get all orders
 describe("orderRoute", () => {
-  it("GET /orders", async () => {
-    await request(app)
+  it.skip("GET /orders", async () => {
+    // await cleanup();
+    const test = await request(app)
       .get("/orders")
-      .set({ Authorization: "Bearer " + token })
+      .set(header)
       .expect(200)
       .expect("content-type", /json/);
+    console.log(test.body.orders);
+
+    expect(test.body.status).toBe(true);
+    expect(test.body.orders[0]._id).toBeDefined();
   });
 });
 
 // Get order by id
-it("GET /orders/:id", async () => {
-  await request(app)
+it("GET /order/:orderId", async () => {
+  // Arrange
+  // await cleanup();
+
+  // Act
+  const test = await request(app)
     .get(`/order/${orderId}`)
-    .set({ Authorization: "Bearer " + token })
+    .set(header)
     .expect(200)
     .expect("content-type", /json/);
+  console.log(test.body.order);
+
+  // Assert
+  const order = await orderModel.findById(test.body.order._id);
+  expect(test.body.status).toBe(true);
+  expect(test.body.order).toBeDefined();
+  expect(order._id.toString()).toBe(test.body.order._id);
 });
 
-//   Create order
-it("POST /order", async () => {
-  await request(app)
+// Create order
+it.skip("POST /order", async () => {
+  // Arrange
+  await cleanup();
+
+  // Act
+  const test = await request(app)
     .post("/order")
-    .set({ Authorization: "Bearer " + token })
+    .set(header)
     .send({
       items: [
         {
@@ -43,24 +72,57 @@ it("POST /order", async () => {
     })
     .expect(200)
     .expect("content-type", /json/);
+
+  // Assert
+  const order = await orderModel.findById(test.body.order._id);
+  expect(test.body.status).toBe(true);
+  expect(order._id.toString()).toBe(test.body.order._id);
 });
 
 // Update order state
-it("PATCH /order/:id", async () => {
-  await request(app)
-    .patch(`/order/${orderId}`)
-    .set({ Authorization: "Bearer " + token })
-    .send({
-      state: 1,
-    })
+it.skip("PATCH /order/:id", async () => {
+  // Arrange
+  await cleanup();
+
+  const order = await orderModel.create({
+    items: [],
+    created_at: moment().toDate(),
+    state: 1,
+    total_price: 0,
+  });
+
+  // Act
+  const test = await request(app)
+    .patch(`/order/${order._id}`)
+    .set(header)
+    .send({ state: 3 })
     .expect(200)
     .expect("content-type", /json/);
+
+  // Assert
+  expect(test.body.status).toBe(true);
+  expect(test.body.order).toBeDefined();
+  expect(test.body.order.state).toBe(3);
 });
 
-it("DELETE /order/:id", async () => {
-  await request(app)
-    .delete(`/order/${orderId}`)
-    .set({ Authorization: "Bearer " + token })
+it.skip("DELETE /order/:id", async () => {
+  // Arrange
+  await cleanup();
+  const order = await orderModel.create({
+    items: [],
+    created_at: moment().toDate(),
+    total_price: 0,
+  });
+
+  // Act
+  const test = await request(app)
+    .delete(`/order/${order._id}`)
+    .set(header)
     .expect(200)
     .expect("content-type", /json/);
+
+  // Assert
+  expect(test.body.status).toBe(true);
+  expect(test.body.order).toBeDefined();
+  expect(test.body.order.deletedCount).toBe(1);
 });
