@@ -15,6 +15,6 @@ router.get(
   orderControllers.getOrder
 );
 router.get("/orders", orderControllers.getAllOrders);
-router.patch("/orders/:id", authenticate, orderControllers.updateOrder);
+router.patch("/orders/:id", passport.authenticate("jwt", { session: false }), orderControllers.updateOrder);
 
 module.exports = router;

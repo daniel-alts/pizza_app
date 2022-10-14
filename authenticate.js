@@ -1,9 +1,11 @@
 const passport = require("passport");
-const { ExtractJwt } = require("passport-jwt");
 const UserModel = require("./models/userModel");
 const JWTstrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const localStrategy = require("passport-local").Strategy;
+const User = require("./models/userModel");
+const dotenv = require("dotenv");
+dotenv.config();
 
 passport.use(
   new JWTstrategy(
@@ -26,22 +28,23 @@ passport.use(
   new localStrategy(
     {
       usernameField: "email",
-      passwordField: "email",
+      passwordField: "password",
     },
-    function (email, password, done) {
-      User.findOne({ email: email }, async function (err, user) {
-        if (err) {
-          return done(err);
-        }
+    async function (email, password, done) {
+      try {
+        const user = await User.findOne({ email: email });
         if (!user) {
           return done(null, false);
         }
-        const validate = await verifyPassword(password);
+        const validate = await user.verifyPassword(password);
+        console.log(validate);
         if (!validate) {
           return done(null, false, { message: "wrong password" });
         }
         return done(null, user, { message: "Logged in successfully" });
-      });
+      } catch (error) {
+        return done(err);
+      }
     }
   )
 );
@@ -51,7 +54,7 @@ passport.use(
   new localStrategy(
     {
       usernameField: "email",
-      passwordField: "email",
+      passwordField: "password",
     },
     async (email, password, done) => {
       try {
