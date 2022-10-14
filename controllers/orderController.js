@@ -25,7 +25,7 @@ const getOrdersInfo = async (req, res, next) => {
 const getAllOrders = async (req, res, next) => {
   try {
     let orders, returnObject = {}
-    const filter = req.authenticatedUser.user_type === 'admin' ? {} : { user: req.authenticatedUser._id }
+    const filter = req.user.user_type === 'admin' ? {} : { user: req.user._id }
     /**
      * check for query parameters
      */
@@ -100,7 +100,7 @@ const getOrderById = async (req, res, next) => {
 const createOrder = async (req, res, next) => {
   try {
     const body = req.body
-    const user = req.authenticatedUser
+    const user = req.user
 
     const total_price = body.items.reduce((prev, curr) => {
       return (prev += curr.quantity * curr.price)
