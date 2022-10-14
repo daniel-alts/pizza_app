@@ -1,6 +1,5 @@
 const express = require("express");
 const orderController = require("../controllers/orderController");
-const userController = require('../controllers/userController')
 
 const orderRouter = express.Router();
 
@@ -8,14 +7,14 @@ const orderRouter = express.Router();
 // ORDER ROUTER FOR ALL ORDER CRUD OPERATIONS
 orderRouter
   .route("/")
-  .post(userController.protect, orderController.createOrder)
-  .get(userController.protect, orderController.getAllOrder);
+  .post(orderController.createOrder)
+  .get(orderController.getAllOrder);
 
 orderRouter
   .route("/:id")
-  .get(userController.protect, orderController.getOrderById)
-  .delete(userController.protect, orderController.deleteOrder)
-  .patch(userController.protect, orderController.updateOrder);
+  .get(orderController.getOrderById)
+  .delete(orderController.deleteOrder)
+  .patch(orderController.updateOrder);
 
   
 module.exports = orderRouter;
