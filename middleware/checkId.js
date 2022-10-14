@@ -1,5 +1,5 @@
 module.exports = (req, res, next) => {
-  const userOrders = req.authenticatedUser.orders.map(order => {
+  const userOrders = req.user.orders.map(order => {
     return order.toString()
   })
   const check = userOrders.includes(req.params.id)
