@@ -10,7 +10,7 @@
 - An account must be created "Post" before order can be created, get, updated, or deleted 
 - (SEE image FOLDER FOR BODY FORMAT)
 
-
+2. Used Passport local-strategy to implement JWT authorization to protect the order route
 
 3. Added query params (Sort) to the Get order route.
 
