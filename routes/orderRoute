@@ -1,0 +1,93 @@
+const express = require('express');
+const Orders = require('../models/orderModel')
+const moment = require('moment');
+const bodyParser = require('body-parser');
+const orderRouter = express.Router()
+const authenticate = require('../authenticate')
+
+orderRouter.use(bodyParser.json());
+
+
+
+orderRouter.route('/')
+.get(authenticate.verifyUser, (req, res) => {
+    const page = req.params.p || 0
+    const ordersPerPage = 10
+
+    Orders.find({})
+    .sort({total_price: 1, created_at: 1, })
+    .skip(page * ordersPerPage)
+    .limit(ordersPerPage)
+    .then((orders)=>{
+        if(!orders){
+            return res.status(400).json({status:false, orders:null})
+        }
+        res.setHeader('Content-Type', 'application/json')
+        res.status(200).json({status:true, orders})
+    })
+})
+.post(authenticate.verifyUser, async (req, res) => {
+    const body = req.body;
+
+    const total_price = body.items.reduce((prev, curr) => {
+        prev += curr.price
+        return prev
+    }, 0);
+
+    const order = await Orders.create({ 
+        items: body.items,
+        created_at: moment().toDate(),
+        total_price
+    })
+    
+    return res.json({ status: true, order })
+})
+
+
+orderRouter.route('/:orderId')
+.get(authenticate.verifyUser, async (req, res) => {
+    const { orderId } = req.params;
+    const order = await Orders.findById(orderId)
+
+    if (!order) {
+        return res.status(404).json({ status: false, order: null })
+    }
+
+    return res.json({ status: true, order })
+})
+
+.patch(authenticate.verifyUser, async (req, res) => {
+    const { orderId } = req.params;
+    const { state } = req.body;
+
+    const order = await Orders.findById(orderId)
+
+    if (!order) {
+        return res.status(404).json({ status: false, order: null })
+    }
+
+    if (state < order.state) {
+        return res.status(422).json({ status: false, order: null, message: 'Invalid operation' })
+    }
+
+    order.state = state;
+
+    await order.save()
+
+    return res.json({ status: true, order })
+})
+
+.delete(authenticate.verifyUser, async (req, res) => {
+    const { orderId } = req.params;
+
+    const order = await Orders.deleteOne({ _id: orderId})
+
+    return res.json({ status: true, order })
+})
+
+module.exports = orderRouter
+
+
+
+
+
