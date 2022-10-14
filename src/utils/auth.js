@@ -39,14 +39,18 @@ const protectRoute = async (
 					authenticatedUser.username,
 				role: authenticatedUser.user_type,
 			}
+		}else {
+			return res.status(401).send({message: "unauthorised access"})
 		}
 		next()
+		
 	} catch (err) {
-		console.log('Forbidden')
-		// console.log(err)
-		return res
-			.status(401)
-			.send({ message: 'forbidden' })
+		// console.log('Forbidden')
+		console.log(err)
+		// return res
+		// 	.status(401)
+		// 	.send({ message: 'forbidden' })
+		next(err)
 	}
 }
 

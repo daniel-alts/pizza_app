@@ -4,6 +4,7 @@ const morgan = require('morgan')
 const orderRouter = require('./resources/order/order.router')
 const { protectRoute, signUp } = require('./utils/auth')
 const connectDB = require('./utils/database')
+const { errorLogger, errorResponder, invalidPathHandler } = require('./utils/errHandler')
 
 const PORT = 3334
 
@@ -18,6 +19,15 @@ app.use('/api', protectRoute)
 
 app.post('/signup', signUp)
 app.use('/api/order', orderRouter)
+
+app.all('*', (req, res, next) => {
+    console.log('here')
+  next()
+})
+
+app.use(errorLogger)
+app.use(errorResponder)
+app.use(invalidPathHandler)
 
 app.listen(PORT, () => {
   console.log(
