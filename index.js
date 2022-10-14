@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const { authenticate } = require('./middleware/authentication');
 const authRoute = require('./routes/auth');
 const orderRoute = require('./routes/order')
+const passport = require("passport"); 
+require('./middleware/passport')
 
 
 const PORT = 3334
@@ -12,7 +14,7 @@ const app = express()
 
 app.use(express.json());
 app.use('/auth', authRoute)
-app.use('/orders', authenticate, orderRoute)
+app.use('/orders', passport.authenticate('jwt', {session: false}), orderRoute)
 
 app.get('/', (req, res) => {
     return res.json({ status: true })
