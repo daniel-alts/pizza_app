@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const UserAPI = require("../controllers/userController");
 const passport = require("passport");
-const {} = require("jsonwebtoken");
+const {sign} = require("jsonwebtoken");
 router.post("/register", UserAPI.registerUser);
 router.post("/login", UserAPI.login);
 router.patch("/:id/update", UserAPI.updateUser);
@@ -19,7 +19,7 @@ router.post(
         if (error) return res.status(400).json({ msg: "An error occured" });
 
         const body = { userID: user._id, email: user.email };
-        const token = jwt.sign({ user: body }, process.env.JWT_SECRET);
+        const token = sign({ user: body }, process.env.JWT_SECRET);
 
         return res.json({ token });
       });
