@@ -1,16 +1,22 @@
 const express = require('express');
 const mongoose = require('mongoose');
+
+const passport = require("passport");
+const bodyParser = require("body-parser");
 const orderRoute = require('./routes/orderRoutes')
 const userRoute =  require('./routes/userRoutes')
 const dotenv = require('dotenv')
-
-
 //INTITIALIZING ENVIRONMENT VARIABLES
-dotenv.config({ path: './config.env'})
+dotenv.config({ path: './.env'})
+
 
 
 const PORT = 5000
 const app = express()
+app.use(bodyParser.urlencoded({ extended: false }));
+
+require("./authentication/auth");
+
 
 
 //MIDDLEWARES
@@ -22,9 +28,8 @@ app.use((req,res, next) => {
 
 
 // ROUTING
-app.use('/order', orderRoute)
+app.use('/order', passport.authenticate('jwt', { session: false }), orderRoute)
 app.use("/user", userRoute);
-
 
 
 mongoose.connect('mongodb://localhost:27017')
@@ -42,5 +47,6 @@ app.listen(PORT, () => {
     console.log('Listening on port, ', PORT)
 	
 })
+
 
 module.exports = app
