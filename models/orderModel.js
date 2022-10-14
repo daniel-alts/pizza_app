@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
-const moment = require("moment");
 
 const OrderSchema = new Schema({
 	id: ObjectId,
@@ -29,6 +28,15 @@ OrderSchema.pre("save", async function (next) {
 	}, 0);
 });
 
+// CHANGES THE FORMAT OF DOCUMENT RETURNED
+// OrderSchema.set("toJSON", {
+// 	transform: (document, returnedObject) => {
+// 		returnedObject.id =
+// 			returnedObject._id.toString();
+// 		delete returnedObject._id;
+// 		delete returnedObject.__v;
+// 	},
+// });
 const Order = mongoose.model(
 	"Order",
 	OrderSchema
