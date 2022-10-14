@@ -4,22 +4,24 @@ const mongoose = require('mongoose');
 //importing routers
 const orderRouter = require('./routes/orders')
 const userRouter = require('./routes/users')
+const passport = require('passport')
 
 //import authentication middleware
-const authentication = require('./middleware/authentication')
+require('./middleware/authentication')
 
 const PORT = 3334
 
 const app = express()
 
 app.use(express.json());
+app.use(express.urlencoded({extended:false}))
 
 
 
 
 // using the routers
-app.use('/register',userRouter)
-app.use('/orders' ,authentication ,orderRouter)
+app.use('/user',userRouter)
+app.use('/orders' ,passport.authenticate('jwt', {session:false}), orderRouter)
 
 
 app.get('/', (req, res) => {
@@ -31,6 +33,25 @@ app.all('*',(req,res)=>{
     return res.status(404).json({ status: false, msg: "page not Found" })
 
 })
+
+
+// Handle errors.
+app.use((err, req, res, next)=> {
+    if(err.code === 11000){
+        return res.status(500).json({ status: false, error:`username ${body.username} is taken already `} )
+
+    }
+
+    // let newMessage = Object.values(error.errors).map(element => element.message).join(' , ')
+    // if(newMessage){      
+    //     return res.status(500).json({ status: false, message: newMessage} )
+    // }
+
+
+    res.status(err.status || 500);
+    res.json({ error: err.message });
+});
+
 
 mongoose.connect('mongodb://localhost:27017')
 

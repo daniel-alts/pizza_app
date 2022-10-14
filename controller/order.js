@@ -1,15 +1,17 @@
 const moment = require('moment')
 const orderModel = require('../model/orderModel')
 
-const createOrder = async (req,res)=>{
+const createOrder = async (req,res,next)=>{
     const body = req.body;
 
+    if(body.items){
     const total_price = body.items.reduce((prev,curr)=>{
         prev += curr.price
         return prev
     },0)
- 
-
+ }
+try {
+    
     const order = await orderModel.create({ 
         items: body.items,
         created_at: moment().toDate(),
@@ -17,6 +19,9 @@ const createOrder = async (req,res)=>{
     })
     
     return res.json({ status: true, order }) 
+} catch (error) {
+    next(error)
+}
 }
 
 const getSingleOrder = async (req,res)=>{
@@ -31,6 +36,7 @@ const getSingleOrder = async (req,res)=>{
 }
 
 const getAllOrders = async (req,res)=>{
+    const info = req.user
     const {sort,state}= req.query
 
     const queryObject = {}
@@ -47,7 +53,7 @@ const getAllOrders = async (req,res)=>{
     const skip = (page-1)*limit
 
     orders = await orders.skip(skip).limit(limit)
-    return res.json({ status: true, orders })
+    return res.json({ info,status: true, orders })
 }
 
 const updateOrder = async (req,res)=>{
