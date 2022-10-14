@@ -2,6 +2,7 @@ const express = require('express');
 const moment = require('moment');
 const mongoose = require('mongoose');
 const orderModel = require('./orderModel');
+const userModel = require('models/userModel.js');
 const db = require('./db');
 
 const PORT = 3334
