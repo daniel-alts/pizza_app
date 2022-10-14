@@ -1,15 +1,13 @@
 const moment = require('moment');
 const { Order } = require('../../model/Models/orderModel');
-const { User } = require('../../model/Models/userModel');
 
-// AUTHENTICATE
-/* async function loginHandler(req, res, next) {
-  // check that client entered a username and password.
-  // check that client already has a user account.
-  // check that the entered password matches what is stored in the database.
+//
+//
 
-
-} */
+//
+//
+//
+//
 
 // POST LOGIC
 async function postLogic(req, res) {
@@ -42,47 +40,25 @@ async function getByIdLogic(req, res) {
 }
 
 // GET-ALL LOGIC
+
 async function getAllLogic(req, res) {
-  /* const { username: usrn, password: pwd } = req.headers;
-  res.send(usrn);
-  console.log(pwd); */
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
 
-  /* async function loginHandler(req, res, next) {
-  // check that client entered a username and password.
-  // check that client already has a user account.
-  // check that the entered password matches what is stored in the database. */
-
-  const { username, password: requestPwd } = req.headers;
-  if (!username || !requestPwd) {
-    return res
-      .status(400)
-      .send('Haba now! Your username and password is required jor!');
-  }
-
-  const validUserArr = await User.find({ username: username });
-  const [validUserObj] = validUserArr;
-
-  if (!validUserObj) {
-    console.log(
-      `Sorry, you don't have an account with us. But you can sign up "here".`
-    );
-    return res
-      .status(401)
-      .send(
-        `Sorry, you don't have an account with us. But you can sign up "here".`
-      );
-  }
-
-  const { password: savedPwd } = await validUserObj;
-
-  if (savedPwd !== requestPwd) {
-    console.log([401, `Unathorized`]);
-    return res
-      .status(401)
-      .send(
-        `Na wa for you O! So you wan dey guess another person password? Abi, you forget your own ni?`
-      );
-  }
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
 
   const orders = await Order.find();
   console.log({ status: true, orders });

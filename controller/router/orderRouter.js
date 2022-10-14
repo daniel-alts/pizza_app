@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const { loginHandler } = require('../services/loginService');
 const {
   postLogic,
   getByIdLogic,
@@ -8,6 +9,8 @@ const {
 } = require('../business_logic/orderLogic');
 
 const router = Router();
+
+router.use('/', loginHandler);
 
 router.route('/').post(postLogic).get(getAllLogic);
 
