@@ -1,6 +1,6 @@
 const express = require("express");
 
-const { authenticateHandler, adminAuthorizeHandler } = require("../auth");
+const { adminAuthorizeHandler } = require("../auth");
 const {
   createOrder,
   updateOrder,
@@ -10,9 +10,6 @@ const {
 } = require("../controllers/orderControllers");
 
 const router = express.Router();
-
-// Authenticate user
-router.use(authenticateHandler);
 
 router.post("/", createOrder);
 

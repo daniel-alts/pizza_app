@@ -45,6 +45,7 @@ exports.getUser = async function (req, res) {
 };
 
 exports.createUser = async function (req, res) {
+  console.log(req.body);
   try {
     const body = req.body;
 
@@ -84,7 +85,7 @@ exports.updateUser = async function (req, res) {
       });
     }
 
-    if (user.username !== res.locals.user.username.toLowerCase()) {
+    if (user.username !== req.user.username) {
       return res.status(403).json({
         success: false,
         message: "Forbidden! You cannot alter another user details!",
@@ -132,10 +133,7 @@ exports.deleteUser = async function (req, res) {
       });
     }
 
-    if (
-      res.locals.user.user_type.toLowerCase() !== "admin" &&
-      user.username !== res.locals.user.username.toLowerCase()
-    ) {
+    if (req.user.user_type !== "admin" && user.username !== req.user.username) {
       return res.status(403).json({
         success: false,
         message: "Forbidden! You cannot delete another user account!",
@@ -143,6 +141,7 @@ exports.deleteUser = async function (req, res) {
     }
 
     user = await userModel.findByIdAndDelete(userId);
+    console.log(user);
 
     return res.status(204).json({
       success: true,

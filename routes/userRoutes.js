@@ -1,6 +1,6 @@
 const express = require("express");
 
-const { authenticateHandler, adminAuthorizeHandler } = require("../auth");
+const { adminAuthorizeHandler } = require("../auth");
 const {
   createUser,
   updateUser,
@@ -10,11 +10,6 @@ const {
 } = require("../controllers/userControllers");
 
 const router = express.Router();
-
-router.post("/", createUser);
-
-// Authenticate user
-router.use(authenticateHandler);
 
 router.patch("/:userId", updateUser);
 
@@ -26,5 +21,7 @@ router.use(adminAuthorizeHandler);
 router.get("/", getAllUsers);
 
 router.get("/:userId", getUser);
+
+router.post("/", createUser);
 
 module.exports = router;

@@ -7,6 +7,7 @@ dotenv.config({ path: "./config.env" });
 const app = require("./../index");
 const userModel = require("./../models/userModel");
 const orderModel = require("./../models/orderModel");
+const TEST_TOKEN = process.env.TEST_TOKEN;
 
 //  Runs before all the tests
 beforeAll((done) => {
@@ -47,7 +48,7 @@ beforeAll((done) => {
 //  Runs after all the tests
 afterAll((done) => {
   mongoose.connection.db.dropDatabase(() => {
-    mongoose.connection.close(() => done());
+    mongoose.connection.close(done);
   });
 });
 
@@ -68,7 +69,7 @@ describe("orders", () => {
   it("GET /orders", async () => {
     const response = await supertest(app)
       .get("/orders")
-      .auth("Bolaji", "qwerty", { type: "basic" });
+      .set("Authorization", `Bearer ${TEST_TOKEN}`);
     expect(response.headers["content-type"]).toBe(
       "application/json; charset=utf-8"
     );
@@ -83,7 +84,7 @@ describe("orders", () => {
     });
     const response = await supertest(app)
       .get(`/orders/${orderId}`)
-      .auth("Bolaji", "qwerty", { type: "basic" });
+      .set("Authorization", `Bearer ${TEST_TOKEN}`);
     expect(response.headers["content-type"]).toBe(
       "application/json; charset=utf-8"
     );
@@ -95,7 +96,7 @@ describe("orders", () => {
   it("POST /orders", async () => {
     const response = await supertest(app)
       .post(`/orders`)
-      .auth("Bolaji", "qwerty", { type: "basic" })
+      .set("Authorization", `Bearer ${TEST_TOKEN}`)
       .send(newOrder);
     expect(response.headers["content-type"]).toBe(
       "application/json; charset=utf-8"
@@ -111,7 +112,7 @@ describe("orders", () => {
     });
     const response = await supertest(app)
       .patch(`/orders/${orderId}`)
-      .auth("Bolaji", "qwerty", { type: "basic" })
+      .set("Authorization", `Bearer ${TEST_TOKEN}`)
       .send(updateOrder);
     expect(response.headers["content-type"]).toBe(
       "application/json; charset=utf-8"
@@ -126,7 +127,7 @@ describe("orders", () => {
     });
     const response = await supertest(app)
       .delete(`/orders/${orderId}`)
-      .auth("Bolaji", "qwerty", { type: "basic" });
+      .set("Authorization", `Bearer ${TEST_TOKEN}`);
     expect(response.status).toBe(204);
     expect(response.body).toEqual({});
   });
