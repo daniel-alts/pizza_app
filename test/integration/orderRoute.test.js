@@ -1,3 +1,4 @@
+// this local host is for testing, so the testing doesn't affect the data in my database
 process.env.MONGODB_URI = "mongodb://localhost:27017/pizza-app-test";
 
 const request = require("supertest");
