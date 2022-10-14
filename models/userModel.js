@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
 
 const Schema = mongoose.Schema
 
@@ -13,6 +14,17 @@ const UserSchema = new Schema({
     },
   ],
 })
+
+// Encrypt password before saving to the database
+UserSchema.pre('save', async function (next) {
+  this.password = await bcrypt.hash(this.password, 10)
+  next()
+})
+
+// Check if password is valid
+UserSchema.methods.isValidPassword = async function (password) {
+  return await bcrypt.compare(password, this.password)
+}
 
 /**
  * Convert id to string
