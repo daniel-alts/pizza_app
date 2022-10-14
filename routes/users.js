@@ -12,6 +12,16 @@ router.route('/').get(passport.authenticate('jwt', { session: false }), authoriz
 /**
  * Create a new user
  */
-router.route('/register').post(controller.createUser)
+router.route('/register').post(passport.authenticate('register', { session: false }), (req, res, next) => {
+  try {
+    res.json({
+      status: true,
+      message: 'Sign-up successful',
+      user: req.user
+    })
+  } catch (e) {
+    next(e)
+  }
+})
 
 module.exports = router

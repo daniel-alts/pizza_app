@@ -44,4 +44,33 @@ module.exports = (passport) => {
       }
     })
   )
+
+  // This middleware saves the information provided by the user to the database,
+  // and then sends the user information to the next middleware if successful.
+  // Otherwise, it reports an error.
+  passport.use(
+    'register',
+    new localStrategy(
+      {
+        passReqToCallback: true,
+      },
+      async (req, username, password, done) => {
+        try {
+          const { user_type } = req.body
+          const hashedPassword = await bcrypt.hash(password, 10)
+          const userObject = {
+            username,
+            password: hashedPassword,
+          }
+          if (user_type) userObject.user_type = user_type
+          const user = new User(userObject)
+          const savedUser = await user.save()
+
+          return done(null, savedUser)
+        } catch (error) {
+          done(error)
+        }
+      }
+    )
+  )
 }
