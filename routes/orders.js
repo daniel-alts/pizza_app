@@ -2,10 +2,10 @@ const express = require("express");
 const ordersRouter = express.Router();
 const orderModel = require("../models/orderModel");
 const moment = require("moment");
-const { validateAdmin, validateLoginDetails } = require("../authenticate");
+const { validateAdmin, validateLoginDetails } = require("../authenticate"); // Used this middleware to secure the routes before implementing the JWT. "validateAdmin" middleware goes into the "get all order" route
 
 // Create an order
-ordersRouter.post("/", validateLoginDetails, async (req, res) => {
+ordersRouter.post("/", async (req, res) => {
   const body = req.body;
 
   const total_price = body.items.reduce((prev, curr) => {
@@ -19,11 +19,11 @@ ordersRouter.post("/", validateLoginDetails, async (req, res) => {
     total_price,
   });
 
-  return res.json({ status: true, order });
+  return res.status(201).json({ status: true, order });
 });
 
 // Get an order by Id
-ordersRouter.get("/:orderId", validateLoginDetails, async (req, res) => {
+ordersRouter.get("/:orderId", async (req, res) => {
   const { orderId } = req.params;
 
   const order = await orderModel.findById(orderId);
@@ -36,8 +36,8 @@ ordersRouter.get("/:orderId", validateLoginDetails, async (req, res) => {
 });
 
 // Get all orders
-ordersRouter.get("/", validateAdmin, async (req, res) => {
-  const perPage = 2;
+ordersRouter.get("/", async (req, res) => {
+  const perPage = 3;
   const pageNumber = parseInt(req.query.pageNumber);
 
   const orders = await orderModel
@@ -50,7 +50,7 @@ ordersRouter.get("/", validateAdmin, async (req, res) => {
 });
 
 // Update an order by id
-ordersRouter.patch("/:id", validateLoginDetails, async (req, res) => {
+ordersRouter.patch("/:id", async (req, res) => {
   const { id } = req.params;
   const { state } = req.body;
 
@@ -74,7 +74,7 @@ ordersRouter.patch("/:id", validateLoginDetails, async (req, res) => {
 });
 
 // Delete an order by Id
-ordersRouter.delete("/:id", validateLoginDetails, async (req, res) => {
+ordersRouter.delete("/:id", async (req, res) => {
   const { id } = req.params;
 
   const order = await orderModel.deleteOne({ _id: id });

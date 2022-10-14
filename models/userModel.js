@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
+const bcrypt = require("bcrypt");
 
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
@@ -33,6 +34,18 @@ const UserSchema = new Schema(
 
 UserSchema.plugin(uniqueValidator, { message: "is already taken." }); //uniqueValidator plugin and returns friendly message if email or username is taken
 
+UserSchema.pre("save", async function (next) {
+  const user = this;
+  const hash = await bcrypt.hash(this.password, 10);
+  this.password = hash;
+  next();
+});
+
+UserSchema.methods.isValidPassword = async function (password) {
+  const user = this;
+  const compare = await bcrypt.compare(password, user.password);
+  return compare;
+};
 const User = mongoose.model("User", UserSchema);
 
 module.exports = User;
