@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const orderModel = require("./models/orderModel");
 const cookieParser = require("cookie-parser");
 const PORT = 3334;
+const passport = require("passport");
 
 const app = express();
 
@@ -13,7 +14,7 @@ app.use(cookieParser());
 app.get("/", (req, res) => {
   return res.json({ status: true });
 });
-
+require("./passport")(passport);
 app.use("/order", require("./routes/orderRouter"));
 app.use("/account", require("./routes/userRouter"));
 
