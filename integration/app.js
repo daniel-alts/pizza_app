@@ -1,16 +1,34 @@
 const supertest = require("supertest");
 const server = require("../index");
 
-describe("Calculate", () => {
-    it("POST /calculate: action: sum", async() => {
+describe("register", () => {
+    it("POST /register", async() => {
         const response = await supertest(server).post("/api/orders").send({
-            action: "sum",
-            num1: 20,
-            num2: 10,
+            action: "registration successful",
         });
 
         // console.log({response})
-        expect(response.status).toBe(200);
-        expect(response.text).toBe(JSON.stringify({ result: 30 }));
+        expect("Content-Type", /json/).expect(200, done);
+    });
+});
+
+describe("GET /user", function() {
+    it("responds with json", function(done) {
+        request(app)
+            .get("/user")
+            .set("Accept", "application/json")
+            .expect("Content-Type", /json/)
+            .expect(200, done);
+    });
+});
+
+describe("GET /user", function() {
+    it("responds with json", function(done) {
+        request(app)
+            .get("/user")
+            .auth("username", "password")
+            .set("Accept", "application/json")
+            .expect("Content-Type", /json/)
+            .expect(200, done);
     });
 });
