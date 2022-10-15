@@ -105,7 +105,7 @@ exports.loginUser = async (req,res, next) =>{
                 return next(err);
             }
 
-            if (!user) return next(new Error('Username or Password is Incorrect'));
+            if (!user) return next('Username or Password is Incorrect');
 
             req.login(user, { session: false }, async (err) => {
                 if (err) return next(err);
