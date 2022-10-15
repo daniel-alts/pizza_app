@@ -1,13 +1,15 @@
 // this is like my auth.js file
 
 const express = require("express")
-const moment = require('moment')
+// const moment = require('moment')
 const { authenticate } = require("../authentication/authenticate")
 const userModel = require("../models/usersModel")
 
 const usersRoute = express.Router()
 
-// get all users
+// get all users by admin only
+
+// add query parameter here
 usersRoute.get("/", async(req, res)=>{
     const users = await userModel.find()
     .then((users) =>{
@@ -18,7 +20,7 @@ usersRoute.get("/", async(req, res)=>{
     })
 })
 
-// get a user == login/ signin
+// get a user's profile; can be by admin and customer
 
 usersRoute.get('/user', (req, res)=>{
     authenticate(req, res)
@@ -31,37 +33,39 @@ usersRoute.get('/user', (req, res)=>{
 )
 })
     
+// creating user is no longer needed here since we have an authRoute doing this
 
 // create new user == signup
-usersRoute.post("/user", (req, res)=>{
-    const user = req.body
-    const newUser = userModel.create({
-        firstName: user.firstName,
-        lastName: user.lastName,
-        username: user.username,
-        password: user.password
-    }).then(
-        (newUser)=>{
-            res.json({ status: true, message: newUser })
-        }
-    ).catch(
-        (err) =>{
-            res.status(404).json({
-                status: false,
-                message: err
-            })
-        }
-    )
-})
+// usersRoute.post("/user", (req, res)=>{
+//     const user = req.body
+//     const newUser = userModel.create({
+//         firstName: user.firstName,
+//         lastName: user.lastName,
+//         username: user.username,
+//         password: user.password
+//     }).then(
+//         (newUser)=>{
+//             res.json({ status: true, message: newUser })
+//         }
+//     ).catch(
+//         (err) =>{
+//             res.status(404).json({
+//                 status: false,
+//                 message: err
+//             })
+//         }
+//     )
+// })
 
-// update a user by ID
+
+// update a user after signIn/login by users specific ID
 usersRoute.patch('/:id', async (req, res) => {
     const { id } = req.params;
     const { user_type, password } = req.body;
     
-    
     // before update can happen, the username and password must be authenticated
-
+    // this means that users cannot make updates without signing in
+    // this is already done by the authRoute which protects the user and order route
 
     const user = await userModel.findByIdAndUpdate(id)
 
@@ -80,6 +84,7 @@ usersRoute.patch('/:id', async (req, res) => {
     })
 })
 
+// delete user account by admin and the customer who owns the account
 usersRoute.delete("/:id", async(req, res)=>{
     const id = req.body
 

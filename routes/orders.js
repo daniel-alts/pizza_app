@@ -50,14 +50,14 @@ orderRoute.get('/:orderId',async (req, res) => {
 
 
 // get all orders
-orderRoute.get('/',(req, res) => {
+orderRoute.get('/orders?sort_by=total_price,craeted_at&order=asc',async (req, res) => {
 
-    authenticate (req, res)
-    .then(()=>{
-        const orders = orderModel.find()
-        return res.status(200).json({ status: true, orders })
-
-    }).catch((err)=>{
+    // authenticate (req, res)
+    // .then(()=>{
+        const orders = await orderModel.find()
+        .then(()=>{
+        return res.status(200).json({ status: true, message: orders })
+        }).catch((err)=>{
         res.status(404).json(
             {
                 status: false,
@@ -65,7 +65,7 @@ orderRoute.get('/',(req, res) => {
             }
         )
     })
-   
+   // add pagination here
 })
 
 // update state of order

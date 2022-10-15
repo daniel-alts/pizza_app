@@ -1,7 +1,7 @@
 const express = require("express")
-// const fs = require ("fs")
-// const { connectToMongoDb } = require("./db")
-// const users = require("./routes/users")
+const fs = require ("fs")
+const { connectToMongoDb } = require("./db")
+const users = require("./routes/users")
 const userModel = require("../models/usersModel")
 
 function authenticate (req, res){
