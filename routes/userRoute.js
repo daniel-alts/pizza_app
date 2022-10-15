@@ -1,6 +1,4 @@
 const express = require('express')
-const { reset } = require('nodemon')
-const User = require('../models/userModel')
 const Users = require('../models/userModel')
 
 const userRouter = express.Router()

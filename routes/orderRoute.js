@@ -4,6 +4,19 @@ const orderModel = require('../models/orderModel');
 
 const ordersRouter = express.Router()
 
+// home page
+ordersRouter.get('/', (req, res) => {
+    orderModel.find({})
+        .then((orders)=>{
+            res.status(200).send(orders)
+        }).catch((err)=>{
+            console.log(err);
+            res.status(500).send(err.message)
+        })
+    // return res.json({ status: true })
+})
+
+
 // create order
 ordersRouter.post('/order', async (req, res) => {
     const body = req.body;

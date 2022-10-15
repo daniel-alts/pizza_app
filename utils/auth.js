@@ -1,11 +1,32 @@
-const orderModel = require('../models/orderModel');
+const userModel = require('../models/userModel');
 
+const users = [];
+// get all users from db
 function getAllUsers(){
-    const users = orderModel.find()
+    const users = userModel.find()
 
     return res.json({ status: true, users: users })
 }
 
+const  findByUsername = async (username) =>  {
+    // Console.log the return value of user. 
+    // If it returns null for "not found ", the function should return false. If it returns anything else handle the errors.....
+
+    // if it returns the user, the function should return true.
+
+    const user = await userModel.findOne({
+        where: {
+            username: username
+        }
+    })
+
+
+    console.log("user ", user)
+
+    return user ? user : false; 
+}
+
+// authenticate users
 const authenticate = async (req, res, next) => {
     return new Promise ((resolve, reject) => {
         const body = []
@@ -23,11 +44,7 @@ const authenticate = async (req, res, next) => {
 
             const loginDetails = JSON.parse(parsedBody)
 
-            const users = await getAllUsers()
-
-            const userFound = users.find((user) => {
-                return user.username === loginDetails.username
-            })
+            const userFound = await findByUsername(user.username)
 
             if (!userFound) {
                 reject ("user not found, please sign up")

@@ -1,33 +1,32 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const userRoute = require('./routes/userRoute')
 const ordersRoute = require('./routes/orderRoute')
-const authenticate = require('./utils/auth')
+const passport = require("passport");
+const bodyParser = require("body-parser");
+const  authRouter = require("./routes/authRoute");
+const { connectToMongoDB } = require('./db')
+require('dotenv').config()
 
-const PORT = 3334
+const PORT = process.env.PORT
 
 const app = express()
 
+// Connecting to MongoDB instance
+connectToMongoDB()
+
 app.use(express.json());
 
+app.use(bodyParser.urlencoded({extended: false}));
 
-app.get('/', (req, res) => {
-    return res.json({ status: true })
+require("./utils/authMiddleware");
+app.use("/", authRouter);
+
+app.use(passport.authenticate("jwt", { session: false }),  ordersRoute);
+app.use(userRoute);
+app.use("**", (req, res) => {
+	res.status(404).send({ message: "Route not found" })
 })
 
-app.use(authenticate, ordersRoute);
-app.use(userRoute);
-
-mongoose.connect('mongodb://localhost:27017')
-
-mongoose.connection.on("connected", () => {
-	console.log("Connected to MongoDB Successfully");
-});
-
-mongoose.connection.on("error", (err) => {
-	console.log("An error occurred while connecting to MongoDB");
-	console.log(err);
-});
 
 app.listen(PORT, () => {
     console.log('Listening on port, ', PORT)
