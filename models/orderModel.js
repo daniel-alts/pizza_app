@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
-
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
-
 const OrderSchema = new Schema({
   id: ObjectId,
   created_at: Date,
@@ -14,8 +12,16 @@ const OrderSchema = new Schema({
     size: { type: String, enum: ['m', 's', 'l']},
     quantity: Number,
   }]
+  items: [
+    {
+      name: String,
+      price: Number,
+      size: { type: String, enum: ['m', 's', 'l'] },
+      quantity: Number,
+    },
+  ],
 });
 
 const Order = mongoose.model('Order', OrderSchema);
 
-module.exports = Order;
+const Order = mongoose.model('Order', OrderSchema);

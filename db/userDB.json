@@ -1,0 +1,26 @@
+[
+  {
+    "username": "Abacus",
+    "password": "16@kin$ha$ha",
+    "user_type": "admin",
+    "email": "abasumo24@gmail.com"
+  },
+  {
+    "username": "Cole Pfeifer",
+    "password": "April&&%30th",
+    "user_type": "user",
+    "email": "pfeifercandoit@yahoo.com"
+  },
+  {
+    "username": "Dana Walsh",
+    "password": "daintybaddie20",
+    "user_type": "user",
+    "email": "daintywalsh98@gmail.com"
+  },
+  {
+    "username": "Optimus Prime",
+    "password": "legalTermin8t0r",
+    "user_type": "user",
+    "email": "ageofultron@yahoo.com"
+  }
+]
