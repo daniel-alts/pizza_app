@@ -1,91 +1,49 @@
+/* eslint-disable no-undef */
+const passport = require('passport');
+// const localStrategy = require('passport-local').Strategy;
+// const UserModel = require('./models/userModel');
+// const JwtStrategy = require('passport-jwt').Strategy;
+// const ExtractJwt = require('passport-jwt').ExtractJwt;
+
+/* eslint-disable no-undef */
+require('dotenv').config();
 const express = require('express');
-const moment = require('moment');
+const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const orderModel = require('./orderModel');
+const path = require('path');
+require('./auth')
 
-const PORT = 3334
+const UserRouter= require('./controllers/user.controller');
+const indexRouter = require('./controllers/index.controllers')
 
-const app = express()
-
-app.use(express.json());
-
-
-app.get('/', (req, res) => {
-    return res.json({ status: true })
-})
+const {PORT = 3444} = process.env.PORT;
 
 
-app.post('/order', async (req, res) => {
-    const body = req.body;
+const app = express();
 
-    const total_price = body.items.reduce((prev, curr) => {
-        prev += curr.price
-        return prev
-    }, 0);
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 
-    const order = await orderModel.create({ 
-        items: body.items,
-        created_at: moment().toDate(),
-        total_price
-    })
-    
-    return res.json({ status: true, order })
-})
-
-app.get('/order/:orderId', async (req, res) => {
-    const { orderId } = req.params;
-    const order = await orderModel.findById(orderId)
-
-    if (!order) {
-        return res.status(404).json({ status: false, order: null })
-    }
-
-    return res.json({ status: true, order })
-})
-
-app.get('/orders', async (req, res) => {
-    const orders = await orderModel.find()
-
-    return res.json({ status: true, orders })
-})
-
-app.patch('/order/:id', async (req, res) => {
-    const { id } = req.params;
-    const { state } = req.body;
-
-    const order = await orderModel.findById(id)
-
-    if (!order) {
-        return res.status(404).json({ status: false, order: null })
-    }
-
-    if (state < order.state) {
-        return res.status(422).json({ status: false, order: null, message: 'Invalid operation' })
-    }
-
-    order.state = state;
-
-    await order.save()
-
-    return res.json({ status: true, order })
-})
-
-app.delete('/order/:id', async (req, res) => {
-    const { id } = req.params;
-
-    const order = await orderModel.deleteOne({ _id: id})
-
-    return res.json({ status: true, order })
-})
+// app.use(session({secret: "exposedsecret", resave: false, saveUninitialized: true}))
+app.use(bodyParser.json())
+app.use(express.urlencoded({ extended: true}))
+app.use(passport.initialize());
 
 
-mongoose.connect('mongodb://localhost:27017')
 
-mongoose.connection.on("connected", () => {
+
+app.use('/', indexRouter)
+app.use('/users', passport.authenticate('jwt', { session: false }),UserRouter)
+
+
+
+mongoose.connect("mongodb+srv://test-project:test-project@cluster0.4qna20m.mongodb.net/?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true})
+let db = mongoose.connection;
+
+db.on("connected", () => {
 	console.log("Connected to MongoDB Successfully");
 });
-
-mongoose.connection.on("error", (err) => {
+db.on("error", (err) => {
 	console.log("An error occurred while connecting to MongoDB");
 	console.log(err);
 });
