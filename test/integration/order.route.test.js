@@ -4,7 +4,7 @@ const supertest = require("supertest");
 const Order = require("../../orderModel");
 require('dotenv').config()
 
-const data = {
+const orderData = {
   "test": true,
   "items": [
   {
@@ -21,6 +21,9 @@ const data = {
   }
   ]
 }
+
+const nonAdminUser = {username: "test", password: "test"}
+const AdminUser = {username: "test1", password: "test1", user_type: "admin"}
 
 expect.extend({
   toBeJSON(contentType) {
@@ -45,22 +48,29 @@ expect.extend({
   }
 })
 
-beforeEach(async () => {
+
+beforeAll(async () => {
   await mongoose.connect(process.env.MONGO_TEST_DB);
+
+  const server = supertest(app)
+  await server.post("/users/new").send(nonAdminUser);
+  await server.post("/users/new").send(AdminUser);
+  await server.post("/order").send(orderData);
 })
 
-afterEach(async () => {
+
+afterAll(async () => {
   await mongoose.connection.close();
 });
 
-describe("GET  /", () => {
+describe("Order GET / route ", () => {
   it("responds with 401 status code", async () => {
     const response = await supertest(app).get("/")
     expect(response.statusCode).toBe(401);
   })
 
   it("responds with 200 status code", async () => {
-    const response = await supertest(app).get("/").auth("test", "test")
+    const response = await supertest(app).get("/").auth(nonAdminUser.username, nonAdminUser.password)
     expect(response.statusCode).toBe(200);
   })
 
@@ -70,15 +80,17 @@ describe("GET  /", () => {
   })
 });
 
-describe("POST /order", () => {
+describe("Order POST / route", () => {
   it("denies non-admin user permission to add new order", async () => {
-    const response = await supertest(app).post("/order").auth("test", "test").send(data);
+    const response = await supertest(app)
+      .post("/order").send(orderData).auth(nonAdminUser.username, nonAdminUser.password);
     expect(response.statusCode).toBe(401);
 
   })
 
   it("adds order for admin user", async () => {
-    const response = await supertest(app).post("/order").auth("test1", "test1").send(data);
+    const response = await supertest(app)
+      .post("/order").auth(AdminUser.username, AdminUser.password).send(orderData);
     expect(response.headers["content-type"]).toBeJSON()
     expect(response.statusCode).toBe(200);
     expect(response.body.status).toBe(true);
@@ -91,13 +103,13 @@ describe("POST /order", () => {
 describe("DELETE /order/:id", () => {
   it("denies non-admin user permission to delete", async () => {
     const itemToDelete = await Order.findOne({test: true});
-    const response = await supertest(app).delete(`/order/${itemToDelete._id}`).auth("test", "test")
+    const response = await supertest(app).delete(`/order/${itemToDelete._id}`).auth(nonAdminUser.username, nonAdminUser.password)
     expect(response.statusCode).toBe(401);
   })
 
   it("deletes order for admin user", async () => {
     const itemToDelete = await Order.findOne({test: true});
-    const response = await supertest(app).delete(`/order/${itemToDelete._id}`).auth("test1", "test1")
+    const response = await supertest(app).delete(`/order/${itemToDelete._id}`).auth(AdminUser.username, AdminUser.password)
     expect(response.headers["content-type"]).toBeJSON()
     expect(response.statusCode).toBe(200);
     expect(response.body.status).toBe(true);

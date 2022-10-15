@@ -1,3 +1,4 @@
+const bodyParser = require("body-parser");
 const express = require("express");
 const mongoose = require("mongoose");
 require("dotenv").config();
@@ -9,7 +10,7 @@ const userRoutes = require("./routes/user");
 const app = express();
 
 app.use(basicAuthMiddleware);
-app.use(express.json());
+app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
   return res.json({ status: true });
@@ -18,8 +19,6 @@ app.get("/", (req, res) => {
 app.use(userRoutes);
 app.use(orderRoutes);
 
-
-mongoose.connect(process.env.DB_URL);
 
 mongoose.connection.on("connected", () => {
   console.log("Connected to MongoDB Successfully");
