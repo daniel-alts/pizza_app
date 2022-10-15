@@ -1,14 +1,22 @@
 const express = require('express');
 const moment = require('moment');
 const mongoose = require('mongoose');
-const orderModel = require('./orderModel');
-
+const userModel = require('./models/userModel');
+const {authenticateUser} = require('./middleware/authenticate');
+const db = require("./database/db");
+const { userRouter } = require("./routers/userRouter");
 const PORT = 3334
 
 const app = express()
 
+db.connectToMongoDB();
+
+
 app.use(express.json());
 
+app.use(authenticateUser);
+
+app.use("/users", userRouter)
 
 app.get('/', (req, res) => {
     return res.json({ status: true })
@@ -77,18 +85,6 @@ app.delete('/order/:id', async (req, res) => {
 
     return res.json({ status: true, order })
 })
-
-
-mongoose.connect('mongodb://localhost:27017')
-
-mongoose.connection.on("connected", () => {
-	console.log("Connected to MongoDB Successfully");
-});
-
-mongoose.connection.on("error", (err) => {
-	console.log("An error occurred while connecting to MongoDB");
-	console.log(err);
-});
 
 app.listen(PORT, () => {
     console.log('Listening on port, ', PORT)
