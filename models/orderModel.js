@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
@@ -5,6 +6,7 @@ const ObjectId = Schema.ObjectId;
 
 const OrderSchema = new Schema({
   id: ObjectId,
+  userId: Number,
   created_at: Date,
   state: { type: Number, default: 1 },
   total_price: Number,

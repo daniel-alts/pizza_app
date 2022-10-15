@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <% if (user) {%>
+        <h1>Welcome Back <%= user.username %></h1>
+        <a href="/logout">LOG OUT</a>
+    <% } else { %>
+        <h1>Please Log in</h1>
+        <form action="/login" method="POST">
+            <label for="username">Email</label>
+            <input name="username" placeholder="email" type="text"/>
+            <label for="password">Password</label>
+            <input name="password" type="password"/>
+            <button type="submit">Log In</button>
+        </form>
+    <%}%>
+</body>
+</html>
