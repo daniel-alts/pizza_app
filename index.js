@@ -1,20 +1,30 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const passport = require('passport');
 
+const passportConfig = require('./passport');
 const userRoutes = require('./routes/userRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const PORT = process.env.PORT || 3334;
 const MONGO_URL = process.env.MONGO_URL;
 
 const app = express();
 
+passportConfig();
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/orders', orderRoutes());
+app.use(
+  '/api/orders',
+  passport.authenticate('jwt', { session: false }),
+  orderRoutes()
+);
 app.use('/api/users', userRoutes());
+app.use('/api/auth', authRoutes());
 
 app.get('/', (req, res) => {
   return res.json({ status: true });

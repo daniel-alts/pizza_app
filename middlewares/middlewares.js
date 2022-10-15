@@ -1,38 +1,7 @@
 const orderModel = require('../model/orderModel');
-const User = require('../model/userModel');
 
 module.exports = (function middlewares() {
   return {
-    confirmUser: (req, res, next) => {
-      (async function confirmUser() {
-        const authHeader = req.headers.authorization;
-
-        if (!authHeader) {
-          const err = new Error('You must be logged in to access this route.');
-          res.setHeader('WWW-Authenticate', 'Basic');
-          err.status = 401;
-          next(err);
-        } else {
-          const auth = Buffer.from(authHeader.split(' ')[1], 'base64')
-            .toString()
-            .split(':');
-          const username = auth[0];
-          const password = auth[1];
-
-          const foundUser = await User.findOne({ username });
-
-          if (!foundUser || foundUser.password !== password) {
-            const err = new Error('Wrong username or password.');
-            res.setHeader('WWW-Authenticate', 'Basic');
-            err.status = 401;
-            next(err);
-          } else {
-            req.user = foundUser;
-            next();
-          }
-        }
-      })();
-    },
     pagination: (req, res, next) => {
       (async function paginate() {
         const page = +req.query.page || 1;

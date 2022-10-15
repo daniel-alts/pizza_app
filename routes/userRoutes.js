@@ -16,24 +16,6 @@ function userRoutes() {
           return res.status(500).json(err);
         }
       })();
-    })
-    .post((req, res) => {
-      (async function newuser() {
-        try {
-          const { username, fullname, password, user_type } = req.body;
-          const newUser = new User({
-            username,
-            password,
-            fullname,
-            user_type,
-          });
-          const savedUser = await newUser.save();
-          return res.status(201).json(savedUser);
-        } catch (err) {
-          console.log(err);
-          return res.status(500).json(err);
-        }
-      })();
     });
   userRoutes
     .route('/:userId')
@@ -47,7 +29,6 @@ function userRoutes() {
           }
           return res.status(200).json(user);
         } catch (err) {
-          console.log(err);
           return res.status(500).json(err);
         }
       })();
@@ -61,7 +42,6 @@ function userRoutes() {
             .status(204)
             .json({ message: 'User updated successfully.', updateInfo });
         } catch (err) {
-          console.log(err);
           return res.status(500).json(err);
         }
       })();
@@ -75,7 +55,6 @@ function userRoutes() {
             .status(200)
             .json({ message: 'User deleted successfully.' });
         } catch (err) {
-          console.log(err);
           return res.status(500).json(err);
         }
       })();

@@ -3,12 +3,10 @@ const moment = require('moment');
 
 const orderModel = require('../model/orderModel');
 
-const { confirmUser, pagination } = require('../middlewares/middlewares');
+const { pagination } = require('../middlewares/middlewares');
 
 function orderRoutes() {
   const orderRoutes = Router();
-  //To run integration testing, uncomment the next line
-  orderRoutes.use(confirmUser);
   orderRoutes
     .route('/')
     .get(pagination, (req, res) => {
@@ -48,7 +46,6 @@ function orderRoutes() {
 
           const total_price = body.items.reduce((prev, curr) => {
             prev += curr.price * +curr.quantity;
-            console.log(prev);
             return prev;
           }, 0);
 
@@ -61,7 +58,6 @@ function orderRoutes() {
 
           return res.status(201).json({ status: true, order });
         } catch (err) {
-          console.log(err);
           return res.status(500).json(err);
         }
       })();
@@ -80,7 +76,6 @@ function orderRoutes() {
 
           return res.status(200).json({ status: true, order });
         } catch (err) {
-          console.log(err);
           return res.status(500).json(err);
         }
       })();
@@ -90,7 +85,6 @@ function orderRoutes() {
         try {
           const { orderId } = req.params;
           const { state } = req.body;
-          console.log(state);
 
           const order = await orderModel.findById(orderId);
 
@@ -105,14 +99,12 @@ function orderRoutes() {
               message: 'Invalid operation',
             });
           }
-
           order.state = state;
-
           await order.save();
 
           return res.status(204).json({ status: true, order });
         } catch (err) {
-          console.log(err);
+   
           return res.status(500).json(err);
         }
       })();
@@ -124,7 +116,6 @@ function orderRoutes() {
           const order = await orderModel.deleteOne({ _id: id });
           return res.status(200).json({ status: true, order });
         } catch (err) {
-          console.log(err);
           return res.status(500).json(err);
         }
       })();
