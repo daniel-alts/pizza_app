@@ -2,6 +2,7 @@ const app = require("../../index");
 const mongoose = require('mongoose');
 const supertest = require("supertest");
 const Order = require("../../orderModel");
+const User = require("../../userModel");
 require('dotenv').config()
 
 const orderData = {
@@ -23,7 +24,7 @@ const orderData = {
 }
 
 const nonAdminUser = {username: "test", password: "test"}
-const AdminUser = {username: "test1", password: "test1", user_type: "admin"}
+const adminUser = {username: "testadmin", password: "testadmin", user_type: "admin"}
 
 expect.extend({
   toBeJSON(contentType) {
@@ -48,29 +49,32 @@ expect.extend({
   }
 })
 
+async function removeAllCollections() {
+    const collections = Object.keys(mongoose.connection.collections);
+    for (const collectionName of collections) {
+      const collection = mongoose.connection.collections[collectionName];
+      await collection.deleteMany();
+    }
+  }
+
+
 
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGO_TEST_DB);
-
-  const server = supertest(app)
-  await server.post("/users/new").send(nonAdminUser);
-  await server.post("/users/new").send(AdminUser);
-  await server.post("/order").send(orderData);
+  await User.create(adminUser);
+  await User.create(nonAdminUser);
+  await supertest(app).post("/order").send(orderData);
 })
 
 
 afterAll(async () => {
+  await removeAllCollections();
   await mongoose.connection.close();
 });
 
 describe("Order GET / route ", () => {
-  it("responds with 401 status code", async () => {
-    const response = await supertest(app).get("/")
-    expect(response.statusCode).toBe(401);
-  })
-
   it("responds with 200 status code", async () => {
-    const response = await supertest(app).get("/").auth(nonAdminUser.username, nonAdminUser.password)
+    const response = await supertest(app).get("/")
     expect(response.statusCode).toBe(200);
   })
 
@@ -82,15 +86,17 @@ describe("Order GET / route ", () => {
 
 describe("Order POST / route", () => {
   it("denies non-admin user permission to add new order", async () => {
+    const loginResponse = await supertest(app).post("/users/login").send(nonAdminUser);
     const response = await supertest(app)
-      .post("/order").send(orderData).auth(nonAdminUser.username, nonAdminUser.password);
-    expect(response.statusCode).toBe(401);
+      .post("/order").send(orderData).set("Authorization", `Bearer ${loginResponse.body.token}`);
 
+    expect(response.statusCode).toBe(401);
   })
 
   it("adds order for admin user", async () => {
+    const loginResponse = await supertest(app).post("/users/login").send(adminUser);
     const response = await supertest(app)
-      .post("/order").auth(AdminUser.username, AdminUser.password).send(orderData);
+      .post("/order").send(orderData).set("Authorization", `Bearer ${loginResponse.body.token}`);
     expect(response.headers["content-type"]).toBeJSON()
     expect(response.statusCode).toBe(200);
     expect(response.body.status).toBe(true);
@@ -100,16 +106,37 @@ describe("Order POST / route", () => {
 
 })
 
+describe("UPDATE /order/:id", () => {
+  it("doesn't patch order state with invalid order state", async () => {
+    const loginResponse = await supertest(app).post("/users/login").send(adminUser);
+    const itemToUpdate = await Order.findOne({test: true});
+    const response = await supertest(app).patch(`/order/${itemToUpdate._id}`).send({state: 0}).set("Authorization", `Bearer ${loginResponse.body.token}`);
+    expect(response.headers["content-type"]).toBeJSON()
+    expect(response.statusCode).toBe(422);
+  })
+
+  it("patch order state with valid order state", async () => {
+    const loginResponse = await supertest(app).post("/users/login").send(adminUser);
+    const itemToUpdate = await Order.findOne({test: true});
+    const response = await supertest(app).patch(`/order/${itemToUpdate._id}`).send({state: 2}).set("Authorization", `Bearer ${loginResponse.body.token}`);
+    expect(response.headers["content-type"]).toBeJSON()
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe(true);
+  })
+})
+
 describe("DELETE /order/:id", () => {
   it("denies non-admin user permission to delete", async () => {
+    const loginResponse = await supertest(app).post("/users/login").send(nonAdminUser);
     const itemToDelete = await Order.findOne({test: true});
-    const response = await supertest(app).delete(`/order/${itemToDelete._id}`).auth(nonAdminUser.username, nonAdminUser.password)
+    const response = await supertest(app).delete(`/order/${itemToDelete._id}`).set("Authorization", `Bearer ${loginResponse.body.token}`);
     expect(response.statusCode).toBe(401);
   })
 
   it("deletes order for admin user", async () => {
+    const loginResponse = await supertest(app).post("/users/login").send(adminUser);
     const itemToDelete = await Order.findOne({test: true});
-    const response = await supertest(app).delete(`/order/${itemToDelete._id}`).auth(AdminUser.username, AdminUser.password)
+    const response = await supertest(app).delete(`/order/${itemToDelete._id}`).set("Authorization", `Bearer ${loginResponse.body.token}`);
     expect(response.headers["content-type"]).toBeJSON()
     expect(response.statusCode).toBe(200);
     expect(response.body.status).toBe(true);
