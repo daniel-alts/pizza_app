@@ -15,8 +15,14 @@
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
     "express": "^4.18.1",
+    "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.4",
-    "mongoose": "^6.6.1"
+    "mongoose": "^6.6.1",
+    "passport": "^0.6.0",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0",
+    "promisify": "0.0.3",
+    "util": "^0.12.4"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
