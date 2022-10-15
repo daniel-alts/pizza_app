@@ -1,21 +1,11 @@
 const express = require('express');
 const moment = require('moment');
-const mongoose = require('mongoose');
-const orderModel = require('./orderModel');
-
-const PORT = 3334
-
-const app = express()
-
-app.use(express.json());
+const orderModel = require('../models/orderModel');
+const router = express.Router();
 
 
-app.get('/', (req, res) => {
-    return res.json({ status: true })
-})
 
-
-app.post('/order', async (req, res) => {
+router.post('/', async (req, res) => {
     const body = req.body;
 
     const total_price = body.items.reduce((prev, curr) => {
@@ -32,9 +22,9 @@ app.post('/order', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-app.get('/order/:orderId', async (req, res) => {
-    const { orderId } = req.params;
-    const order = await orderModel.findById(orderId)
+router.get('/:id', async (req, res) => {
+    const { id } = req.params;
+    const order = await orderModel.findById(id)
 
     if (!order) {
         return res.status(404).json({ status: false, order: null })
@@ -43,13 +33,46 @@ app.get('/order/:orderId', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-app.get('/orders', async (req, res) => {
-    const orders = await orderModel.find()
+router.get('/', async (req, res) => {
+  let  query = {}
+ const   {state} = req.query
+ if (state){
+    query = {state}
+ }
+
+ const {total_price, created_at, limit} = req.query
+
+ let TotalP = {}
+ let Created = {}
+ let limiter = {}
+
+ if(total_price==="asc") {
+    TotalP={total_price : 1}
+ }
+ else if(total_price === "dsc"){
+    TotalP = {total_price: -1}
+ }
+ else{TotalP  = {}}
+
+ if(created_at == "asc"){
+    Created==={created_at: 1}
+ }
+ else if(created_at == "dsc"){
+ Created ={created_at: -1}
+ }
+ else{Created = {}}
+
+ if(limit){
+    limiter = {limit : parseInt(limit)}
+ }
+ 
+
+    const orders = await orderModel.find(query).sort(Created).sort(TotalP).limit(limiter.limit)
 
     return res.json({ status: true, orders })
 })
 
-app.patch('/order/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { state } = req.body;
 
@@ -70,7 +93,7 @@ app.patch('/order/:id', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-app.delete('/order/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
     const order = await orderModel.deleteOne({ _id: id})
@@ -78,18 +101,6 @@ app.delete('/order/:id', async (req, res) => {
     return res.json({ status: true, order })
 })
 
+module.exports = router;
 
-mongoose.connect('mongodb://localhost:27017')
 
-mongoose.connection.on("connected", () => {
-	console.log("Connected to MongoDB Successfully");
-});
-
-mongoose.connection.on("error", (err) => {
-	console.log("An error occurred while connecting to MongoDB");
-	console.log(err);
-});
-
-app.listen(PORT, () => {
-    console.log('Listening on port, ', PORT)
-})
