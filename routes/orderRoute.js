@@ -1,9 +1,11 @@
 const express = require("express");
 const orderModels = require("../model/orderModel");
+const UserType = require("../routes/Auth");
 
 const orderRouter = express.Router();
 
 const moment = require("moment");
+const userttyp = UserType.usertype;
 
 // orderRouter.get("/", (req, res) => {
 //   return res.json({ status: true });
@@ -27,28 +29,39 @@ orderRouter.get("/", (req, res) => {
 //CREATE NEW ORDER
 orderRouter.post("/", async (req, res) => {
   const body = req.body;
+  console.log(userttyp);
+  // const usertype = req.query.usertype;
 
-  const total_price = body.items.reduce((prev, curr) => {
-    prev += curr.price;
-    return prev;
-  }, 0);
+  // if (!usertype) {
+  //   res.status(404).send("Please Enter Your user type!");
+  // }
 
-  // orderModels
-  //   .create(body)
-  //   .then((result) => {
-  //     res.status(201).send(result);
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
+  if (userttyp === "admin") {
+    const total_price = 5;
+    //body.items.reduce((prev, curr) => {
+    //   prev += curr.price;
+    //   return prev;
+    // }, 0);
 
-  const order = await orderModels.create({
-    items: body.items,
-    created_at: moment().toDate(),
-    total_price,
-  });
+    // orderModels
+    //   .create(body)
+    //   .then((result) => {
+    //     res.status(201).send(result);
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
 
-  return res.json({ status: true, order });
+    const order = await orderModels.create({
+      items: body.items,
+      created_at: moment().toDate(),
+      total_price,
+    });
+
+    return res.json({ status: true, order });
+  } else {
+    res.status(500).send("This User cannot create orders!");
+  }
 });
 
 //GET ORDER BY ID
