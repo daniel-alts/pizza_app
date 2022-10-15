@@ -1,0 +1,29 @@
+[
+    {
+    "username": "Ann",
+    "password": 1234,
+    "user_type": "user",
+    "email": "anny@gmail.com"
+    },
+
+    {
+    "username": "Chris",
+    "password": 3637,
+    "user_type": "admin",
+    "email": "chris@gmail.com"
+    },
+
+    {
+    "username": "Scar",
+    "password": 3630,
+    "user_type": "admin",
+    "email": "scar@gmail.com"
+    },
+
+    {
+    "username": "Cynthia",
+    "password": 3690,
+    "user_type": "user",
+    "email": "cynthia@gmail.com"
+    }
+]
