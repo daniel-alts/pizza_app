@@ -28,5 +28,5 @@ const UserSchema = new Schema({
     }    
 });
 
-// Export the model
+
 module.exports = moogoose.model('users', UserSchema); 
