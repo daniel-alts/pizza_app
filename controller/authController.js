@@ -3,7 +3,7 @@ const orderModel = require('../models/orderModel');
 const userModel = require('../models/userModel');
 const bcrypt = require('bcrypt');
 
-const users_get = (req, res) => {
+const getUsers = (req, res) => {
     userModel.find({})
         .then(result => {
             return res.json(result)
@@ -11,12 +11,12 @@ const users_get = (req, res) => {
         .catch(err => console.log(err))
 }
 
-const users_post = async (req, res) => {
+const addUser = async (req, res) => {
     try{
         const { username, password } = req.body
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
         const user = {
-            username: username,
+            username,
             password: hashedPassword
         }
         const newUser = new userModel(user);
@@ -33,13 +33,14 @@ const users_post = async (req, res) => {
     };
 }
 
-const users_login_post = async (req, res) => {
+const userLogin = async (req, res) => {
     const users = await userModel.find({});
-    const user = await users.find((user) => user.name = req.body.name);
-
+    const user = users.find((user) => user.username = req.body.username);
+    
     if(user == null){
         return res.status(400).send('cannot find user');
     }
+    
     try{
         if(await bcrypt.compare(req.body.password, user.password)){
             res.send('Access Granted');
@@ -51,7 +52,7 @@ const users_login_post = async (req, res) => {
     };
 }
 
-const order_post = async (req, res) => {
+const createOrder = async (req, res) => {
     const body = req.body;
 
     const total_price = body.items.reduce((prev, curr) => {
@@ -68,7 +69,7 @@ const order_post = async (req, res) => {
     return res.json({ status: true, order });
 }
 
-const order_orderId_get = async (req, res) => {
+const getOrderById = async (req, res) => {
     const { orderId } = req.params;
     const order = await orderModel.findById(orderId);
 
@@ -79,7 +80,7 @@ const order_orderId_get = async (req, res) => {
     return res.json({ status: true, order });
 }
 
-const orders_get = async (req, res) => {
+const getAllOrders = async (req, res) => {
     
     let orders;
 
@@ -102,7 +103,7 @@ const orders_get = async (req, res) => {
     return res.json({ status: true, orders });
 }
 
-const order_id_patch = async (req, res) => {
+const updateOrder = async (req, res) => {
     const { id } = req.params;
     const { state } = req.body;
 
@@ -123,7 +124,7 @@ const order_id_patch = async (req, res) => {
     return res.json({ status: true, order });
 }
 
-const order_id_delete = async (req, res) => {
+const deleteOrder = async (req, res) => {
     const { id } = req.params;
 
     const order = await orderModel.deleteOne({ _id: id});
@@ -132,13 +133,13 @@ const order_id_delete = async (req, res) => {
 }
 
 module.exports = {
-    users_get,
-    users_post,
-    users_login_post,
-    order_post,
-    order_orderId_get,
-    orders_get,
-    order_id_patch,
-    order_id_delete
+    getUsers,
+    addUser,
+    userLogin,
+    createOrder,
+    getOrderById,
+    getAllOrders,
+    updateOrder,
+    deleteOrder
 }
 
