@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Fuzzy+Bubbles:wght@400;700&display=swap');
+
+body {
+  font-family: 'Fuzzy Bubbles', cursive;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+
+h1 {
+  font-size: 3.05em;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+h2 {
+  font-size: 2.44em;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+h3 {
+  font-size: 1.95em;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+h4 {
+  font-size: 1.56em;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  width: min(100%, 800px);
+  margin: 4rem auto 4rem auto;
+  padding: 0 15px;
+}
