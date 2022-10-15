@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 /**
  * authenticate() - checks if user is authenticated and
  * also checks the role of user
@@ -11,16 +9,10 @@ require('dotenv').config();
  * If userType not in roles, return You are not permitted
  * to access this route
  */
-function authenticate(roles) {
+function authorise(roles) {
   return (req, res, next) => {
-    if (!process.env.TOKEN) {
-      return res.status(401).json({
-        status: false,
-        message: 'Unauthorized, login or signup',
-      });
-    }
-
-    if (!roles.includes(process.env.USER_TYPE)) {
+    const { userType } = req.user;
+    if (!roles.includes(userType)) {
       return res.status(401).json({
         status: false,
         message: 'You are not permitted to access this route',
@@ -32,4 +24,4 @@ function authenticate(roles) {
   };
 }
 
-module.exports = authenticate;
+module.exports = authorise;

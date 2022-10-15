@@ -71,7 +71,7 @@ This is an API created with ExpressJS. It can be classified into three main rout
 | Route              | Methods | Controller     | ACL       |
 | :----------------- | :-----  | :------------  | :-------- |
 | /auth/login        | POST    | login          | -         |
-| /auth/logout       | POST    | logoout        | -         |
+| /auth/signup       | POST    | signup        | -         |
 
 
 ## Usage
@@ -129,20 +129,24 @@ Since this API already had a prior code base, my design process involved me writ
 - Mongoose
 - MomentJS
 - Dotenv
+- Bcrypt
+- PassportJS
+- JWT
 
 ### What I learned
 
 - How to Object Document Model (ODM) which in this project is Mongoose, to perform CRUD actions with MongoDB using NodeJS
 - Basic authentication
+- JWT Authentication
 - How to use ESLint
 
 ### Continued development
 
-I look forward to improving the API's authentication system using a standard library called PassportJS. Since it is an API, I will use the JWT strategy for authentication.
+I look forward to improving the API's authentication system by providing different authentication options e.g using Google and Facebook auth strategies.
 
 ### Useful resources
 
-For the development of the authentication route and middleware, I found this resources, [Basic Authentication in Node.js using HTTP Header](https://www.geeksforgeeks.org/basic-authentication-in-node-js-using-http-header/) and [Basic Authentication in Postman](https://www.toolsqa.com/postman/basic-authentication-in-postman/) very useful.
+For the development of the authentication route and middleware, I found this resources, [Basic Authentication in Node.js using HTTP Header](https://www.geeksforgeeks.org/basic-authentication-in-node-js-using-http-header/), [Basic Authentication in Postman](https://www.toolsqa.com/postman/basic-authentication-in-postman/) and [How To Implement API Authentication with JSON Web Tokens and Passport](https://www.digitalocean.com/community/tutorials/api-authentication-with-json-web-tokensjwt-and-passport) very useful.
 
 ## Author
 

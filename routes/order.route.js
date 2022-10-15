@@ -1,12 +1,12 @@
+const passport = require('passport');
 const orderRouter = require('express').Router();
 const orderController = require('../controllers/orders.controller');
-const authenticate = require('../middlewares/authenticate');
 
 // Orders Routes
 orderRouter.get('/', orderController.getOrders);
 orderRouter.get('/:orderId', orderController.getOrderById);
-orderRouter.post('/', authenticate(['admin', 'user']), orderController.makeOrder);
-orderRouter.put('/:id', authenticate(['admin']), orderController.updateOrder);
-orderRouter.delete('/:id', authenticate(['admin', 'user']), orderController.deleteOrder);
+orderRouter.post('/', passport.authenticate('jwt', { session: false }), orderController.makeOrder);
+orderRouter.put('/:id', passport.authenticate('jwt', { session: false }), orderController.updateOrder);
+orderRouter.delete('/:id', passport.authenticate('jwt', { session: false }), orderController.deleteOrder);
 
 module.exports = orderRouter;

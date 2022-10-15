@@ -1,6 +1,21 @@
-const generateToken = require('../utils/tokenGenerator.utils');
-const userModel = require('../models/users.model');
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
+
+/**
+ * signup() - registers user
+ * @req: contains request details
+ * @res: contains response details
+ *
+ * Return: Signup Successful
+ */
+async function signup(req, res, next) {
+  res.json({
+    message: 'Signup successful',
+    user: req.user,
+  });
+  next();
+}
 
 /**
  * login() - checks if user is in database and adds token
@@ -11,76 +26,46 @@ require('dotenv').config();
  * If no user, return Username not found!
  * If password is incorrect, return Incorrect password!
  */
-async function login(req, res) {
-  const authHeader = req.headers.authorization;
+async function login(req, res, next) {
+  passport.authenticate('login', async (err, user) => {
+    try {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        const error = new Error('Username or password is incorrect');
+        return next(error);
+      }
 
-  if (!authHeader) {
-    const err = new Error('You are not authenticated!');
-    res.setHeader('WWW-Authenticate', 'Basic');
-    err.status = 401;
-    return res.json({
-      status: false,
-      message: 'Provide login credentials',
-    });
-  }
+      req.login(
+        user,
+        { session: false },
+        async (error) => {
+          if (error) return next(error);
 
-  // Get user details
-  const auth = new Buffer
-    .From(authHeader.split(' ')[1], 'base64')
-    .toString()
-    .split(':');
-  const username = auth[0];
-  const password = auth[1];
+          const { _id } = user;
 
-  // Find user in database
-  const user = await userModel.findOne({ username });
+          const body = {
+            _id,
+            username: user.username,
+            userType: user.userType,
+          };
+          const token = jwt.sign({
+            user: body,
+          }, process.env.JWT_SECRET);
 
-  // If user is not found
-  if (!user) {
-    return res.status(404).json({
-      status: false,
-      message: 'Username not found!',
-    });
-  }
-
-  // Check if user's password is correct
-  if (user.password !== password) {
-    return res.status(404).json({
-      status: false,
-      message: 'Incorrect password!',
-    });
-  }
-
-  // If user's password is correct
-  const token = generateToken();
-  process.env.TOKEN = token;
-  process.env.USER_TYPE = user.userType;
-
-  return res.json({
-    status: true,
-    message: 'Logged In Successfully!',
-  });
-}
-
-/**
- * logout() - removes token
- * @req: contains request details
- * @res: contains response details
- *
- * Return: Logged Out Successfully!
- */
-async function logout(req, res) {
-  // Remove token from .env
-  process.env.TOKEN = '';
-  process.env.USER_TYPE = '';
-
-  return res.json({
-    status: true,
-    message: 'Logged Out Successfully!',
-  });
+          return res.json({
+            token,
+          });
+        },
+      );
+    } catch (error) {
+      return next(error);
+    }
+  })(req, res, next);
 }
 
 module.exports = {
+  signup,
   login,
-  logout,
 };
