@@ -1,95 +1,44 @@
 const express = require('express');
-const moment = require('moment');
-const mongoose = require('mongoose');
-const orderModel = require('./orderModel');
+const orderRoute = require("./routes/orders")
+const { connectToMongoDb } = require("./db")
+// const {authenticate} = require("./authentication/authenticate")
+const usersRoute = require("./routes/users")
+require("dotenv").config()
+require("./authentication/auth") // signup and login authentication middleware. Ensure the middleware is available at the top before accessing any route
+const passport = require('passport')
+const bodyParser = require('body-parser')
+const authRoute = require("./routes/authRoute")
 
-const PORT = 3334
+const PORT = process.env.PORT
 
 const app = express()
 
-app.use(express.json());
+app.use(bodyParser.urlencoded({extended:false}))
 
+// connect to mongoDB instance
+connectToMongoDb()
+
+app.use(express.json());
+// app.use(bodyParser.json())
+
+// define views
+app.use("/", authRoute) // authRoute is not protected so we can perform login, sign up and other functions needed for authentication
+app.use("/users", passport.authenticate('jwt', {session: false}) ,usersRoute) // using a jwt strategy for authentication, seesion is false to prevent saving the token in browser
+app.use("/order", passport.authenticate('jwt', {session: false}) ,orderRoute) 
 
 app.get('/', (req, res) => {
-    return res.json({ status: true })
+   res.send("Welcome to Alexander pizza App")
 })
 
-
-app.post('/order', async (req, res) => {
-    const body = req.body;
-
-    const total_price = body.items.reduce((prev, curr) => {
-        prev += curr.price
-        return prev
-    }, 0);
-
-    const order = await orderModel.create({ 
-        items: body.items,
-        created_at: moment().toDate(),
-        total_price
+// handling errors
+app.use(function(err, req, res, next){
+    console.log(err)
+    res.status(err.status || 500).json({
+        status: false,
+        error: err.message
     })
-    
-    return res.json({ status: true, order })
 })
 
-app.get('/order/:orderId', async (req, res) => {
-    const { orderId } = req.params;
-    const order = await orderModel.findById(orderId)
-
-    if (!order) {
-        return res.status(404).json({ status: false, order: null })
-    }
-
-    return res.json({ status: true, order })
-})
-
-app.get('/orders', async (req, res) => {
-    const orders = await orderModel.find()
-
-    return res.json({ status: true, orders })
-})
-
-app.patch('/order/:id', async (req, res) => {
-    const { id } = req.params;
-    const { state } = req.body;
-
-    const order = await orderModel.findById(id)
-
-    if (!order) {
-        return res.status(404).json({ status: false, order: null })
-    }
-
-    if (state < order.state) {
-        return res.status(422).json({ status: false, order: null, message: 'Invalid operation' })
-    }
-
-    order.state = state;
-
-    await order.save()
-
-    return res.json({ status: true, order })
-})
-
-app.delete('/order/:id', async (req, res) => {
-    const { id } = req.params;
-
-    const order = await orderModel.deleteOne({ _id: id})
-
-    return res.json({ status: true, order })
-})
-
-
-mongoose.connect('mongodb://localhost:27017')
-
-mongoose.connection.on("connected", () => {
-	console.log("Connected to MongoDB Successfully");
-});
-
-mongoose.connection.on("error", (err) => {
-	console.log("An error occurred while connecting to MongoDB");
-	console.log(err);
-});
-
-app.listen(PORT, () => {
-    console.log('Listening on port, ', PORT)
+app.listen(PORT, ()=>{
+    console.log(`Server started on PORT: http://localhost:${PORT}`)
 })
