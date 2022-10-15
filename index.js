@@ -3,7 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-// const basicAuthMiddleware = require('./middlewares');
+const { adminOnlyMiddleware } = require('./middlewares');
 const passport = require("passport");
 const orderRoutes = require('./routes/order');
 const userRoutes = require("./routes/user");
@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
 });
 
 app.use(userRoutes);
-app.use(passport.authenticate('jwt', {session: false}), orderRoutes);
+app.use(passport.authenticate('jwt', {session: false}), adminOnlyMiddleware, orderRoutes);
 
 
 mongoose.connection.on("connected", () => {
