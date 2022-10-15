@@ -1,23 +1,24 @@
-const app = require('../../index');
+const app = require('../../app');
 const setupDbForTesting = require('../config/setupDb');
 const request = require('supertest').agent(app);
 const itemFixtures = require('../fixtures/items');
 
 setupDbForTesting();
 
-let Authorization = Buffer.from('test:test').toString('base64');
+let token;
 beforeAll(async () => {
-  await request.post('/user').send({
+  const response = await request.post('/user').send({
     username: 'test',
     password: 'test',
     user_type: 'admin',
   });
+  token = response.body.token;
 })
 
 describe('POST /user', () => {
   it('should not accept item without price', async () => {
     const response = await request.post('/order')
-      .set('Authorization', `Basic ${Authorization}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({
         items: [
           { "quantity": 1, "size": "s", "name": "Test" }
@@ -29,8 +30,8 @@ describe('POST /user', () => {
 
   it('should not accept item without quantity', async () => {
     const response = await request.post('/order')
-      .set('Authorization', `Basic ${Authorization}`)
-        .send({
+      .set('Authorization', `Bearer ${token}`)
+      .send({
         items: [
           { "price": 1, "size": "s", "name": "Test" }
         ]
@@ -41,8 +42,8 @@ describe('POST /user', () => {
 
   it('should not accept item without name', async () => {
     const response = await request.post('/order')
-      .set('Authorization', `Basic ${Authorization}`)
-        .send({
+      .set('Authorization', `Bearer ${token}`)
+      .send({
         items: [
           { "price": 1, "size": "s", "price": 1 }
         ]
@@ -53,8 +54,8 @@ describe('POST /user', () => {
 
   it('should create an order', async () => {
     const response = await request.post('/order')
-      .set('Authorization', `Basic ${Authorization}`)
-        .send({
+      .set('Authorization', `Bearer ${token}`)
+      .send({
         items: [
           { price: 1, quantity: 1, size: "s", name: "One" },
           { price: 2, quantity: 2, size: "s", name: "Two" },
@@ -76,7 +77,7 @@ describe('GET /order', () => {
   beforeAll(async () => {
     for (const items of itemFixtures) {
       const response = await request.post('/order')
-        .set('Authorization', `Basic ${Authorization}`)
+        .set('Authorization', `Bearer ${token}`)
         .send({ items });
       ids.push(response.body.order._id);
     }
@@ -84,7 +85,7 @@ describe('GET /order', () => {
 
   it('should return a single order', async () => {
     const response = await request.get(`/order/${ids[0]}`)
-      .set('Authorization', `Basic ${Authorization}`);
+      .set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('status', true);
     expect(response.body).toHaveProperty('order');
@@ -94,7 +95,7 @@ describe('GET /order', () => {
 
   it('should return all orders', async () => {
     const response = await request.get('/order')
-      .set('Authorization', `Basic ${Authorization}`);
+      .set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('status', true);
     expect(response.body).toHaveProperty('orders');
@@ -104,7 +105,7 @@ describe('GET /order', () => {
 
   it('should return all orders paginated 3 per page, page 1', async () => {
     const response = await request.get('/order?page=1&limit=3')
-      .set('Authorization', `Basic ${Authorization}`);
+      .set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('status', true);
     expect(response.body).toHaveProperty('orders');
@@ -114,7 +115,7 @@ describe('GET /order', () => {
 
   it('should return all orders paginated 3 per page, page 2', async () => {
     const response = await request.get('/order?page=2&limit=3')
-      .set('Authorization', `Basic ${Authorization}`);
+      .set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('status', true);
     expect(response.body).toHaveProperty('orders');
@@ -124,7 +125,7 @@ describe('GET /order', () => {
 
   it('should return all orders paginated 3 per page, page 3', async () => {
     const response = await request.get('/order?page=3&limit=3')
-      .set('Authorization', `Basic ${Authorization}`);
+      .set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('status', true);
     expect(response.body).toHaveProperty('orders');
@@ -134,7 +135,7 @@ describe('GET /order', () => {
 
   it('should return an empty array - orders paginated 4 per page, page 3', async () => {
     const response = await request.get('/order?page=4&limit=3')
-      .set('Authorization', `Basic ${Authorization}`);
+      .set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('status', true);
     expect(response.body).toHaveProperty('orders');
@@ -146,7 +147,7 @@ describe('GET /order', () => {
 describe('PATCH /order', () => {
   it('should update an order', async () => {
     const response = await request.patch(`/order/${ids[0]}`)
-      .set('Authorization', `Basic ${Authorization}`)
+      .set('Authorization', `Bearer ${token}`)
       .send({ state: 2 });
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('status', true);
@@ -158,7 +159,7 @@ describe('PATCH /order', () => {
 describe('DELETE /order', () => {
   it('should delete an order', async () => {
     const response = await request.delete(`/order/${ids[0]}`)
-      .set('Authorization', `Basic ${Authorization}`);
+      .set('Authorization', `Bearer ${token}`);
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('status', true);
   });
