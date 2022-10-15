@@ -1,14 +1,45 @@
 const express = require('express');
 const moment = require('moment');
 const mongoose = require('mongoose');
-const orderModel = require('./orderModel');
+const orderModel = require('./models/orderModel');
+const productRoutes = require('./routes/products');
+const orderRoutes = require('./routes/orders');
+const bodyParser = require('body-parser');
+
+const userRoutes = require('./routes/user');
+
+
 
 const PORT = 3334
+
+
 
 const app = express()
 
 app.use(express.json());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+ 
 
+// Routes to handle request
+ app.use('/products', productRoutes);
+ app.use('/orders', orderRoutes);
+ app.use('/user', userRoutes);
+
+app.use((req, res, next) => {
+    const error = new Error('Not Found');
+    error.status = 404;
+    next(error);
+})
+
+app.use((error, req, res, next) => {
+    res.status(error.status || 500);
+    res.json({
+        error: {
+            message: error.message
+        }
+    })
+})
 
 app.get('/', (req, res) => {
     return res.json({ status: true })
@@ -79,7 +110,7 @@ app.delete('/order/:id', async (req, res) => {
 })
 
 
-mongoose.connect('mongodb://localhost:27017')
+//mongoose.connect('mongodb://localhost:27017')
 
 mongoose.connection.on("connected", () => {
 	console.log("Connected to MongoDB Successfully");
