@@ -1,46 +1,24 @@
 const orderModel = require('../models/orderModel');
+const userModel = require('../models/userModel');
 
-function getAllUsers(){
-    const users = orderModel.find()
+const authenticateUser = (req, _) =>
+  new Promise(async (resolve, reject) => {
+    const { username, password } = req.body;
+    if (!username || !password) reject('Invalid username or password.');
+    const [user] = await userModel.find({ username: username });
+    if (!user) reject('User Not Found');
+    if (password !== user.password) reject('Invalid username or password');
+    else resolve('Done');
+  });
 
-    return res.json({ status: true, users: users })
-}
+const authenticateOrder = (req, res, type) =>
+  new Promise(async (resolve, reject) => {
+    const { id } = req.params;
+    const order = await orderModel.findById(id);
+    if (!order) reject('Invalid ID');
+    if (type !== 'user' && type !== 'admin')
+      reject("can't perform this operation");
+    else resolve('Access granted');
+  });
 
-const authenticate = async (req, res, next) => {
-    return new Promise ((resolve, reject) => {
-        const body = []
-
-        req.on('data', (chunk) => {
-            body.push(chunk)
-        })
-
-        req.on("end", async () => {
-            const parsedBody = Buffer.concat(body).toString()
-            
-            if (!parsedBody) {
-                reject ("no username or password provided")
-            }
-
-            const loginDetails = JSON.parse(parsedBody)
-
-            const users = await getAllUsers()
-
-            const userFound = users.find((user) => {
-                return user.username === loginDetails.username
-            })
-
-            if (!userFound) {
-                reject ("user not found, please sign up")
-            }
-
-            if (userFound.password !== loginDetails.password) {
-                reject("Invalid username or password")
-            }
-
-            resolve()
-        })
-        next();
-    })
-}
-
-module.exports = authenticate
+module.exports = { authenticateUser, authenticateOrder };

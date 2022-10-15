@@ -1,50 +1,17 @@
-const express = require('express')
-const { reset } = require('nodemon')
-const User = require('../models/userModel')
-const Users = require('../models/userModel')
+const express = require('express');
+const userController = require('../controllers/userController');
 
-const userRouter = express.Router()
+const router = express.Router();
 
-// create user
-userRouter.post('/', async (req,res) => {
-    const {username, password, user_type} = req.body;
-    if(!(username || password)) {
-        return res.status(400).send({ message: "username and password required"})
-    }
+router
+  .route('/')
+  .get(userController.getAllUsers)
+  .post(userController.createUser);
 
-    try{
-        const findUser = await Users.find()
-        const userFound = findUser.find((user) => user.username === username);
+router
+  .route('/:id')
+  .get(userController.getUser)
+  .patch(userController.updateUser)
+  .delete(userController.deleteUser);
 
-        if (userFound) {
-            return res.status(409).send('User already exists');
-        }
-
-        const newUser = await Users.create ({
-            username : username,
-            password: password,
-            user_type: user_type
-        })
-
-        res.status(201).send({Data: newUser})
-
-    } catch (error) {
-        res.status(409).send(error.message);
-    }
-})
-
-// Get all users
-userRouter.get("/users", async (req, res) => {
-
-    const users = await Users.find();
-
-    if (!users) {
-        return res.status(500).json({ status: false, users: null})
-    }
-
-    return res.json({ status: true, users })
-    
-})
-
-
-module.exports = userRouter
+module.exports = router;
