@@ -4,61 +4,7 @@ const Users = require("../models/userModel");
 const userRouter = express.Router();
 
 
-//admin authentication function
-const adminAuthenticated = (req , res , next)=>{
-    const User = req.params.username
-    const userId = req.params.userId
-    const userPassword = req.params.password
-    
-     Users.findById(userId)
-        .then((user) =>{
-            console.log(user)
-            if(user.username === User && user.password === userPassword && user.user_type === "admin"){
-                next()
-                
-            }
-            else{
-                res.status(401)
-            res.send({
-                message:"unauthorized action"
-            })
-            }
-        })
-        .catch((err) =>{
-            console.log(err)
-        })
-    
-    console.log(userId)
- 
-}
 
-const userAuthenticated = (req , res , next)=>{
-    const User = req.params.username
-    const userId = req.params.userid
-    const userPassword = req.params.password
-
-     Users.findById(userId)
-        .then((user) =>{
-            console.log(user)
-            if(user.username === User && user.password === userPassword){
-                next()
-            }
-            else{
-                res.status(401)
-            res.send({
-                message:"unauthorized action"
-            })
-            }
-        })
-        .catch((err) =>{
-            console.log(err)
-        })
-    console.log(User)
-    console.log(userId)
-
-    
-  
-}
 
 //the only authoried user able to GET all users is the admin
 userRouter.get("/", (req,res)=>{
@@ -78,7 +24,7 @@ userRouter.get("/", (req,res)=>{
         })
 } )
 
-userRouter.get("/:userid/:username/:password", userAuthenticated, (req,res)=>{
+userRouter.get("/:userid", (req,res)=>{
     
     const userId = req.params.userid
     console.log(userId)
@@ -99,7 +45,7 @@ userRouter.get("/:userid/:username/:password", userAuthenticated, (req,res)=>{
 } )
 
 //every user is can create a document
-userRouter.post("/:userid/:username/:password",userAuthenticated, (req,res) =>{
+userRouter.post("/", (req,res) =>{
     const newUser = req.body
 
     Users.create(newUser)
@@ -115,7 +61,7 @@ userRouter.post("/:userid/:username/:password",userAuthenticated, (req,res) =>{
         })
 })
 
-userRouter.put("/:userid/:username/:password",userAuthenticated, (req,res) =>{
+userRouter.put("/:userid", (req,res) =>{
     const userId = req.params.id
     const updates = req.body
 
@@ -134,7 +80,7 @@ userRouter.put("/:userid/:username/:password",userAuthenticated, (req,res) =>{
         })
 } )
 
-userRouter.delete("/:id/:userId/:username/:password",adminAuthenticated, (req,res) =>{
+userRouter.delete("/:userId", (req,res) =>{
     const userId = req.params.id
 
 
