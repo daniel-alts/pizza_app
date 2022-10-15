@@ -8,7 +8,7 @@ const userRouter = require('./routes/userRoutes');
 require('./db/database')();
 require('dotenv').config();
 
-require('./utilities/passport-jwt');
+require('./utils/passport-jwt');
 
 const PORT = process.env.PORT || 3334;
 

@@ -3,7 +3,7 @@ const orderModel = require('../models/orderModel');
 const {
   authenticateOrder,
   authenticateUser,
-} = require('../utilities/authenticate');
+} = require('../utils/authenticate');
 
 exports.getAllOrders = async (req, res) => {
   try {

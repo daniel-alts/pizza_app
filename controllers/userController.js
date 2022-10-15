@@ -1,5 +1,5 @@
 const User = require('../models/userModel');
-const { authenticateUser } = require('../utilities/authenticate');
+const { authenticateUser } = require('../utils/authenticate');
 
 exports.getAllUsers = async (req, res) => {
   try {
