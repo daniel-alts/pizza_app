@@ -16,7 +16,7 @@ const userRoutes = express.Router()
 // });
 
 userRoutes.post("/users/signup", passport.authenticate('signup', {session: false}), async (req, res) => {
-  if (!user) {
+  if (!req.user) {
     res.statusCode = 400;
     return res.json({message: req.authInfo.message});
   }
@@ -43,7 +43,7 @@ userRoutes.post("/users/login", async (req, res, next) => {
           return next(error);
         }
 
-        const token = jwt.sign({user: {user_id: user._id, username: user.username}}, process.env.SECRET_KEY)
+        const token = jwt.sign({user_id: user._id, username: user.username, userPermission: user.user_type}, process.env.SECRET_KEY)
         return res.json({token, message: message.message})
       })
     } catch (error) {
