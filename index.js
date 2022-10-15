@@ -1,14 +1,28 @@
 const express = require('express');
-const moment = require('moment');
+const passport = require('passport');
+const bodyParser = require('body-parser');
+
 const mongoose = require('mongoose');
-const orderModel = require('./orderModel');
+const orderModel = require('.models/orderModel');
+
+const authRoute = require('./routes/auth');
+const ordersRoute = require('./routes/orders');
+const usersRoute = require('./routes/users');
+
+require('./db').connectToMongoDB() // Connect to MongoDB
+require('dotenv').config()
+
+require("./authentication/auth") // Signup and login authentication middleware
+
 
 const PORT = 3334
 
 const app = express()
 
-app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
+app.use('/', authRoute);
+app.use('/orders', passport.authenticate('jwt', { session: false }), ordersRoute);
 
 app.get('/', (req, res) => {
     return res.json({ status: true })
