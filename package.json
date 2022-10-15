@@ -1,19 +1,18 @@
 {
-  "name": "pizza_app",
+  "name": "pizza-app",
   "version": "1.0.0",
-  "description": "",
+  "description": "Pizza ordering app",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:dev": "nodemon index"
   },
-  "keywords": [],
-  "author": "",
+  "author": "Michael",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.1",
     "moment": "^2.29.4",
-    "mongoose": "^6.6.1"
+    "mongoose": "^6.6.4"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
