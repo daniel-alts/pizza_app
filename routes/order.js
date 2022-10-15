@@ -1,27 +1,27 @@
 const express = require("express");
 const controller = require("../controllers/orderController");
-const mongoose = require("mongoose");
-const orderModel = require("../model/orderModel");
-const authenticate = require("../middlewares/authenticate");
 
-/* Getting Info about all ordrs */
+
 
 const router = express.Router();
-const {getOrderInfo, getAllOrders, createOrder, getOrderById, updateOrder, deleteOrder} = controller
+const { getOrderInfo, getAllOrders, createOrder, getOrderById, updateOrder, deleteOrder } = controller
+
+
+/* Getting Info about all ordrs */
+router.get("/info", getOrderInfo);
 
 /*Getting all orders
-and
+&&
 Creating new orders
 */
-router.get("/info", authenticate, getOrderInfo);
-router.get("/", authenticate, getAllOrders)
-router.post("/", authenticate, createOrder)
+router.get("/", getAllOrders)
+router.post("/", createOrder)
 
 /**Get order by id */
-router.get("/:orderId", authenticate, getOrderById);
+router.get("/:orderId", getOrderById);
 
 /*Update order state and Delete order by ID*/
-router.patch("/:id", authenticate, updateOrder)
-router.delete("/:id", authenticate, deleteOrder)
+router.patch("/:id", updateOrder)
+router.delete("/:id", deleteOrder)
 
 module.exports = router;

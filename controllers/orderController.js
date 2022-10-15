@@ -1,4 +1,5 @@
 const express = require("express");
+const { object } = require("webidl-conversions");
 const router = express.Router();
 const orderModel = require("../model/orderModel");
 
@@ -24,30 +25,71 @@ const getOrderInfo = async(rq, res, next) => {
 /*Get all orders*/
 const getAllOrders = async(req, res, next) => {
     try {
-        //Check if user is authenticated
-        const authenticatedUser = req.authenticatedUser;
-        if (!authenticatedUser) {
-            return res.status(403).send({ mesage: Forbidden });
-        }
-        if (authenticatedUser.role !== "admin") {
-            return res.status(401).status({ message: Unauthorized });
-        }
-        let orders;
-        //checking for query parameters
+        let orders,
+            returnObject = {};
+
+        //PAGINATION
+        let limitFromQuery = parseInt(req.query.limit);
+        let pageFromQuery = parseInt(req.query.page);
+
+        let limit = 5,
+            page = 1; // default values
+        if (!isNaN(limitFromQuery) && limitFromQuery > 0) limit = limitFromQuery;
+
+        const numberOfOrders = await orderModel.find().countDocuments().exec();
+        const totalPages = Math.ceil(numberOfOrders / limit);
+        if (!isNaN(pageFromQuery) && pageFromQuery <= totalPages)
+            page = pageFromQuery;
+
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+
         const { price, date } = req.query;
 
         if (price) {
             const value = price === "asc" ? 1 : price === "desc" ? -1 : false;
             if (value)
-                orders = await orderModel.find({}).sort({ total_price: value });
+                orders = await orderModel
+                .find(filter)
+                .populate("user", { username: 1 })
+                .sort({ total_price: value })
+                .limit(limit)
+                .skip(startIndex);
         } else if (date) {
             const value = date === "asc" ? 1 : date === "desc" ? -1 : false;
-            console.log(value, "<-- value");
-            if (value) orders = await orderModel.find({}).sort({ created_at: value });
+            if (value)
+                orders = await orderModel
+                .find()
+                .populate("user", { username: 1 })
+                .sort({ created_at: value })
+                .limit(limit)
+                .skip(startIndex);
         }
-        if (!orders) orders = await orderModel.find({});
+        if (!orders)
+            orders = await orderModel
+            .find()
+            .populate("user", { username: 1 })
+            .limit(limit)
+            .skip(startIndex);
 
-        return res.json({ status: true, orders });
+        if (startIndex > 0) {
+            returnObject.previousPage = {
+                page: page - 1,
+                limit: limit,
+            };
+        }
+        returnObject.currentPage = page;
+
+        if (endIndex < numberOfOrders) {
+            returnObject.nextPage = {
+                page: page + 1,
+                limit: limit,
+            };
+        }
+        returnObject.totalPages = totalPages;
+        returnObject.orders = orders;
+
+        return res.json({ status: true, data: returnObject });
     } catch (err) {
         next(err);
     }
@@ -56,14 +98,6 @@ const getAllOrders = async(req, res, next) => {
 /*Get order by id*/
 const getOrderById = async(req, res, next) => {
     try {
-        //Check if user is authenticated
-        const authenticatedUser = req.authenticatedUser;
-        if (!authenticatedUser) {
-            return res.status(403).send({ mesage: Forbidden });
-        }
-        //  if(authenticatedUser.role !== 'admin'){
-        //      return res.status(401).status({message: Unauthorized})
-        //  }
         const { orderId } = req.params;
         const order = await orderModel.findById(orderId);
         if (!order) {
@@ -78,11 +112,6 @@ const getOrderById = async(req, res, next) => {
 /*Create a new order*/
 const createOrder = async(req, res, next) => {
     try {
-        //Check if user is authenticated
-        const authenticatedUser = req.authenticatedUser;
-        if (!authenticatedUser) {
-            return res.status(403).send({ mesage: Forbidden });
-        }
         const body = req.body;
 
         const total_price = body.items.reduce((prev, curr) => {
@@ -114,15 +143,6 @@ const createOrder = async(req, res, next) => {
 /*Update order state*/
 const updateOrder = async(req, res, next) => {
     try {
-        //Check if user is authenticated
-        const authenticatedUser = req.authenticatedUser;
-        if (!authenticatedUser) {
-            return res.status(403).send({ mesage: Forbidden });
-        }
-        if (authenticatedUser.role !== "admin") {
-            return res.status(403).send({ message: "Unauthorized" });
-        }
-
         const { id } = req.params;
         const { state } = req.body;
 
@@ -150,15 +170,6 @@ const updateOrder = async(req, res, next) => {
 /*Delete order*/
 const deleteOrder = async(req, res, next) => {
     try {
-        //Check if user is authenticated
-        const authenticatedUser = req.authenticatedUser;
-        if (!authenticatedUser) {
-            return res.status(403).send({ mesage: Forbidden });
-        }
-        if (authenticatedUser.role !== "admin") {
-            return res.status(403).send({ message: "Unauthorized" });
-        }
-
         const { id } = req.params;
 
         const order = await orderModel.findOne({ _id: id });

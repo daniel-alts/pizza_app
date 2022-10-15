@@ -1,19 +1,12 @@
 require("dotenv").config();
 const express = require("express");
-<<<<<<< Updated upstream
-const {connectToMongoDB} = require("./db");
-=======
 const { connectToMongoDB } = require("./db");
-const mongoose = require("mongoose");
-const OrderModel = require("./model/orderModel");
-const UserModel = require("./model/userModel");
->>>>>>> Stashed changes
 const userRoute = require("./routes/user");
+const errorHandler = require("./controllers/errHandler");
 const orderRoute = require("./routes/order");
-const errorHandler = require("./middlewares/errHandler");
 const passport = require("passport");
 const bodyParser = require("body-parser");
-const authRoute = require("./routes/user");
+const authRoute = require("./routes/auth");
 
 const app = express();
 
@@ -24,12 +17,9 @@ const PORT = process.env.PORT;
 connectToMongoDB();
 
 // app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
-<<<<<<< Updated upstream
-app.use("/api/orders", orderRoute);
-app.use("/api/users", userRoute);
-=======
 app.use("/", authRoute);
 app.use(
     "/api/orders",
@@ -37,7 +27,6 @@ app.use(
     orderRoute
 );
 app.use("/api/users", authRoute, userRoute);
->>>>>>> Stashed changes
 
 app.all("/", (req, res) => {
     return res.json({ status: true });
