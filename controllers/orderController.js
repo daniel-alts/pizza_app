@@ -5,7 +5,10 @@ const moment = require("moment");
 
 async function createOrder(req, res) {
   const body = req.body;
-
+  const user = req.user;
+   if (user.user_type !== 'admin' ) {
+    return res.status(403).send({ message: "Forbidden" });
+  }
   const total_price = body.items.reduce((prev, curr) => {
     prev += curr.price;
     return prev;
@@ -22,9 +25,8 @@ async function createOrder(req, res) {
 
 const getOrderById = async (req, res, next) => {
   // check for authenticated user
-  const authenticatedUser = req.authenticatedUser;
-
-  if (!authenticatedUser) {
+  const user = req.user;
+  if (user.user_type !== 'admin' || user.user_type !=='user') {
     return res.status(403).send({ message: "Forbidden" });
   }
 

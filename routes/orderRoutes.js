@@ -7,10 +7,10 @@ const orderRouter = express.Router()
 const orderController = require('../controllers/orderController')
 
 // import middleware functions
-const authenticatedUser = require('../middleware/authenticate')
+// const authenticatedUser = require('../middleware/authenticate')
 
 // use middleware function
-orderRouter.use(authenticatedUser)
+// orderRouter.use(authenticatedUser)
 
 // creating url endpoints
 orderRouter.post('/addorder', orderController.createOrder)

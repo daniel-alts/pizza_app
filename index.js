@@ -1,21 +1,32 @@
-const express = require('express');
-const {connectToMongoDB} = require('./DB_Connection/db')
 
+const express = require('express');
+const app = express()
+const {connectToMongoDB} = require('./DB_Connection/db')
+const passport = require("passport");
+require('./authentication/auth')
 const orderRoute = require('./routes/orderRoutes')
 const userRoute = require('./routes/userRoutes')
-const authenticatedUser = require('./middleware/authenticate')
+
+
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: false }));
 
 require('dotenv').config()
 
 const PORT = process.env.PORT
 connectToMongoDB()
-const app = express()
+
 
 app.use(express.json());
 
 
-app.use('/orders', orderRoute)
-app.use('/users', userRoute)
+app.use(
+    "/api/orders",
+    passport.authenticate('jwt', { session: false }),
+    orderRoute
+  );
+// app.use('/api/orders', orderRoute)
+app.use('/api/users', userRoute)
 
 app.get('/', (req, res) => {
     return res.json({ status: true })
