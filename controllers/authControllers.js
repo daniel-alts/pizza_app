@@ -45,7 +45,17 @@ exports.signin = function (req, res, next) {
         user_type: user.user_type,
       };
       const token = genToken(payload);
-      return res.status(200).json({ token });
+      return res.status(200).json({ token }); // passport.authenticate automatically invokes req.login()
+      // req.login(user, { session: false }, (err) => {
+      //   if (err) return next(err);
+      //   const payload = {
+      //     id: user._id,
+      //     username: user.username,
+      //     user_type: user.user_type,
+      //   };
+      //   const token = genToken(payload);
+      //   return res.status(200).json({ token });
+      // });
     } catch (error) {
       next(error);
     }
