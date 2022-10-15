@@ -2,7 +2,7 @@ const express = require("express");
 const moment = require("moment");
 const orderModel = require("../models/orderModel");
 
-const { isLoggedIn } = require("../middleware/auth");
+// const  } = require("../middleware/auth");
 
 const orderRouter = express.Router();
 
@@ -11,7 +11,7 @@ orderRouter.get("/", (req, res) => {
 });
 
 //Add Order
-orderRouter.post("/order", isLoggedIn, async (req, res) => {
+orderRouter.post("/order", async (req, res) => {
   const body = req.body;
 
   const total_price = body.items.reduce((prev, curr) => {
@@ -29,7 +29,7 @@ orderRouter.post("/order", isLoggedIn, async (req, res) => {
 });
 
 //Get Order by Id
-orderRouter.get("/order/:orderId", isLoggedIn, async (req, res) => {
+orderRouter.get("/order/:orderId", async (req, res) => {
   const { orderId } = req.params;
   const order = await orderModel.findById(orderId);
 
@@ -41,7 +41,7 @@ orderRouter.get("/order/:orderId", isLoggedIn, async (req, res) => {
 });
 
 //Get order by order by ascending order of date and total price
-orderRouter.get("/orders", isLoggedIn, async (req, res) => {
+orderRouter.get("/orders", async (req, res) => {
   const orders = await orderModel
     .find()
     .sort({ total_price: 1, created_at: 1 });
@@ -50,7 +50,7 @@ orderRouter.get("/orders", isLoggedIn, async (req, res) => {
 });
 
 //get orders by state
-orderRouter.get("/orders/:state", isLoggedIn, async (req, res) => {
+orderRouter.get("/orders/:state", async (req, res) => {
   const { state } = req.params;
 
   const orders = await orderModel.find({ state }).exec();
@@ -59,7 +59,7 @@ orderRouter.get("/orders/:state", isLoggedIn, async (req, res) => {
 });
 
 //get orders
-orderRouter.get("/orders", isLoggedIn, async (req, res) => {
+orderRouter.get("/orders", async (req, res) => {
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
   const skipIndex = (page - 1) * limit;
@@ -75,7 +75,7 @@ orderRouter.get("/orders", isLoggedIn, async (req, res) => {
 });
 
 //Update Orders
-orderRouter.patch("/order/:id", isLoggedIn, async (req, res) => {
+orderRouter.patch("/order/:id", async (req, res) => {
   const { id } = req.params;
   const { state } = req.body;
 
@@ -99,7 +99,7 @@ orderRouter.patch("/order/:id", isLoggedIn, async (req, res) => {
 });
 
 //Delete orders
-orderRouter.delete("/order/:id", isLoggedIn, async (req, res) => {
+orderRouter.delete("/order/:id", async (req, res) => {
   const { id } = req.params;
 
   const order = await orderModel.deleteOne({ _id: id });
