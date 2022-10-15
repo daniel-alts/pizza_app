@@ -5,8 +5,9 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 //const authenticatedUser  = require("../middleware/auth")
+const router = express.Router();
 
-exports.createOrder =  async(req, res) => {
+router.post ('/',  async(req, res) => {
   try{
      
       const body = req.body;
@@ -30,15 +31,11 @@ exports.createOrder =  async(req, res) => {
       })
   }
 
-}
+})
 
-exports.getaSingleOrder = async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
-      const authenticatedUser = req.authenticatedUser
-      // 
-          if (authenticatedUser) {
-            return res.status(200)
-          }
+      
       const { orderId } = req.params;
       const order = await orderModel.findById(orderId)
   
@@ -53,17 +50,12 @@ exports.getaSingleOrder = async (req, res) => {
           message: error
       })
   }
-}
+})
 
-exports.getAllOrder =  async (req, res) => {
+router.get('/',  async (req, res) => {
   try {
       // check for authenticated user
-  const authenticatedUser = req.authenticatedUser
-// 
-  if (authenticatedUser) {
-    return res.status(200)
-  }
-
+  
  // let orders
 
       const { state, sort } = req.query
@@ -132,16 +124,11 @@ const orders = await orderModel.find(query).sort(totalPrice).sort(createdAt).lim
           message: error
       })
   } 
-}
+})
 
 
-exports.updateOrder = async (req, res) => {
+router.patch('/"id', async (req, res) => {
   try{
-      const authenticatedUser = req.authenticatedUser
-      // 
-          if (authenticatedUser) {
-            return res.status(200)
-          }  
       const { id } = req.params;
       const { state } = req.body;
   
@@ -168,8 +155,8 @@ exports.updateOrder = async (req, res) => {
       })
   }
 }
-
-exports.cancelOrder=  async (req, res) => {
+)
+router.delete('/:id',  async (req, res) => {
   try {
       
   const { id } = req.params;
@@ -183,4 +170,5 @@ exports.cancelOrder=  async (req, res) => {
       message: error
   })
  }
-}
+})
+module.exports = router
