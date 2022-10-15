@@ -14,7 +14,7 @@ const signupUser = async (req, res) => {
     });
 
     return res.status(201).send({
-      message: "You have been succesfully signed up",
+      message: "You have been successfully registered",
       data: newUser,
     });
   } catch (err) {
