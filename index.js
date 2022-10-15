@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const ordersRouter = require('./routes/order')
 const userRouter = require('./routes/user')
+const passport = require('passport')
+require("dotenv").config()
 
 
 const PORT = 3334
@@ -10,8 +12,8 @@ const app = express()
 
 app.use(express.json());
 
-app.use('/orders', ordersRouter)
-app.use('/users', userRouter)
+app.use('/orders', passport.authenticate('jwt', {session: false}),  ordersRouter)
+app.use('/auth', userRouter)
 
 
 app.use((err, req, res, next) => {

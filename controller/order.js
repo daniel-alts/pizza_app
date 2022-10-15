@@ -28,7 +28,9 @@ const getOrders = async (req, res, next) => {
     .sort(queryParameter)
   
   
- return res.status(200).json(orders)
+    console.log(orders)
+    return res.status(200).json(orders)
+    
  
   } catch (error) {
     next(error)

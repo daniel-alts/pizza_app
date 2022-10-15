@@ -9,13 +9,13 @@ const router = express.Router()
 
 router.get('/', orderController.getOrders)
  
-router.post('/', auth, orderController.createOrder)
+router.post('/', orderController.createOrder)
 
-router.get('/:id', auth, orderController.getOrder)
+router.get('/:id', orderController.getOrder)
 
-router.patch('/:id', [auth, role], orderController.updateOrder)
+router.patch('/:id', orderController.updateOrder)
 
-router.delete('/:id', [auth, role], orderController.deleteOrder)
+router.delete('/:id', orderController.deleteOrder)
 
 
 
