@@ -2,17 +2,18 @@ const express = require("express")
 const orderRouter = express.Router()
 
 const orderController = require("../controllers/orderController")
-const { passwordAuth, adminAuth, userAuth } = require("../handlers/authentication")
+// const { passwordAuth, adminAuth, userAuth } = require("../handlers/authentication")
 const errorHandler = require("../handlers/error_handler")
+const { adminAuth } = require('../handlers/authentication')
 
-orderRouter.post('/createOrder', [passwordAuth, userAuth], orderController.order, errorHandler)
+orderRouter.post('/createOrder', orderController.order, errorHandler)
 
-orderRouter.get('/:orderId', [passwordAuth, adminAuth], orderController.getOrderById, errorHandler)
+orderRouter.get('/:orderId', adminAuth , orderController.getOrderById, errorHandler)
 
-orderRouter.get('/', [passwordAuth, adminAuth], orderController.getAllOrder, errorHandler)
+orderRouter.get('/', adminAuth , orderController.getAllOrder, errorHandler)
 
-orderRouter.patch('/:id', [passwordAuth, adminAuth], orderController.updateOrder, errorHandler)
+orderRouter.patch('/:id', adminAuth , orderController.updateOrder, errorHandler)
 
-orderRouter.delete('/:id', [passwordAuth, adminAuth], orderController.deleteOrder, errorHandler)
+orderRouter.delete('/:id', adminAuth , orderController.deleteOrder, errorHandler)
 
 module.exports = orderRouter
