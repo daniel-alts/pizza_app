@@ -5,21 +5,41 @@ require('dotenv').config();
 
 const userRoute = express.Router();
 
-userRoute.post(
-    '/signup',
-    passport.authenticate('signup', { session: false }), async (req, res, next) => {
-        // const {password, ...rest} = req.user;
-        const body = { id: req.user.id, username: req.user.username };
-        const token = jwt.sign({ user: body }, process.env.JWT_SECRET, { expiresIn: '1h' });
+//A new user registers and is logged in afterwards
+userRoute.post("/signup", async (req, res, next) => {
+  passport.authenticate(
+    "signup",
+    { session: false },
+    async (err, user, info) => {
+      try {
+
+        if (!user) {
+          const error = new Error("Username already exists");
+          return next(error);
+        }
+
+        if (err) {
+          return next(err);
+        }
+
+        const body = { id: user.id, username: user.username };
+        const token = jwt.sign({ user: body }, process.env.JWT_SECRET, {
+          expiresIn: "1h",
+        });
 
         res.json({
-            message: 'Signup successful',
-            user: req.user,
-            token: token
+          message: "Signup successful",
+          user: req.user,
+          token: token,
         });
+      } catch (error) {
+        return next(error);
+      }
     }
-);
+  )(req, res, next);
+});
  
+//An existing user signs in
 userRoute.post(
     '/login',
     async (req, res, next) => {
@@ -38,9 +58,8 @@ userRoute.post(
                         if (error) return next(error);
 
                         const body = { id: user.id, username: user.username };
-                        //You store the id and email in the payload of the JWT. 
-                        // You then sign the token with a secret or key (JWT_SECRET), and send back the token to the user.
-                        // DO NOT STORE PASSWORDS IN THE JWT!
+                        //This stores the id and email in the payload of the JWT. 
+                        //Then signs the token with a secret or key (JWT_SECRET), and sends back the token to the user.
                         const token = jwt.sign({ user: body }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
                         return res.json({ token });

@@ -9,8 +9,7 @@ passport.use(
     new JWTstrategy( 
         {
             secretOrKey: process.env.JWT_SECRET,
-            // jwtFromRequest: ExtractJWT.fromUrlQueryParameter('secret_token')
-            jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken() // Use this if you are using Bearer token
+            jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken() // Making use of Bearer token
         },
         async (token, done) => {
             try {
@@ -38,7 +37,7 @@ passport.use(
 
                 return done(null, user);
             } catch (error) {
-                done(error);
+                return done(error);
             }
         }
     )
