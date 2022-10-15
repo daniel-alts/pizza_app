@@ -8,15 +8,16 @@ const signupUser = async (req, res) => {
 
     const newUser = await userModel.create({
       
-        email: req.body.email,
-        name: req.body.username,
-        password: req.body.password,
+        email: body.email,
+        name: body.username,
+        password: body.password,
     });
 
     return res.status(201).send({
       message: "You have been successfully registered",
       data: newUser,
     });
+    
   } catch (err) {
     console.log(err);
     res.status(400).send(err);
