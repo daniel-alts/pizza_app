@@ -1,15 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const bcrypt = require('bcrypt');
 
 const userSchema = new Schema({
-    firstName: {
-        type: String,
-        required: true
-    },
-    lastName: {
-        type: String,
-        required: true
-    },
     userName: {
         type: String,
         required: true,
@@ -24,11 +17,6 @@ const userSchema = new Schema({
         enum: ["admin", "user"],
         required: true
     },
-    sex: {
-        type: String,
-        enum: ["male", "female", "prefer not to mention"],
-        required: true
-    },
     createdAt: {
         type: Date,
         default: Date.now
@@ -38,6 +26,25 @@ const userSchema = new Schema({
         default: Date.now
     }
 })
+
+userSchema.pre('save', async function (next) {
+    const salt = await bcrypt.genSalt()
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+})
+
+userSchema.statics.login = async function(username, password) {
+    const user = await this.findOne({ username });
+    if (user) {
+        const auth = await bcrypt.compare(password, user.password);
+        if (auth) {
+            return user
+        }
+        throw Error('invalid password')
+    }
+    throw Error('invalid user');
+}
+
 
 const User = mongoose.model('User', userSchema);
 

@@ -1,15 +1,9 @@
 const orderModel = require("../models/orderModel");
 const moment = require("moment");
-const authentication = require("../utils/authentication");
 
 //create orders
 
 const createOrders = async (req, res) => {
-  const authenticateUser = await authentication(req, res);
-
-  if (!authenticateUser) {
-    return res.status(403).send({ message: "unauthorized user" });
-  } else {
     const body = req.body;
 
     const total_price = body.items.reduce((prev, curr) => {
@@ -29,16 +23,10 @@ const createOrders = async (req, res) => {
         .status(500)
         .send("Error occurred while trying to create order");
     }
-  }
+  
 };
 
 const getOneOrder = async (req, res) => {
-  const authenticateUser = await authentication(req, res);
-
-  if (!authenticateUser) {
-    return res.status(401).send({ message: "unauthorized user" });
-  }
-
   const { id } = req.params;
   const order = await orderModel.findById(id);
   try {
@@ -49,17 +37,7 @@ const getOneOrder = async (req, res) => {
 };
 
 const getAllOrders = async (req, res) => {
-  const authenticateUser = await authentication(req, res);
-
-  if (!authenticateUser) {
-    return res.status(403).send({ message: "unauthorized user" });
-  }
-
-  // only a user with userType == "admin" can get all orders
-  if (authenticateUser.userType !== "admin") {
-    res.status(403).send({ message: "unauthorized user" });
-  }
-
+ 
   //sorting,querying and pagination
   let query = {};
   const { state } = req.query;
@@ -82,7 +60,7 @@ const getAllOrders = async (req, res) => {
     createdAt = { created_at: -1 };
   }
   if (!created_at) {
-    createdAt = {};
+    createdAt = {};  
   }
 
   if (total_price === "asc") {
@@ -111,11 +89,6 @@ const getAllOrders = async (req, res) => {
 
 //update order
 const updateOrder = async (req, res) => {
-  const authenticateUser = await authentication(req, res);
-
-  if (!authenticateUser) {
-    return res.status(403).send({ message: "unauthorized user" });
-  }
   const { id } = req.params;
   const newOrder = req.body;
 
@@ -132,11 +105,6 @@ const updateOrder = async (req, res) => {
 
 //delete order
 const deleteOrder = async (req, res) => {
-  const authenticateUser = await authentication(req, res);
-
-  if (!authenticateUser) {
-    return res.status(403).send({ message: "unauthorized user" });
-  }
   const { id } = req.params;
 
   const order = await orderModel.deleteOne({ _id: id });
