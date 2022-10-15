@@ -1,8 +1,10 @@
 const orderModel = require('../models/orderModel');
+const { userModel } = require('../models/userModel')
 const moment = require('moment')
 
 async function addOrder(req, res) {
     const body = req.body;
+    
     const countUsers = await orderModel.count({})
     if (countUsers == 0) body._id = 1
     else body._id = countUsers + 1
@@ -10,7 +12,7 @@ async function addOrder(req, res) {
         prev += curr.price * curr.quantity  
         return prev
     }, 0); 
-    
+    const userId = req.user
     const order = await orderModel.create({ 
         _id: body._id,
         items: body.items,
@@ -18,7 +20,7 @@ async function addOrder(req, res) {
         total_price,
         location: body.location,
         phoneNo: body.phoneNo,
-        user: req.user
+        userId
     })
     
     return res.json({ status: true, order: {items: order.items, total_price: order.total_price} })
@@ -26,7 +28,9 @@ async function addOrder(req, res) {
 
 async function getOrder(req, res) {
     let orders 
-    let getOrder = await orderModel.find({user: req.user})
+    const userId = req.user
+    // const user = await userModel.findOne({_id: userId})
+    let getOrder = await orderModel.find({userId})
     let countOrders = getOrder.length
 
     // PAGINATION
@@ -43,12 +47,12 @@ async function getOrder(req, res) {
 
         if (sort_by.includes(",")) {
             sort_by = sort_by.split(",")  
-            orders = await orderModel.find({user: req.user}).sort({[ sort_by[0] ]: allOrders[order], [ sort_by[1] ]: allOrders[order]}).skip(skip).limit(page)
+            orders = await orderModel.find({userId}).sort({[ sort_by[0] ]: allOrders[order], [ sort_by[1] ]: allOrders[order]}).skip(skip).limit(page)
         } else {
-            orders = await orderModel.find({user: req.user}).sort({[ sort_by ]: allOrders[order]}).skip(skip).limit(page)
+            orders = await orderModel.find({userId}).sort({[ sort_by ]: allOrders[order]}).skip(skip).limit(page)
         }
     } else {
-        orders = await orderModel.find({user: req.user}).skip(skip).limit(page)
+        orders = await orderModel.find({userId}).skip(skip).limit(page)
     }
 
     if (Array.isArray(orders)) {  
@@ -59,13 +63,14 @@ async function getOrder(req, res) {
 
 async function getOrderById(req, res) {
     const { orderId } = req.params;
-    const order = await orderModel.findById(orderId)
+    const userId = req.user
+
+    const order = await orderModel.findOne({_id: orderId, userId})
 
     if (!order) {
         return res.status(404).json({ status: false, order: null })
     }
 
-    if (order.user.email != req.user.email) return res.status(404).json({ status: false, order: "Wrong id" })
 
     const {_id, state, total_price, items} = order
 

@@ -28,9 +28,9 @@ const OrderSchema = new Schema({
     type: String,
     required: true
   },
+  userId: Number,
   created_at: Date,
   updated_at: Date,
-  user: userSchema
 });
 
 const Order = mongoose.model('Order', OrderSchema);

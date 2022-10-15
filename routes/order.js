@@ -1,10 +1,13 @@
 const express = require('express')
 const orderRouter = express.Router()
 const orderController = require('../controllers/order')
-// const isAuthenticated = require('../authenticate')
+const { userModel } = require('../models/userModel')
 
-orderRouter.use((req, res, next) => {
-    let { user_type } = req.user
+orderRouter.use(express.json())
+
+orderRouter.use(async (req, res, next) => {
+    const user = await userModel.findById(req.user._id)
+    const { user_type } = user
     if (req.method == "PATCH" || req.method == "DELETE") {
         if (user_type != "admin") {
             res.status(401).send("Unauthorized access")

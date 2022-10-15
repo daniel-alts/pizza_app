@@ -9,8 +9,6 @@ const PORT = 3334
 
 const app = express()
 
-// app.use(express.json());
-
 // CONNECT TO MONGOOSE
 db.connectToDb()
 

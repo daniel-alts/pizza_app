@@ -11,14 +11,6 @@ function signup(req, res) {
 }
 
 async function login(req, res, next) {
-    // let userDetail = req.headers.authentication.split(" ")
-    // let [ ,username, password, email] = userDetail
-    // const user = await userModel.exists({username, password, email})
-    // if (user) {
-    //     res.json( {status: true, message: "Login successful, Visit the order routes to make your orders"})
-    //     return
-    // }
-    // res.json( {status: false, message: "login details incorrect"})
     passport.authenticate('login', async (err, user, info) => {
         try {
             if (err) return next(err)
@@ -27,7 +19,6 @@ async function login(req, res, next) {
                 const err = new Error(info.message)
                 return next(err)
             }
-
             req.login(user, {session: false}, async(err) => {
                 if (err) return next(err)
 
