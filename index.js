@@ -1,14 +1,24 @@
 const express = require("express");
 const morgan = require("morgan");
-
+const passport = require("passport");
+const connectEnsureLogin = require("connect-ensure-login");
+const session = require("express-session");
 const mongoose = require("mongoose");
-
+const dotenv = require("dotenv");
 const orderRouter = require("./routes/orderRoutes");
 const userRouter = require("./routes/userRoutes");
+dotenv.config();
+const PORT = 3334; 
 
-const PORT = 3334;
+require("./authentication/auth")
 
 const app = express();
+// app.use(
+//   session({
+//     secret: process.env.SESSION_SECRET,
+    
+//   })
+// );
 app.use(morgan("dev"));
 app.use(express.json());
 
@@ -16,7 +26,7 @@ app.get("/", (req, res) => {
   return res.json({ status: true });
 });
 
-app.use("/orders", orderRouter);
+app.use("/orders",passport.authenticate('jwt', { session: false }), orderRouter);
 app.use("/users", userRouter);
 
 mongoose.connect("mongodb://127.0.0.1:27017");
