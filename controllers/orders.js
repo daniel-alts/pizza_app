@@ -35,7 +35,7 @@ async function getAllOrders(req, res) {
   if (state) {
     query.state = state;
   }
-  let orders =  orderModel.find(query);
+  let orders = orderModel.find(query);
   if (sortBy) {
     orders = orders.sort({ [sortBy]: "asc" });
   }
@@ -44,7 +44,6 @@ async function getAllOrders(req, res) {
 
   orders = await orders.skip(skip).limit(limit);
   return res.json({ status: true, orders });
-
 }
 
 async function updateOrder(req, res) {

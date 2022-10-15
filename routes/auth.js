@@ -1,50 +1,52 @@
 const express = require("express");
 const passport = require('passport')
 const jwt = require('jsonwebtoken')
-const userModel = require("../models/userModel");
 
 const authRouter = express.Router();
 authRouter.post(
     '/auth/signup',
-    passport.authenticate('signup', {session: false}),
-    async (req, res) => {
-        await userModel.create(req.user)
-        return res.json({
+    passport.authenticate('signup', { session: false }), async (req, res, next) => {
+        res.json({
             message: 'Signup successful',
             user: req.user
-        })
+        });
     }
-)
+);
 
 authRouter.post(
     '/auth/login',
     async (req, res, next) => {
         passport.authenticate('login', async (err, user, info) => {
-            console.log(user)
             try {
-                console.log("2")
                 if (err) {
-                    return next(err)
+                    return next(err);
                 }
                 if (!user) {
-                    const error = new Error('Username or password is incorrect')
-                    return next(error)
+                    const error = new Error('Username or password is incorrect');
+                    return next(error);
                 }
-                console.log("3")
-                req.login(user, {session: false},
+
+                req.login(user, { session: false },
                     async (error) => {
-                        if (error) return next();
-                        const body = {_id: user._id, email: user.email};
-                        const token = jwt.sign({user: body}, process.env.JWT_SECRET)
-                        console.log("4")
-                        return res.json({token})
+                        if (error) return next(error);
+
+                        const body = { _id: user._id, email: user.email };
+                        //You store the id and email in the payload of the JWT. 
+                        // You then sign the token with a secret or key (JWT_SECRET), and send back the token to the user.
+                        // DO NOT STORE PASSWORDS IN THE JWT!
+                        const token = jwt.sign({ user: body }, process.env.JWT_SECRET);
+
+                        return res.json({ token });
                     }
-                    )
+                );
             } catch (error) {
-                return next(error)
+                return next(error);
             }
-        })(req, res, next);
+        }
+        )
+        (req, res, next);
     }
-)
+);
+
 
 module.exports = authRouter
