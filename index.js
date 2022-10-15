@@ -4,7 +4,15 @@ const moment = require("moment");
 const mongoose = require("mongoose");
 const orderModel = require("./orderModel");
 const dotEnv = require("dotenv");
+const jwt = require('jsonwebtoken');
+const {promisify} = require('util') 
+const passport = require('passport');
 const User = require("./usermodel");
+const passport_localStrategy = require('passport-local').Strategy
+const JWTstrategy = require('passport-jwt').Strategy
+const ExtractJWT = require('passport-jwt').ExtractJwt
+
+
 
 dotEnv.config({ path: "./config.env" });
 
@@ -15,77 +23,125 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser())
-//Authentication
-app.post("/signup", async (req, res) => {
-    try {
-        const newUser = await User.create({
-            username: req.body.username,
-            password: req.body.password,
-            passwordConfirm: req.body.passwordConfirm,
-            user_Type: req.body.user_Type,
-          });
-          res.status(200).json({
-            status: 'success',
-            data: {
-                newUser,
-            }
-          })
-    } catch (err) {
-        res.status(400).json({
-            status: 'failed',
-            message: `User encountered ${err}`
-        })
-    }
- 
-});
 
-// LOGIN ROUTE  &&& code to get the username and password and alo encrypt the password
-app.post ('/login', async (req, res, next) => {
-    try{
-        const token = "User_Authenticated"
-        const cookieOptions = {
-            expires: new Date(Date.now() + 90 * 24 * 60 * 60 *1000),
-            httpOnly: true,
-        } 
-        const {username, password} = req.body
-        const registeredUser = await User.findOne({username})
-        if (!registeredUser || !(await registeredUser.comparePasswords(password, registeredUser.password))){
-            next(err)
-        }
-        res.cookie('token', token, cookieOptions)
-        res.status(200).json({
-            status: "success",
-            message: "User Successfully Logged In"
-        })
-    } 
-    catch (err){
-        res.status(400).json({
-            status: 'failed',
-            message: 'Wrong Username or Password'
-        })
-        
+const signToken = (id) =>{
+  return jwt.sign({id}, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_SECRET_EXPIRES
+
+})
+
+}
+
+const sendToken = (newUser, res) => {
+  const token = signToken(newUser.id)
+
+  //Date for cookie to disappear from the browser
+  const cookieOptions = {
+    expires: new Date (Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000), 
+    httpOnly: true,
+} 
+res.cookie('jwt', token, cookieOptions)
+}
+
+// Passport_LocalStrategy SIgn Up Route
+passport.use('signup', new passport_localStrategy({
+  usernameField: 'username',
+  passwordField: 'password',
+  passReqToCallback: true
+}, 
+async(req, username, password, done) => {
+  try {
+    const {user_Type} = req.body.user_Type || 'user'
+    const user =  await User.create({
+      username, password
+    })
+    return done(null, user)
+  }
+  catch (err){
+    done(err)
+
+  }
+}))
+
+passport.use('login', new passport_localStrategy({
+  usernameField: 'username',
+  passwordField: 'password',
+  passReqToCallback: true
+}, 
+async(req, username, password, done) => {
+  try {
+    const user = await User.findOne({username})
+    if (!user || (! await user.comparePasswords(password, user.password))){
+      return done(null, false, {message: 'Username or Password Incorrect!'})
     }
-}) 
+    return done (null, user, {message: 'Login Success'})
+  }
+  catch (err){
+    done(err)
+
+  }
+}))
+
+
+passport.use(
+  new JWTstrategy({
+    secretOrKey: process.env.JWT_SECRET,
+    jwtFromRequest: ExtractJWT.fromUrlQueryParameter('secret_token')
+  },
+  async (token, done) => {
+ 
+    try {
+      return done(null, token.user)
+    }
+    catch (error) {
+      return done (error)
+    }
+  }
+  )
+ 
+)
+
+
+app.post('/signup', passport.authenticate('signup',{session:false}),
+async(req, res, next) =>{
+  res.json({
+    ststus: 'Success',
+    message: 'Login Successful',
+    user: req.user
+  })
+})
+
+app.post('/login', async (req, res, next) => {
+  passport.authenticate('login', async (err, user, info) => {
+    try {
+      if (err || !user) {
+        const error = new Error('Error!')
+        return next (error)
+      }
+      req.login(
+        user, {session : false},
+        async (error) => {
+          if (error) return next (error)
+          const body = {_id:user.id}
+          const token = jwt.sign({user: body}, process.env.JWT_SECRET)
+          res.json({token})
+        }
+      )
+    }
+    catch (error){
+      return next(error)
+    } 
+  })(req, res, next)
+  }
+)
+
+
 
 app.get("/", (req, res) => {
   return res.json({ status: true });
 });
 
-const protectRoute =  async (req, res, next) => {
-  const token = req.cookies.token;
-  try{
-    if( token == 'User_Authenticated'){
-      return next();
-    }
-   return next(err)
-  } catch (err) {
-    res.status(400).json({
-      ststus: 'failed',
-      message: 'Please Login'
-    })
-}}
-
-app.post("/order", protectRoute,async (req, res) => {
+app.post("/order", async (req, res) => {
   const body = req.body;
   const total_price = body.items.reduce((prev, curr) => {
     prev += curr.price;
@@ -101,7 +157,7 @@ app.post("/order", protectRoute,async (req, res) => {
 
   return res.json({ 
     status: true, 
-    order 
+    order, token: req.query.secret_token
   });
 });
 

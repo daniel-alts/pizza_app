@@ -14,16 +14,16 @@ const userSchema = new Schema({
         required: [true, 'Please provide password'],
         minLength: 8
     },
-    passwordConfirm: {
-        type: String,
-        required: [true, 'Please provide password'],
-        validate: {
-            validator: function (el) {
-                return el === this.password
-            },
-            message: 'Password Not the same.'
-        },
-    },
+    // passwordConfirm: {
+    //     type: String,
+    //     required: [true, 'Please provide password'],
+    //     validate: {
+    //         validator: function (el) {
+    //             return el === this.password
+    //         },
+    //         message: 'Password Not the same.'
+    //     },
+    // },
     user_Type:{
         type: String,
         enum: ['admin', 'user'],
