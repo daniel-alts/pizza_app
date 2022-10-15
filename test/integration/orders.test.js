@@ -6,14 +6,23 @@ const { validateState, validateQueryResult, validatePagination } = require('../.
 require('dotenv').config();
 
 
-let userCredential;
-let adminCrendential;
+const testUsername = process.env.TEST_USERNAME;
+const testPassword = process.env.TEST_PASSWORD;
+const testUserType = process.env.TEST_USERTYPE;
+let accessToken;
 
 
 //Get user credential for basicAuth
-beforeAll(() => {
-    userCredential = Buffer.from(`${process.env.USER_USERNAME}:${process.env.USER_PASSWORD}`).toString('base64');
-    adminCrendential = Buffer.from(`${process.env.ADMIN_USERNAME}:${process.env.ADMIN_PASSWORD}`).toString('base64');
+beforeAll(async () => {
+    //Login and get a JWT access token for authenticating the /orders route
+    const response = await requestWithSupertest.post('/login').send(
+        {
+            "username": testUsername,
+            "password": testPassword,
+            "userType": testUserType
+        }
+    )
+    accessToken = response.body.token;
 })
 
 
@@ -44,7 +53,7 @@ describe('Order Endpoints', () => {
                   "quantity": 2
                 },
                 {
-                  "name": "Chiken Supreme",
+                  "name": "Chicken Supreme",
                   "price": 40.55,
                   "size": "m",
                   "quantity": 1
@@ -56,7 +65,7 @@ describe('Order Endpoints', () => {
             return prev;
         }, 0);
 
-        const response = await requestWithSupertest.post('/orders').set("Authorization", `Basic ${userCredential}`).send(orderDetails);      
+        const response = await requestWithSupertest.post('/orders').set("Authorization", `Bearer ${accessToken}`).send(orderDetails);      
         
         expect(response.status).toBe(201);
         expect(response.body.status).toBe(true);
@@ -67,7 +76,7 @@ describe('Order Endpoints', () => {
     it('GET /orders/:orderId should return record with the specified ID', async () => {
         const orderId = '633da45072973af6395436f6';
 
-        const response = await requestWithSupertest.get(`/orders/${orderId}`).set("Authorization", `Basic ${adminCrendential}`);      
+        const response = await requestWithSupertest.get(`/orders/${orderId}`).set("Authorization", `Bearer ${accessToken}`);      
         expect(response.status).toBe(200);
         expect(response.body.status).toBe(true);
         expect(response.body.order['_id']).toBe(orderId);
@@ -81,7 +90,7 @@ describe('Order Endpoints', () => {
         
         const orderId = '633da4adccc0dcaf1b2c54e1'
         
-        const response = await requestWithSupertest.patch(`/orders/${orderId}`).set("Authorization", `Basic ${adminCrendential}`).send(updateInfo);      
+        const response = await requestWithSupertest.patch(`/orders/${orderId}`).set("Authorization", `Bearer ${accessToken}`).send(updateInfo);      
         
         expect(response.status).toBe(200);
         expect(response.body.status).toBe(true);
@@ -93,7 +102,7 @@ describe('Order Endpoints', () => {
         
         const orderId = '633da4fc77dace72a5dce6b8'
         
-        const response = await requestWithSupertest.delete(`/orders/${orderId}`).set("Authorization", `Basic ${adminCrendential}`);      
+        const response = await requestWithSupertest.delete(`/orders/${orderId}`).set("Authorization", `Bearer ${accessToken}`);      
         
         if (response.body.status == true) {
             expect(response.status).toBe(200);
@@ -116,7 +125,7 @@ describe('Order Endpoints', () => {
             sortBy: ""     
         };
         
-        const response = await requestWithSupertest.get('/orders').query(queryParams).set("Authorization", `Basic ${adminCrendential}`);      
+        const response = await requestWithSupertest.get('/orders').query(queryParams).set("Authorization", `Bearer ${accessToken}`);      
 
         expect(response.status).toBe(200);
         expect(response.body.status).toBe(true);
@@ -134,7 +143,7 @@ describe('Order Endpoints', () => {
             sortBy: "desc"     
         };
         
-        const response = await requestWithSupertest.get('/orders').query(queryParams).set("Authorization", `Basic ${adminCrendential}`);      
+        const response = await requestWithSupertest.get('/orders').query(queryParams).set("Authorization", `Bearer ${accessToken}`);      
 
         expect(response.status).toBe(200);
         expect(response.body.status).toBe(true);
@@ -152,7 +161,7 @@ describe('Order Endpoints', () => {
             sortBy: ""     
         };
         
-        const response = await requestWithSupertest.get('/orders').query(queryParams).set("Authorization", `Basic ${adminCrendential}`);      
+        const response = await requestWithSupertest.get('/orders').query(queryParams).set("Authorization", `Bearer ${accessToken}`);      
 
         expect(response.status).toBe(200);
         expect(response.body.status).toBe(true);
@@ -170,7 +179,7 @@ describe('Order Endpoints', () => {
             sortBy: "desc"     
         };
         
-        const response = await requestWithSupertest.get('/orders').query(queryParams).set("Authorization", `Basic ${adminCrendential}`);      
+        const response = await requestWithSupertest.get('/orders').query(queryParams).set("Authorization", `Bearer ${accessToken}`);      
 
         expect(response.status).toBe(200);
         expect(response.body.status).toBe(true);

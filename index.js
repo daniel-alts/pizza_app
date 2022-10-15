@@ -1,26 +1,32 @@
 const express = require('express');
 const connectToDatabase = require('./src/db'); //Database connection
-const orderRoutes = require('./src/routes/orderRoutes');
-const userRoutes = require('./src/routes/userRoutes');
+const ordersRoute = require('./src/routes/ordersRoute');
+const authRoute = require('./src/routes/authRoute');
+const passport = require('passport');
+const bodyParser = require('body-parser');
+require('./src/middlewares/authentication');
 require('dotenv').config();
 
-
 //CREATE SERVER
-const app = express()
+const app = express();
 
 //APPLICATION LEVEL MIDDLEWARES
 app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+
 //Routes
-app.use('/orders', orderRoutes);
-app.use('/users', userRoutes);
+app.use('/', authRoute);
+app.use('/orders', passport.authenticate('jwt', { session: false }), ordersRoute);
 
 
-
+//Home route
 app.get('/', (req, res) => {
     return res.json({ status: true })
 })
 
 
+//Error Middleware
 app.use((error, req, res, next) => {
     console.log(error);
     if (error) {
@@ -30,6 +36,8 @@ app.use((error, req, res, next) => {
 });
 
 
+
+//Catch all route
 app.get('*', (req, res) => {
     return res.status(404).json({ status: false, message: "Not Found"});
 });
