@@ -1,48 +1,111 @@
-// const supertest = require("supertest");
-// const server = require("../app");
-// describe("orders route", () => {
-//   it("GET /orders", async () => {
-//     const response = await supertest(server).get("/orders");
-//     expect(response.status).toBe(200);
-//     expect(response.body.length).toBe(3);
-//   });
+const mongoose = require("mongoose");
+const supertest = require("supertest");
 
-//   it("GET /orders?id", async () => {
-//     const response = await supertest(server).get(
-//       "/users?_id=6334602d3bd635fb9d976dc0"
-//     );
-//     expect(response.status).toBe(200);
-//     expect(response.body.state).toBe(1);
-//   });
+// const { connectToMongoDB } = require("../pizzaAppDb");
+require("dotenv").config();
 
-//   it("POST /orders", async () => {
-//     {
-//       "items"[
-//         ({
-//           name: "KFC pizza",
-//           price: 20,
-//           size: "m",
-//           quantity: 5,
-//         },
-//         {
-//           name: "Dominino's pizza",
-//           price: 40,
-//           size: "m",
-//           quantity: 2,
-//         })
-//       ];
-//     }
+const PIZZA_TEST_CONNECTION_URL = process.env.PIZZA_TEST_CONNECTION_URL;
+const app = require("../app");
+const User = require("../models/userModel");
+const Order = require("../models/orderModel");
+const TEST_TOKEN = process.env.TEST_TOKEN;
+let order;
 
-//     const response = await supertest(server).post("/orders");
-//     expect(response.status).toBe(500);
-//     expect(response.body.item.name).toBe("KFC pizza,Dominino's pizza");
-//   });
+beforeAll((done) => {
+  mongoose.connect(PIZZA_TEST_CONNECTION_URL);
 
-//   it("DELETE /users", async () => {
-//     const response = await supertest(server).post(
-//       "/users?_id=633460133bd635fb9d976dbd"
-//     );
-//     expect(response.status).toBe(500);
-//     expect(response.body.item.name).toBe("fried beans");
-//   });
-// });
+  mongoose.connection.on("connected", async () => {
+    console.log("connected to Mongodb succesfully");
+    const orderSeed = {
+      items: [
+        {
+          name: "KFC restaurant",
+          price: 200,
+          size: "s",
+          quantity: 4,
+        },
+        {
+          name: "KFC rice",
+          price: 400,
+          size: "s",
+          quantity: 2,
+        },
+      ],
+    };
+    const userSeed = {
+      username: "jetcode",
+      password: "qwerty12",
+      user_type: "admin",
+    };
+    order = await Order.create(orderSeed);
+    await User.create(userSeed);
+  });
+
+  mongoose.connection.on("error", (err) => {
+    console.log(err);
+    console.log("An error occured");
+  });
+  done();
+});
+afterAll((done) => {
+  mongoose.connection.db.dropDatabase(() => {
+    mongoose.connection.close(() => done());
+  });
+});
+
+// ORDERS ROUTE TESTING
+describe("/orders", () => {
+  it("GET /orders", async () => {
+    const response = await supertest(app)
+      .get("/orders")
+      .set("Authorization", `Bearer ${TEST_TOKEN}`); // authorization
+    console.log("😃😃😃✨", response.body);
+    expect(response.status).toBe(200);
+    expect(response.body.orders.length).toBe(0);
+    expect(response.body).toHaveProperty("orders");
+  });
+  // POST ROUTE TESTING
+  it("POST /orders", async () => {
+    const body = {
+      items: [
+        {
+          name: "iya yusuf pizza ",
+          price: 200,
+          size: "s",
+          quantity: 4,
+        },
+        {
+          name: "item 7 rice",
+          price: 300,
+          size: "m",
+          quantity: 2,
+        },
+      ],
+    };
+    const response = await supertest(app)
+      .post("/orders")
+      .set("Authorization", `Bearer ${TEST_TOKEN}`) // authorization
+      .send(body);
+    expect(response.status).toBe(201);
+    expect(response.body.order.items[0].name).toBe("iya yusuf pizza");
+  });
+  // TEST GETORDER ROUTE
+
+  it("GET /orders?id", async () => {
+    console.log("TEST");
+    const response = await supertest(app)
+      .get(`/orders/${order._id}`)
+      .set("Authorization", `Bearer ${TEST_TOKEN}`); // authorization
+    expect(response.status).toBe(200);
+    console.log(response.body);
+    expect(response.body.order.state).toBe(1);
+  });
+  // TEST DELETE ROUTE
+  it("DELETE /orders/:orderId", async () => {
+    const response = await supertest(app)
+      .delete(`/orders/${order._id}`)
+      .set("Authorization", `Bearer ${TEST_TOKEN}`); // authorization
+    expect(response.status).toBe(204);
+    // expect(response.body.state).toBe(1);
+  });
+});

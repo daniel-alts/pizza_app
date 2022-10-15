@@ -7,7 +7,7 @@ function connectToMongoDB() {
   mongoose.connect(CONNECTION_URL);
 
   mongoose.connection.on("connected", () => {
-    // console.log("connected to Mongodb succesfully")
+    console.log("connected to Mongodb succesfully");
   });
 
   mongoose.connection.on("error", (err) => {
@@ -16,4 +16,4 @@ function connectToMongoDB() {
   });
 }
 
-module.exports = { connectToMongoDB };
+module.exports = connectToMongoDB;

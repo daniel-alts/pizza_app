@@ -1,12 +1,13 @@
-// const app = require("./app");
+require("dotenv").config;
+const connectToMongoDB = require("../pizza_app/pizzaAppDb");
 
-// require("dotenv").config;
-// const PORT = process.env.PORT;
+const app = require("./app");
 
-// const localhost = "127.0.0.1";
+const PORT = process.env.PORT;
+const localhost = "127.0.0.1";
 
-// app.listen(PORT, localhost, () => {
-//   console.log("Listening on port, ", PORT);
-// });
+connectToMongoDB();
 
-// module.exports = app;
+app.listen(PORT, localhost, () => {
+  console.log("Listening on port, ", PORT);
+});

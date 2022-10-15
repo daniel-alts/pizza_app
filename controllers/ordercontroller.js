@@ -4,7 +4,7 @@ const moment = require("moment");
 exports.addOrders = async function (req, res) {
   try {
     const body = req.body;
-    console.log(body);
+    // console.log(body);
     const total_price = body.items.reduce((prev, currItem) => {
       prev += currItem.price * currItem.quantity;
       return prev;
@@ -16,7 +16,7 @@ exports.addOrders = async function (req, res) {
       total_price,
     });
 
-    return res.json({ status: true, order });
+    return res.status(201).json({ status: true, order });
   } catch (error) {
     res.status(404).json({ message: "failed to post orders", error });
   }
@@ -29,7 +29,6 @@ exports.getAllOrder = async function (req, res) {
 
     const reservedkeys = ["sort", "page", "limit"];
     reservedkeys.forEach((key) => delete queryObj[key]);
-    console.log(req.query, queryObj);
 
     let orderQuery = orderModel.find(queryObj);
     // sorting
@@ -47,7 +46,9 @@ exports.getAllOrder = async function (req, res) {
     orderQuery.skip(skip).limit(limit);
     const orders = await orderQuery;
 
-    return res.json({ status: true, results: orders.length, orders });
+    return res
+      .status(200)
+      .json({ status: true, results: orders.length, orders });
   } catch (error) {
     res.status(404).json({ message: "unable to get orders", error });
   }
@@ -101,7 +102,7 @@ exports.deleteOrders = async function (req, res) {
 
     const order = await orderModel.deleteOne({ _id: orderId });
 
-    return res.json({ status: true, order });
+    return res.status(204).json({ status: true, order });
   } catch (error) {
     res.status(401).json({ message: "order can not be deleted", error });
   }

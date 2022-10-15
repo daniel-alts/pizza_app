@@ -1,24 +1,22 @@
 const express = require("express");
 
 const userController = require("../controllers/usercontroller");
-const { authenticateUser, authenticateAdmin } = require("../authorization");
+// const { authenticateUser, authenticateAdmin } = require("../authorization");
 const Router = express.Router();
 
-// Router.get("/", userController.test);
-Router.post("/", userController.addUser);
+// Router.post("/", userController.addUser);
 
-Router.use(authenticateUser);
+// Router.use(authenticateUser);
 
 // Only the authenticated user are allowed to patch and delete
-Router.patch("/:userId", userController.updateUser);
+// Router.patch("/:userId", userController.updateUser);
 
-Router.delete("/:userId", userController.deletaAllUsers);
+// Router.delete("/:userId", userController.deletaAllUsers);
 
 // Admin auth
-Router.use(authenticateAdmin);
-Router.get("/", userController.getAllUsers);
-d;
+// Router.use(authenticateAdmin);
+// Router.get("/", userController.getAllUsers);
 
-Router.get("/:userId", userController.getAllUsersById);
+// Router.get("/:userId", userController.getAllUsersById);
 
 module.exports = Router;

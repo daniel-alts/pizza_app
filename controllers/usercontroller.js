@@ -1,4 +1,48 @@
+const passport = require("passport");
+const jwt = require("jsonwebtoken");
+
 const usereModel = require("../models/userModel");
+require("dotenv").config();
+
+// SIGNUP CONTROLLER ROUTE
+exports.signup = async function (req, res, next) {
+  try {
+    return res.json({
+      message: "Signup successful",
+      user: req.user,
+    });
+  } catch (error) {
+    return next(error, { message: "signing up failed" });
+  }
+};
+// LOGIN CONTRLLER ROUTE
+exports.login = async function (req, res, next) {
+  try {
+    passport.authenticate("login", async (err, user, info) => {
+      console.log(user);
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        const error = new Error("Username or password is incorrect");
+        return next(error);
+      }
+      req.login(user, { session: false }, async (error) => {
+        const body = { _id: user._id, username: user.username };
+
+        const token = await jwt.sign(
+          body,
+          process.env.JWT_SECRET,
+          process.env.EXPIRATION_TIME
+        );
+        console.log(token);
+        return res.json({ token });
+      });
+    })(req, res, next);
+  } catch (error) {
+    next(error);
+  }
+};
 
 exports.addUser = async function (req, res) {
   try {
@@ -50,7 +94,7 @@ exports.getAllUsers = async function (req, res) {
     const users = await usereModel.find({});
     res.status(200).json(users);
   } catch (error) {
-    res.status(404).json({ message: "Error!!!" });
+    res.status(404).json({ message: "Error!!, Cant'get all user " });
   }
 };
 exports.getAllUsersById = async function (req, res) {
