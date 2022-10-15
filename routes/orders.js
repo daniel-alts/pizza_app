@@ -1,27 +1,27 @@
 const express = require('express');
-require('dotenv').config();
-const mongoose = require('mongoose');
-const connectDB = require('../database');
-const moment = require('moment');
 const orderModel = require('../models/orderModel');
-const { auth } = require('../auth');
+// require('dotenv').config();
+// const mongoose = require('mongoose');
+// const connectDB = require('../database');
+const moment = require('moment');
 
 
-const PORT = process.env.PORT
-const DB_URL = process.env.DB_URL
+
+// const PORT = process.env.PORT
+// const DB_URL = process.env.DB_URL
 
 const ordersRouter = express.Router();
 
 //user Authentication
-ordersRouter.use(async (req, res, next) => {
-    const user = await auth(req, res)
-    if (user === "user"){
-        next()
-    }
-    else {
-        res.status(401).send("Not allowed")
-    }
-})
+// ordersRouter.use(async (req, res, next) => {
+//     const user = await auth(req, res)
+//     if (user === "user"){
+//         next()
+//     }
+//     else {
+//         res.status(401).send("Not allowed")
+//     }
+// })
 
 
 ordersRouter.post('/', async (req, res) => {
@@ -50,7 +50,7 @@ ordersRouter.get('/:orderId', async (req, res) => {
     }
 
     return res.json({ status: true, order })
-})
+});
 
 ordersRouter.get('/', async (req, res) => {
     //page and limit sent as query parameters
@@ -101,7 +101,7 @@ ordersRouter.delete('/:id', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-connectDB(PORT, DB_URL);
+
 
 
 module.exports = ordersRouter

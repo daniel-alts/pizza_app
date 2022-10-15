@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
+require('dotenv').config()
+const DB_URL = process.env.DB_URL
 
-module.exports = (PORT, DB_URL) => {
+module.exports = function connectDB() {
     mongoose.connect(DB_URL)
 
     mongoose.connection.on("connected", () => {

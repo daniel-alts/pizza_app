@@ -1,66 +1,50 @@
-const usersModel = require('../models/usersModel');
 const express = require('express');
-const mongoose = require('mongoose');
-const moment = require('moment');
-const connectDB = require('../database');
-const { auth } = require('../auth');
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
-
-const PORT = process.env.PORT
-const DB_URL = process.env.DB_URL
 
 const usersRouter = express.Router();
 
-
-//create a new user
-usersRouter.post('/', (req, res) => {
-    const userData = req.body
-    usersModel.create(userData).then((userData) => {
-        res.status(201).send({
-            message: "User profile successfully created",
-            user: userData.username
-        })
-    }).catch(err => {
-        console.log({error_message: err})
-    })
-    
-})
-
-
-//Admin authentication
-usersRouter.use(async (req, res, next) => {  
-    const user = await auth(req, res)
-    if(user === "admin"){
-        next()
-    }
-    else {
-        res.status(401).send("Unathorized")
-    }
-    
-})
-
-//get all Users
 usersRouter.get('/', (req, res) => {
-    
-    usersModel.find({}).then((users) => {
-        res.status(200).send(users)
-    }).catch(err => {
-        console.log({error_message: err})
-    })
+    res.send('users route')
 })
+usersRouter.post(
+    '/signup',
+    passport.authenticate('signup', { session: false }), async (req, res, next) => {
+        res.json({
+            message: 'Signup successful',
+            user: req.user
+        });
+    }
+);
 
-//delete user by ID
-usersRouter.delete('/:id', (req, res) => {
-    const id = req.params.id
-    usersModel.findByIdAndDelete(id).then(() => {
-        res.status(200).send(`User profile with id: ${id} has been deleted`)
-    }).catch(err => {
-        console.log(error)
-    })
-})
+usersRouter.post(
+    '/login',
+    async (req, res, next) => {
+        passport.authenticate('login', async (err, user, info) => {
+            try {
+                if (err) {
+                    return next(err);
+                }
+                if (!user) {
+                    const error = new Error('Username or password is incorrect');
+                    return next(error);
+                }
 
+                req.login(user, { session: false },
+                    async (error) => {
+                        if (error) return next(error);
+                        const body = { _id: user._id, email: user.email };
+                        const token = jwt.sign({ user: body }, process.env.JWT_SECRET);
+                        return res.json({ token });
+                    }
+                );
+            } catch (error) {
+                return next(error);
+            }
+        }
+        )(req, res, next);
+    }
+);
 
-connectDB(PORT, DB_URL);
-
-module.exports = usersRouter
-
+module.exports = usersRouter;
