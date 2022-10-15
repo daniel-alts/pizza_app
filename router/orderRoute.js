@@ -2,7 +2,7 @@ const express = require("express");
 
 // const { loginUser } = require("../controllers/users");
 
-const { authenticateUser } = require("../middleware/authenticate");
+// const { authenticateUser } = require("../Basic_auth/authenticate");
 
 const orderRouter = express.Router();
 const {
@@ -13,14 +13,14 @@ const {
   deleteOrder,
 } = require("../controllers/order");
 
-orderRouter.get("/", authenticateUser, getAllOrder);
+orderRouter.get("/", getAllOrder);
 
-orderRouter.get("/:id", authenticateUser, getOrderById);
+orderRouter.get("/:id", getOrderById);
 
-orderRouter.post("/", authenticateUser, createOrder);
+orderRouter.post("/", createOrder);
 
-orderRouter.patch("/:id", authenticateUser, updateOrder);
+orderRouter.patch("/:id", updateOrder);
 
-orderRouter.delete("/:id", authenticateUser, deleteOrder);
+orderRouter.delete("/:id", deleteOrder);
 
 module.exports = { orderRouter };
