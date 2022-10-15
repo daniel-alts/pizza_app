@@ -1,7 +1,9 @@
 const express = require('express');
 const moment = require('moment');
 const mongoose = require('mongoose');
-const orderModel = require('./orderModel');
+const orderModel = require('./Models/orderModel');
+const userModel = require('./Models/userModel')
+require("dotenv").config();
 
 const PORT = 3334
 
@@ -14,10 +16,10 @@ app.get('/', (req, res) => {
     return res.json({ status: true })
 })
 
-
 app.post('/order', async (req, res) => {
     const body = req.body;
-
+    return res.json({status:true, body})
+     
     const total_price = body.items.reduce((prev, curr) => {
         prev += curr.price
         return prev
