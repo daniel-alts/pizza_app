@@ -4,6 +4,7 @@ const db = require('./db')
 const bodyParser = require('body-parser')
 const userRouter = require('./routes/user')
 const orderRouter = require('./routes/order')
+const passport = require('passport')
 const PORT = 3334
 
 const app = express()
@@ -23,7 +24,7 @@ app.use(bodyParser.urlencoded( {extended: false} ))
 app.use('/user', userRouter)
 
 // ORDER ROUTE
-app.use('/order', orderRouter)
+app.use('/order', passport.authenticate('jwt', {session: false}), orderRouter)
 
 app.get('/', (req, res) => {
     return res.json({ status: true })

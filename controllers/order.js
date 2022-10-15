@@ -18,7 +18,7 @@ async function addOrder(req, res) {
         total_price,
         location: body.location,
         phoneNo: body.phoneNo,
-        user: res.locals.user
+        user: req.user
     })
     
     return res.json({ status: true, order: {items: order.items, total_price: order.total_price} })
@@ -26,7 +26,7 @@ async function addOrder(req, res) {
 
 async function getOrder(req, res) {
     let orders 
-    let getOrder = await orderModel.find({user: res.locals.user})
+    let getOrder = await orderModel.find({user: req.user})
     let countOrders = getOrder.length
 
     // PAGINATION
@@ -43,12 +43,12 @@ async function getOrder(req, res) {
 
         if (sort_by.includes(",")) {
             sort_by = sort_by.split(",")  
-            orders = await orderModel.find({user: res.locals.user}).sort({[ sort_by[0] ]: allOrders[order], [ sort_by[1] ]: allOrders[order]}).skip(skip).limit(page)
+            orders = await orderModel.find({user: req.user}).sort({[ sort_by[0] ]: allOrders[order], [ sort_by[1] ]: allOrders[order]}).skip(skip).limit(page)
         } else {
-            orders = await orderModel.find({user: res.locals.user}).sort({[ sort_by ]: allOrders[order]}).skip(skip).limit(page)
+            orders = await orderModel.find({user: req.user}).sort({[ sort_by ]: allOrders[order]}).skip(skip).limit(page)
         }
     } else {
-        orders = await orderModel.find({user: res.locals.user}).skip(skip).limit(page)
+        orders = await orderModel.find({user: req.user}).skip(skip).limit(page)
     }
 
     if (Array.isArray(orders)) {  
@@ -65,7 +65,7 @@ async function getOrderById(req, res) {
         return res.status(404).json({ status: false, order: null })
     }
 
-    if (order.user.email != res.locals.user.email) return res.status(404).json({ status: false, order: "Wrong id" })
+    if (order.user.email != req.user.email) return res.status(404).json({ status: false, order: "Wrong id" })
 
     const {_id, state, total_price, items} = order
 
