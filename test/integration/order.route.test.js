@@ -122,6 +122,7 @@ describe("UPDATE /order/:id", () => {
     expect(response.headers["content-type"]).toBeJSON()
     expect(response.statusCode).toBe(200);
     expect(response.body.status).toBe(true);
+    expect(response.body.order.state).toBe(2)
   })
 })
 
