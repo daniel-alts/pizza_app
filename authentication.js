@@ -15,17 +15,17 @@ const password_authentication = (req, res) => {
       resolve();
     }
   });
-};
 
-password_authentication()
-  .then(() => {
-    orderRoute;
-  })
-  .catch((err) => {
-    res.status(400);
-    res.send({
-      err,
+  password_authentication()
+    .then(() => {
+      orderRoute;
+    })
+    .catch((err) => {
+      res.status(400);
+      res.send({
+        err,
+      });
     });
-  });
+};
 
 module.exports = { password_authentication };

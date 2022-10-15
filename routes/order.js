@@ -33,42 +33,42 @@ orderRoute.get("/orders", async (req, res) => {
   return res.json({ status: true, orders });
 });
 
-// get paginated results
-app.get("/users/paginate", paginatedResults(users), (req, res) => {
-  res.json(res.paginatedResults);
-});
+// // get paginated results
+// orderRoute.get("/users/paginate", paginatedResults(users), (req, res) => {
+//   res.json(res.paginatedResults);
+// });
 
-function paginatedResults(model) {
-  // middleware function
-  return (req, res, next) => {
-    const page = parseInt(req.query.page);
-    const limit = parseInt(req.query.limit);
+// function paginatedResults(model) {
+//   // middleware function
+//   return (req, res, next) => {
+//     const page = parseInt(req.query.page);
+//     const limit = parseInt(req.query.limit);
 
-    // calculating the starting and ending index
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
+//     // calculating the starting and ending index
+//     const startIndex = (page - 1) * limit;
+//     const endIndex = page * limit;
 
-    const results = {};
-    if (endIndex < model.length) {
-      results.next = {
-        page: page + 1,
-        limit: limit,
-      };
-    }
+//     const results = {};
+//     if (endIndex < model.length) {
+//       results.next = {
+//         page: page + 1,
+//         limit: limit,
+//       };
+//     }
 
-    if (startIndex > 0) {
-      results.previous = {
-        page: page - 1,
-        limit: limit,
-      };
-    }
+//     if (startIndex > 0) {
+//       results.previous = {
+//         page: page - 1,
+//         limit: limit,
+//       };
+//     }
 
-    results.results = model.slice(startIndex, endIndex);
+//     results.results = model.slice(startIndex, endIndex);
 
-    res.paginatedResults = results;
-    next();
-  };
-}
+//     res.paginatedResults = results;
+//     next();
+//   };
+// }
 
 // Read Orders by OrderID
 orderRoute.get("/order/:orderId", async (req, res) => {
