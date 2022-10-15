@@ -29,8 +29,8 @@ From our last live class, we created a mini pizza ordering app. What we want you
 - Add a user schema, the attributes/fields are up to you but the required fields/attributes are: 
   - `username`
   - `password`
-  - `user_type`
-- `user_type` should be `admin` or `user`
+  - `userType`
+- `userType` should be `admin` or `user`
 - Using basic authentication, protect the `order` routes
 - Add query params to the `/orders` route, we want to:
   - Sort the `total_price` from ascending to descending
