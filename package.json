@@ -2,22 +2,28 @@
   "name": "pizza_app",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "jest --runInBand",
     "test:watch": "npx test --watch",
-    "start": "node index",
-    "start:dev": "nodemon index",
+    "start": "node app",
+    "start:dev": "nodemon app",
     "dev": "npm run start:dev"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "dotenv": "^16.0.2",
+    "ejs": "^3.1.8",
     "express": "^4.18.1",
+    "express-session": "^1.17.3",
+    "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.4",
-    "mongoose": "^6.6.1"
+    "mongoose": "^6.6.1",
+    "passport": "^0.6.0",
+    "passport-jwt": "^4.0.0"
   },
   "devDependencies": {
     "jest": "^29.1.1",
