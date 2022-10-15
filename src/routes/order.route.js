@@ -2,12 +2,12 @@ const orders = require('express').Router();
 const orderController = require('../controllers/order.controller');
 const passport = require('passport');
 const { userauth, adminauth } = require('../middleware/auth')
-orders.use(passport.authenticate('jwt', { session: false}));
+//orders.use(passport.authenticate('jwt', { session: false}));
 
 
 orders
 .route('/')
-.get(adminauth, orderController.getOrders)
+.get(orderController.getOrders)
 .post(userauth, orderController.createOrder)
 
 
