@@ -3,7 +3,7 @@ const moment = require('moment');
 
 
 const getOrders = async (req, res) => {
-    const orders = await orderService.getOrder();
+    const orders = await orderService.getOrders();
     res.json({ success: true, orders})
 }
 

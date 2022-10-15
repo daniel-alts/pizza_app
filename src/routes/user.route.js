@@ -1,17 +1,19 @@
 const users = require('express').Router();
 const userController = require('../controllers/user.controller');
-
+const { userauth, adminauth } = require('./../middleware/auth');
+const passport = require('passport');
+users.use(passport.authenticate('jwt', { session: false}))
 
 users
 .route('/')
-.get(userController.getUsers)
-.post(userController.createUser)
+.get(adminauth, userController.getUsers)
+.post(adminauth, userController.createUser)
 
 users
 .route('/:_id')
-.get(userController.getUser)
-.patch(userController.updateUser)
-.delete(userController.deleteUser)
+.get(userauth, userController.getUser)
+.patch(userauth, userController.updateUser)
+.delete(adminauth, userController.deleteUser)
 
 module.exports = users;
 
