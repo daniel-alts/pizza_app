@@ -54,7 +54,7 @@ passport.use('login',
                         return done(null, false, {message: "Invalid password"})
                     }
 
-                    done(null, true, {message: "Logged in successfully!"})
+                    done(null, user, {message: "Logged in successfully!"})
                 } catch (error) {
                     console.log(error);
                     done(error);
