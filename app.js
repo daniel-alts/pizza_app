@@ -1,13 +1,11 @@
-
 require ("express-async-errors")
 require ("dotenv").config()
 
 const express = require("express");
 const mongoose = require("mongoose");
-const connectDB = require("./db/connect")
+const connectDB = require("./db/connect");
 const userRouter = require("./routes/userRoutes");
-const orderRouter = require("./routes/orderRoutes")
-
+const orderRouter = require("./routes/orderRoutes");
 
 
 
@@ -31,5 +29,3 @@ const start = async () => {
 	}
 };
 start();
-
-

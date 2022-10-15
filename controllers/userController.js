@@ -1,53 +1,54 @@
-// const express =require("express");
-// const mongoose = require("mongoose");
 const User = require("../models/userModel");
-const bcrypt = require("bcrypt")
-
-const getAllUsers = async(req, res) => {
-    const users = await User.find()
-    return res.status(200).json(users)
-}
+const {StatusCodes} = require("http-status-codes");
+const CustomError = require("../errors");
+const {createTokenUser} = require("../utils");
 
 
 
-const createUser = async (req, res) => {
-    try {
-      const { username, password, email, user_type } = req.body
-      const hashedPassword = await bcrypt.hash(password, 6)
-      const userObject = {
-        username,
-        password: hashedPassword,
-        email,
-      }
-      if (user_type) userObject.user_type = user_type
-      const user = new User(userObject)
-      user
-        .save()
-        .then((result) => {
-          const { id, username, email, user_type } = result
-          const returnObj = {
-            id,
-            username,
-            email,
-            user_type,
-          }
-          return res.status(201).json({ status: true, data: returnObj })
-        })
-        .catch((err) => {
-          console.log('error occured', err)
-          return res.status(400).json({ status: false, message: err.message })
-        })
-    } catch (err) {
-      res.json(err)
-    }
+//REGISTRATION
+const register = async(req, res ) => {
+  const {email, username, password} = req.body
+  const emailAlreadyExist = await User.findOne({email})
+  if(emailAlreadyExist){
+    throw new CustomError.BadRequestError("Email already exist")
+    return;
   }
+
+
+
+  //first registration user is an admin
+  const isFirstAccount = await User.countDocuments({}) === 0;
+  const user_type = isFirstAccount ? 'admin' : 'user';
   
+  const user = await User.create({email, username, password, user_type});
+
+  const tokenUser = createTokenUser(user);
+
+  res.status(StatusCodes.CREATED).json({user: tokenUser});
+};
 
 
 
+const login = async(req, res) =>{
+  const { email, password } = req.body;
+
+  if (!email || !password ) {
+    throw new CustomError.BadRequestError("Please provide email or password");
+  }
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new CustomError.UnauthenticatedError("invalid credentials");
+  }
+  const isPasswordCorrect = await user.comparePassword(password);
+  if(!isPasswordCorrect) {
+    throw new CustomError.UnauthenticatedError("Invalid login");
+  }
+  const tokenUser = createTokenUser(user);
+
+  res.status(StatusCodes.OK).json({ user: tokenUser });
+};
 
 
-module.exports = {
-    getAllUsers,
-    createUser,
-}
+
+module.exports = {register, login}; 
