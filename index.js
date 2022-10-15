@@ -1,30 +1,26 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const orderRouter = require('./routes/orderRoutes');
-const userRouter = require('./routes/userRoutes');
+const morgan = require('morgan');
+const connectToMongoDB = require('./config/dbConfig');
+const authRouter = require('./routes/auth.route');
+const orderRouter = require('./routes/order.route');
+const userRouter = require('./routes/users.route');
 
-const PORT = 3334;
+const PORT = 8000;
 
 const app = express();
 
+// Middlewares
 app.use(express.json());
+app.use(morgan('tiny'));
 
+// Connect to MongoDB database
+connectToMongoDB();
+
+// Routes
+app.use('/auth', authRouter);
 app.use('/orders', orderRouter);
 app.use('/users', userRouter);
 
-mongoose.connect('mongodb://localhost:27017');
-
-mongoose.connection.on('connected', () => {
-  console.log('Connected to MongoDB Successfully');
-});
-
-mongoose.connection.on('error', (err) => {
-  console.log('An error occurred while connecting to MongoDB');
-  console.log(err);
-});
-
 app.listen(PORT, () => {
-  console.log('Listening on port, ', PORT);
+  // console.log('Server listening on port, ', PORT);
 });
-
-module.exports = app;
