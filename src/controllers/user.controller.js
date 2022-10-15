@@ -7,6 +7,7 @@ const createUser = async (req, res) => {
     res.json({ success: true, newUser});
 }
 
+
 const updateUser =async (req, res) => {
     const { _id, ...state } = req.body;
     const updatedUser =await userService.updateUser(_id, state);

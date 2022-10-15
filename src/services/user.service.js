@@ -11,6 +11,11 @@ const updateUser = async (_id, updates) => {
     return updated;
 }
 
+const findUser = async (username ) => {
+    const user = await User.findOne({username});
+    return user;
+}
+
 const deleteUser = async (_id) => {
     const deleted = await User.findOneAndDelete({_id});
     return deleted;
@@ -21,12 +26,16 @@ const getUser = async (_id) => {
     return user;
 }
 
+
 const getUsers = async () => {
     const users = await User.find({});
     return users;
 }
 
 module.exports = {
-
+    findUser,
+    updateUser,
+    getUsers,
+    getUser,
     createUser
 }

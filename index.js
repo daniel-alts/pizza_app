@@ -2,7 +2,8 @@ const express = require('express');
 const moment = require('moment');
 const mongoose = require('mongoose');
 const userRouter = require('./src/routes/user.route');
-const orderRouter = require('./src/routes/order.route')
+const orderRouter = require('./src/routes/order.route');
+const { login, register } = require('./src/services/auth.service')
 require('dotenv').config()
 const PORT = 3334
 
@@ -17,9 +18,11 @@ app.get('/', (req, res) => {
 })
 
 
-app.use('/orders', orderRouter);
+app.use('/orders',  orderRouter);
 app.use('/users',userRouter);
 
+app.post('/login', login)
+app.post('/register', register)
 
 mongoose.connect( process.env.MONGO_URI ,{useNewUrlParser : true})
 .then(()=>{console.log("Connected to MongoDB Successfully")})
