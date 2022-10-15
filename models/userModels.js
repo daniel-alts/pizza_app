@@ -5,17 +5,17 @@ const Schema = mongoose.Schema;
 
 
 const UserSchema = new Schema({
-    username: {
-        type: "String",
-       // required: true,
-        unique: true
-    },
+    // username: {
+    //     type: String,
+    //    // required: true,
+    //    unique: true
+    // },
     password: {
-        type: "String",
+        type: String,
         required: true
     },
     user_type: {
-        type: "String",
+        type: String,
         enum: ['admin', 'user'],
         default: 'user'
     }, 

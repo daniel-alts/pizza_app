@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 
 //const OrderRoute = require('./routes/orderRoutes');
 const userController = require('./controllers/userController')
-const orderController = require('./controllers/orderController')
+const orderRoutes = require('./route/routes')
 const auth = require("./middleware/auth")
 app.use(express.json())
 
@@ -16,7 +16,7 @@ app.use(express.json())
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/', userController);
-app.use('/orders', passport.authenticate('jwt', { session: false }), orderController);
+app.use('/orders', passport.authenticate('jwt', { session: false }), orderRoutes);
 
 // Handle errors.
 app.use(function (err, req, res, next) {

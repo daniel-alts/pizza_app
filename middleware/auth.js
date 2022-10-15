@@ -31,7 +31,7 @@ passport.use(
         usernameField: 'email',
         passwordField: 'password'
       },
-      async (email, password, done) => {
+      async (email, password,  done) => {
         try {
           const user = await UserModel.create({ email, password });
   
