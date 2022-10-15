@@ -1,13 +1,33 @@
 const mongoose = require('mongoose');
-bycrypt = require(bycrypt);
+const bcrypt = require('bcrypt')
 
 const Schema = mongoose.Schema;
 
  const UserSchema = new Schema({
-    username: { type: String, required: true, index: { unique: true } },
-    password: { type: String, required: true }
-    user_type:{ type: String, enum: ['admin','user'], required: true},
+    username: { type: String,required: true,unique: true},
+    password: { type: String,required: true },
+   //  user_type:{ type: String, enum: ['admin','user'], required: true},
     });
+
+
+    UserSchema.pre(
+      'save',
+      async function (next) {
+          const user = this;
+          const hash = await bcrypt.hash(this.password, 10);
+  
+          this.password = hash;
+          next();
+      }
+  );
+  
+  
+  UserSchema.methods.isValidPassword = async function(password) {
+      const user = this;
+      const compare = await bcrypt.compare(password, user.password);
+    
+      return compare;
+    }
     
     
     const Users = mongoose.model("User", UserSchema);
