@@ -37,7 +37,6 @@ userSchema.pre('save', async function (next) {
 });
 
 userSchema.methods.isValidPassword = async function (password) {
-	console.log(this);
 	const valid = await bcrypt.compare(password, this.password);
 	return valid;
 };
