@@ -28,7 +28,6 @@ const getOrders = async (req, res, next) => {
     .sort(queryParameter)
   
   
-    console.log(orders)
     return res.status(200).json(orders)
     
  

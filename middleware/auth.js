@@ -1,33 +1,18 @@
-// const User = require('../model/user')
-
-// module.exports = async(req, res, next) => {
-//   const username = req.headers['username']
-//   const password = req.headers['password']
-
-//   const user = await User.findOne({username: username, password: password})
-//   if (!user) return res.status(401).json({ msg: "access denied! user not authenticated." })
-
-//   req.user = user
-  
-//   next()
-
-// }
-
-
 const passport = require('passport')
 const User = require('../model/user')
 const LocalStrategy = require('passport-local').Strategy
-const JwtStrategy = require('passport-jwt').Strategy
-const ExtractJwt = require('passport-jwt').ExtractJwt
+const JwtStrategy = require('passport-jwt').Strategy,
+      ExtractJwt = require('passport-jwt').ExtractJwt
+
 
 
 passport.use(new JwtStrategy({
-  secretOrKey: 'nmamama',
-  jwtFromRequest : ExtractJwt.fromHeader('authToken')
+  secretOrKey: process.env.JWT_SECRETE,
+  jwtFromRequest : ExtractJwt.fromAuthHeaderAsBearerToken()
 }, async (token, done) => {
   try {
     return done(null, token.user);
-} catch (error) {
+  } catch (error) {
     done(error);
   }
   
@@ -42,8 +27,8 @@ passport.use('register', new LocalStrategy({
 }, async (username, password, done) => {
 
   try {
-    let user = await User.findOne({username})
-    if (user) return done(null, false, { message: "Username already exists." })
+    let user = await User.findOne({ username })
+    if (user) return done(null, false, { message: 'username already exist!' })
     
     user = new User({ username, password })
 

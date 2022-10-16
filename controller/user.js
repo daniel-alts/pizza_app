@@ -1,6 +1,6 @@
-const User = require('../model/user')
 const passport = require('passport')
 const jwt = require('jsonwebtoken')
+
 module.exports = {
   createUser: async (req, res, next) => {
     res.status(200).json({msg : "Register Successfully", user : req.user})
@@ -23,7 +23,7 @@ module.exports = {
 
               const payload = { _id: user._id, username: user.username };
        
-              const token = jwt.sign({ user: payload }, 'jajka');
+              const token = jwt.sign({ user: payload }, process.env.JWT_SECRETE);
 
               return res.json({ token });
           }
