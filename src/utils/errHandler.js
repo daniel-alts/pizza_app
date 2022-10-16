@@ -24,6 +24,13 @@ const errorResponder = (
       .send({
         message: 'unauthorised access'
       })
+  }
+  else if (err.name === 'Error') {
+    res
+      .status(401)
+      .send({
+        message: 'unauthorised access'
+      })
   } else {
     next(err)
   }

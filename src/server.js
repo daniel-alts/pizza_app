@@ -2,7 +2,7 @@ const express = require('express')
 const { urlencoded } = require('body-parser')
 const morgan = require('morgan')
 const orderRouter = require('./resources/order/order.router')
-const { protectRoute, signUp } = require('./utils/auth')
+const { protectRoute, signUp, signIn } = require('./utils/auth')
 const connectDB = require('./utils/database')
 const { errorLogger, errorResponder, invalidPathHandler } = require('./utils/errHandler')
 
@@ -17,8 +17,11 @@ app.use(urlencoded({ extended: true }))
 app.use(morgan('dev'))
 app.use('/api', protectRoute)
 
+
+app.post('/signin', signIn)
 app.post('/signup', signUp)
 app.use('/api/order', orderRouter)
+
 
 app.all('*', (req, res, next) => {
     console.log('here')

@@ -1,20 +1,29 @@
+const User = require ('../resources/user/user.model')
 const createOrder =
   (model) => async (req, res, next) => {
     try {
-      const authenticatedUser =
-        req.authenticatedUser
-      if (!authenticatedUser) {
-        return res
-          .status(403)
-          .send({
-            message: 'forbidden'
-          })
-      }
+	// Uncomment this piece of codes if you want to use basic authntication
+    //   const authenticatedUser =
+    //     req.authenticatedUser
+    //   if (!authenticatedUser) {
+    //     return res
+    //       .status(403)
+    //       .send({
+    //         message: 'forbidden'
+    //       })
+    //   }
+	const authenticatedUser = req.user
       const body = req.body
+	  const user = await User.findById(authenticatedUser.id)
 
       const order = await model.create({
-        items: body.items
+        items: body.items,
+		user: user.id
       })
+
+	  user.orders = user.orders.concat(order.id)
+	  await user.save()
+	  
       return res
         .status(201)
         .json({ data: order })
@@ -59,15 +68,20 @@ const checkOrderById =
 const checkAllOrder =
   (model) => async (req, res, next) => {
     try {
-      const authenticatedUser =
-        req.authenticatedUser
-      if (!authenticatedUser) {
-        // return res.status(403).send({
-        //   message: 'forbidden'
-        // })
-		return next()
-      }
+    //   const authenticatedUser =
+    //     req.authenticatedUser
+    //   if (!authenticatedUser) {
+    //     // return res.status(403).send({
+    //     //   message: 'forbidden'
+    //     // })
+	// 	return next()
+    //   }
+	
 
+	//Comment the next 2 lines for basic authentication
+	const authenticatedUser = req.user
+	const usersOrder = User.find({ _id: authenticatedUser.id }).populate('orders')
+	
       let orders
 
       const { price, date, p } =
@@ -91,8 +105,7 @@ const checkAllOrder =
             ? -1
             : false
         if (value) {
-          orders = await model
-            .find({})
+          orders = await usersOrder //replace this with model.find({}) for basic authentication
             .sort({
               total_price: value
             })
@@ -113,8 +126,7 @@ const checkAllOrder =
             : false
 
         if (value) {
-          orders = await model
-            .find({})
+          orders = await usersOrder
             .sort({ created_at: value })
             .skip(skipPage)
             .limit(booksPerPage)

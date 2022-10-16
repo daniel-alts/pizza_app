@@ -3,49 +3,49 @@ const moment = require('moment')
 const orderController = require('./order.controller')
 
 const Schema = mongoose.Schema
-const ObjectId = Schema.ObjectId
+const ObjectId = Schema.Types.ObjectId
 
 const OrderSchema = new Schema({
-	// id: ObjectId,
-	created_at: {
-		type: Date,
-		default: Date,
-	},
-	state: { type: Number, default: 1 },
-	total_price: Number,
-	items: [
-		{
-			name: String,
-			price: Number,
-			size: {
-				type: String,
-				enum: ['m', 's', 'l'],
-			},
-			quantity: Number,
-		},
-	],
+  // id: ObjectId,
+  created_at: {
+    type: Date,
+    default: Date
+  },
+  state: { type: Number, default: 1 },
+  total_price: Number,
+  items: [
+    {
+      name: String,
+      price: Number,
+      size: {
+        type: String,
+        enum: ['m', 's', 'l']
+      },
+      quantity: Number
+    }
+  ],
+  user: {
+    type: ObjectId,
+    ref: 'User'
+  }
 })
 
 OrderSchema.pre(
-	'save',
-	async function (next) {
-		let order = this
+  'save',
+  async function (next) {
+    let order = this
 
-		order.items.reduce(
-			(prev, curr) => {
-				prev += curr.price * curr.quantity
-				order.total_price = prev
-				next()
-			},
-			0,
-		)
+    order.items.reduce((prev, curr) => {
+      prev += curr.price * curr.quantity
+      order.total_price = prev
+      next()
+    }, 0)
 
     // Add default created at on save
-		order.created_at.default =
-			moment.toDate()
-	},
+    order.created_at.default =
+      moment.toDate()
+  }
 )
-
 
 // I'd be back for you someday
 // OrderSchema.methods.sortOrder =
@@ -77,8 +77,8 @@ OrderSchema.pre(
 // 	}
 
 const Order = mongoose.model(
-	'Order',
-	OrderSchema,
+  'Order',
+  OrderSchema
 )
 
 module.exports = Order
