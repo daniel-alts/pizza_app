@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
   return res.json({ status: true });
 });
 
-// app.use(errorHandler);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log("Listening on port, ", PORT);
