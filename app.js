@@ -1,21 +1,37 @@
-require("dotenv").config();
-require("./config/db").connect();
 const express = require("express");
-const moment = require("moment")
+const passport = require("passport");
+const bodyParser = require("body-parser");
 
-const orderRoute = require('./routes/order')
-const userRoute = require('./routes/user')
+const { connectToMongoDB } = require("./config/db");
+const orderRoute = require("./routes/order");
+const authRoute = require("./routes/auth");
 
+require("dotenv").config();
+require("./middleware/jwtauth");
+
+const PORT = 3334;
 const app = express();
 
-app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
-app.get('/', (req, res) => {
-  return res.json({ status: true })
-})
+app.use("/", authRoute);
+app.use("/order", passport.authenticate("jwt", { session: false }), orderRoute);
 
-app.use("/user", userRoute)
-app.use("/orders", orderRoute)
+// renders the home page
+app.get("/", (req, res) => {
+  return res.send("Welcome");
+});
 
+// Handle errors.
+app.use(function(err, req, res, next) {
+  console.log(err);
+  res.status(err.status || 500);
+  res.json({ error: err.message });
+});
 
-module.exports = app;
+connectToMongoDB(
+  app.listen(PORT, () => {
+    console.log("Listening on port, ", PORT);
+  })
+);
