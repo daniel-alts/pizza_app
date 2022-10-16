@@ -6,17 +6,22 @@
   "scripts": {
     "test": "cross-env NODE_ENV=test jest",
     "pretest": "cross-env NODE_ENV=test",
-    "start:dev": "nodemon index"
+    "start": "node index",
+    "dev": "nodemon index"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "body-parser": "^1.20.0",
     "dotenv": "^16.0.2",
     "express": "^4.18.1",
     "moment": "^2.29.4",
-    "mongoose": "^6.6.1"
+    "mongoose": "^6.6.1",
+    "passport": "^0.6.0",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
