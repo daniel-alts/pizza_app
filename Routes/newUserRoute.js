@@ -40,7 +40,6 @@ userRoute.post("/login/:userId", async (req, res) => {
     res.send("User not found")
   }
   
-
   if(await bycrypt.compare(req.body.password, user.password)) {
     const SECRET_KEY = process.env.SECRET_KEY
     const accessToken = jwt.sign(user.toJSON(), SECRET_KEY)
