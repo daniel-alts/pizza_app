@@ -1,11 +1,14 @@
 const express = require('express');
-const userController = require('../controllers/users')
+const userController = require('../controllers/register')
+require('../authentication/auth') // Signup and login authentication middleware
+
+const passport = require('passport')
 
 const userRouter = express.Router();
 
-userRouter.post('/register', userController.registerUser);
+userRouter.route('/register').post(passport.authenticate('register', { session: false }), userController.registerUser)
+
        
-userRouter.post('/login', userController.loginUser);
 
 
 module.exports = userRouter;

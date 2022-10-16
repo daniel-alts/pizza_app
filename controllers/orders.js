@@ -83,6 +83,9 @@ async function deleteOrderById( req, res, next){
         const { id } = req.params;
 
         const order = await orderModel.deleteOne({ _id: id})
+        if (!order) {
+            return res.status(404).json({ status: false, order: null })
+        }
     
         return res.json({ status: true, order })
          

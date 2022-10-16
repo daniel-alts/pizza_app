@@ -1,18 +1,19 @@
 const express = require('express');
 const ordersController = require('../controllers/orders')
-const {authenticateAdmin, authenticateUser} = require('../controllers/users')
+const passport = require('passport')
 
 const orderRouter = express.Router();
 
+orderRouter.use(passport.authenticate('jwt', { session: false }))
 
-orderRouter.post('/',authenticateUser ,ordersController.makeOrder);
+orderRouter.route('/').post(ordersController.makeOrder);
 
-orderRouter.get('/:orderId',authenticateAdmin, ordersController.getOrderById);
+orderRouter.route('/:orderId').get(ordersController.getOrderById);
 
-orderRouter.get('/',authenticateAdmin, ordersController.getAllOrders);
+orderRouter.route('/').get(ordersController.getAllOrders);
 
-orderRouter.patch('/:id',authenticateUser, ordersController.updateOrderById);
+orderRouter.route('/:id').patch(ordersController.updateOrderById);
 
-orderRouter.delete('/:id',authenticateAdmin, ordersController.deleteOrderById);
+orderRouter.route('/:id').delete(ordersController.deleteOrderById);
 
 module.exports = orderRouter;
