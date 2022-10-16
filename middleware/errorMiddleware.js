@@ -1,4 +1,3 @@
-const { response } = require("express");
 const path = require("path");
 
 async function errorHandler(error, req, res, next) {

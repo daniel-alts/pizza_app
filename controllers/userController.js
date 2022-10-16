@@ -1,27 +1,9 @@
 const userModel = require('../models/user')
-const moment = require('moment')
-
-async function signup(req, res) {
-    const body = req.body
-
-    try {
-        const user = await userModel.create({
-            created_at: moment().toDate(),
-            username: body.username,
-            password: body.password,
-            user_type: body.user_type
-        })
-
-        return res.status(201).json({ status: true, user })
-    } catch (error) {
-        return res.json({ status: false, error })
-    }
-}
 
 async function allUsers(req, res) {
     try {
         const user = await userModel.find()
-        return res.status(200).json({ status: true, user })
+        return res.status(200).json({ status: true, user: user.username })
     } catch (error) {
         return res.json({ status: false, error })
     }
@@ -65,7 +47,6 @@ async function deleteUser(req, res) {
 
 
 module.exports = {
-    signup,
     allUsers,
     updateUser,
     deleteUser
