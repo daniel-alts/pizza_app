@@ -1,6 +1,7 @@
 const orderModel = require('../models/orderModel');
 
 const getAllOrders = async (req, res) => {
+	console.log(req.user);
 	const { order, created_at, state, page, limit } = req.query;
 	const sort = {};
 	const where = {};
