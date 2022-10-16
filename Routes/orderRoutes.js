@@ -5,13 +5,10 @@ const express = require("express");
 const orderRouter = express.Router()
 
 
-  orderRouter.get("/",authenticateDetails, async (req, res,next) => {
+  orderRouter.get("/", async (req, res,next) => {
 
   
-    try{ const authenticatedUserDetails= req.authenticatedUser
-      if(!authenticatedUserDetails){
-    return res.status(403).send({message: "Forbidden"})
-      }
+    try{ 
       let orders
       const{price, date}= req.query
       if(price){
@@ -35,15 +32,12 @@ const orderRouter = express.Router()
   })
 
 
-  orderRouter.get("/:orderId",authenticateDetails, async (req, res) => {
+  orderRouter.get("/:orderId", async (req, res) => {
 
  
     const { orderId } = req.params;
   try {
-    const authenticatedUserDetails= req.authenticatedUserDetails
-      if(!authenticatedUserDetails){
-    return res.status(403).send({message: "Forbidden"})
-      }
+    
       let orders
       const{price, date}= req.query
       if(price){
@@ -70,12 +64,9 @@ const orderRouter = express.Router()
 
 
 
-  orderRouter.post("/", authenticateDetails, async (req, res) => {
+  orderRouter.post("/", async (req, res) => {
  
-    passedUserDetails= req.authenticatedUser
-    if(!passedUserDetails){
-      return res.status(404).send({message:"forbidden"})
-    }
+
     
       const body = req.body;
   
@@ -96,11 +87,8 @@ const orderRouter = express.Router()
 
 
 
-  orderRouter.patch("/:id",authenticateDetails, async (req, res) => {
-    passedUserDetails= req.authenticatedUser
-    if(!passedUserDetails){
-      return res.status.send({message:"forbidden"})
-    }
+  orderRouter.patch("/:id", async (req, res) => {
+    
     
     const { id } = req.params;
     const { state } = req.body;
@@ -125,13 +113,10 @@ const orderRouter = express.Router()
   });
 
 
-  orderRouter.delete("/:id",authenticateDetails, async (req, res) => {
+  orderRouter.delete("/:id", async (req, res) => {
   
 
-    passedUserDetails= req.authenticatedUserDetails
-    if(!passedUserDetails){
-      return res.status.send({message:"forbidden"})
-    }
+    
     
     const { id } = req.params;
   

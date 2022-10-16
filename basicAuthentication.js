@@ -1,32 +1,72 @@
-const dbModel= require('./models/userModel')
+
+const passport= require('passport')
+const localStrategy= require('passport-local').Strategy
+const JWTstrategy= require('passport-jwt').Strategy
+const ExtractJWT = require('passport-jwt').ExtractJwt
+const userModel = require('./models/userModel')
+passport.use(
+  new JWTstrategy({secretOrKey: process.env.JWT_SECRET,
+  jwtFromRequest: ExtractJWT.fromUrlQueryParameter('secret_token')
+// jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken()
+  
+},
+async(token,done)=>{
+try{
+  return done(null, token.user)
+}
+catch(error){
+done(error)
+}
+
+}
+)
+)
+
+
+passport.use( 'signup', new localStrategy({
+
+usernameField: 'username',
+passwordField: 'password'
+}, async (username,password,done) =>{
+
+try{
+
+  const user= await userModel.create({username, password})
+  return done(null, user)
+
+}
+catch(error){
+  done(error)
+}
+}) )
 
 
 
+passport.use('login', 
+new localStrategy({
+  usernameField: "username",
+  passwordField: "password" 
+}, async (username, password ,done)=>{
 
-module.exports = async (req, res, next) => {
-    // get basic authentication from header
-    const authorization = req.headers.authorization
-    try {
-      if (authorization) {
-        // remove "Basic "
-        const encoded = authorization.substring(6)
-        // decode to get username and password as plain text
-        const decoded = Buffer.from(encoded, 'base64').toString('ascii')
-        const [username, password] = decoded.split(':')
-        // get the user object from database
-        const authenticatedUser = await dbModel.findOne({ username })
-        // compare the password
-        // const match = await bcrypt.compare(password, authenticatedUser.password)
-        // if successful, store the details in the request
-        if (authenticatedUser) {
-          req.authenticatedUser = {
-            username: authenticatedUser.username,
-            role: authenticatedUser.user_type,
-          }
-        }
-      }
-      next()
-    } catch (err) {
-      next()
-    }
-  }
+try{
+const user = await userModel.findOne({username})
+
+
+if(!user){
+  return done(null, false, {message: 'user not found'})
+}
+
+const validate = await user.isValidPassword(password)
+
+if(!validate){
+  return done(null, false,{message:'wrong password'})
+}
+
+return done(null,user, {message:'You are logged in'})
+}
+catch(error){
+
+  return done(error)
+}
+
+}))
