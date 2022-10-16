@@ -1,31 +1,35 @@
 const express = require('express')
 const router = express.Router()
-const orderModel = require('../models/orderModel')
-const authenticate = require('../middleware/authenticate')
 const controller = require('../controllers/orderController')
+const passport = require('passport')
+const authorize = require('../middleware/authorize')
+const checkId = require('../middleware/checkId')
 
+
+router.use(passport.authenticate('jwt', { session: false }))
 /**
  * Get information about all orders
  */
-router.route('/info').get(authenticate, controller.getOrdersInfo)
+router.route('/info')
+  .get(authorize, controller.getOrdersInfo)
 
 /**
  * Get all orders
  * &&
  * Create new orders
  */
-router.route('/').get(authenticate, controller.getAllOrders).post(authenticate, controller.createOrder)
+router.route('/')
+  .get(controller.getAllOrders)
+  .post(controller.createOrder)
 
 /**
- * Get order by id
- */
-router.route('/:orderId').get(authenticate, controller.getOrderById)
-
-/**
- * Update order state
- * &&
+ * Get order by id,
+ * Update order state and
  * Delete order by ID
  */
-router.route('/:id').patch(authenticate, controller.updateOrder).delete(authenticate, controller.deleteOrder)
+router.route('/:id')
+  .get(checkId, controller.getOrderById)
+  .patch(authorize, controller.updateOrder)
+  .delete(checkId, controller.deleteOrder)
 
 module.exports = router
