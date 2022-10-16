@@ -306,6 +306,7 @@ const orderState =
 const deleteOrder =
   (model) => async (req, res, next) => {
     try {
+// get 
       const authenticatedUser =
         req.authenticatedUser
       if (!authenticatedUser) {
