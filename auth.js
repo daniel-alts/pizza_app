@@ -25,7 +25,7 @@ passport.use(
     new localStrategy(
         {
             passReqToCallback: true,
-            // usernameField: 'email',
+            // usernameField: 'username',
             // passwordField: 'password'
         },
         async (req, username, password, done) => {
@@ -53,12 +53,12 @@ passport.use(
     'login',
     new localStrategy(
         {
-            usernameField: 'email',
+            usernameField: 'username',
             passwordField: 'password'
         },
-        async (email, password, done) => {
+        async (username, password, done) => {
             try {
-                const user = await userModel.findOne({ email });
+                const user = await userModel.findOne({ username });
 
                 if (!user) {
                     return done(null, false, { message: 'User not found' });

@@ -25,8 +25,15 @@ const userSchema = new Schema({
         type: String  
     },
     user_type: {
-        type: String
-    }
+        type: String,
+        default: 'user'
+    },
+    orders: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Order'
+        }
+    ]
 
 });
 
@@ -47,6 +54,6 @@ userSchema.methods.isValidPassword = async function (password){
     return compare;
 }
 
-const userModel = model("users", userSchema);
+const User = model("User", userSchema);
 
-module.exports = userModel;
+module.exports = User;

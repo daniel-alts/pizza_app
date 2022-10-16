@@ -13,7 +13,7 @@ usersRouter.post(
     passport.authenticate('signup', { session: false }), async (req, res, next) => {
         res.json({
             message: 'Signup successful',
-            user: req.user
+            user: req.user.firstName + " " + req.user.lastName
         });
     }
 );
