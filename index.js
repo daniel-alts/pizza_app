@@ -1,32 +1,40 @@
-const express = require('express');
-// const {connectToMongoDB} =require('./db')
-require("dotenv").config();
-const OrderRoute = require("./order/ordersroute");
-const mongoose = require('mongoose');
-
-
-
-const PORT = process.env.PORT;
+const CONFIG = require('./config/config')
+const express = require('express')
+const ordersRoute = require('./routes/orders')
+const usersRoute = require('./routes/users')
+const loginRoute = require('./controllers/login')
+const errorHandler = require('./middleware/errHandler')
+const connectDb = require('./utils/db')
+const passport = require('passport')
 
 const app = express()
-// connectToMongoDB()
 
- app.use(express.json());
-app.use("/order", OrderRoute);
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
 
+// Use passport middleware
+app.use(passport.initialize())
+require('./config/passport')(passport)
 
+app.use('/api/login', loginRoute)
+app.use('/api/orders', ordersRoute)
+app.use('/api/users', usersRoute)
 
-mongoose.connect('mongodb://localhost:27017')
+app.all('/', (req, res) => {
+  return res.json({ status: true })
+})
 
-mongoose.connection.on("connected", () => {
-	console.log("Connected to MongoDB Successfully");
-});
+app.use(errorHandler)
 
-mongoose.connection.on("error", (err) => {
-	console.log("An error occurred while connecting to MongoDB");
-	console.log(err);
-});
+/**
+ * Connect to database
+ */
+connectDb(CONFIG.MONGODB_URI)
 
+/**
+ * Start server
+ */
+const PORT = CONFIG.PORT || 5555
 app.listen(PORT, () => {
-    console.log('Listening on port, ', PORT)
+  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
 })
