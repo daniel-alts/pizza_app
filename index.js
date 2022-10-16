@@ -1,95 +1,45 @@
-const express = require('express');
-const moment = require('moment');
-const mongoose = require('mongoose');
-const orderModel = require('./orderModel');
+const express = require("express");
+const morgan = require("morgan");
+const passport = require("passport");
+const connectEnsureLogin = require("connect-ensure-login");
+const session = require("express-session");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const orderRouter = require("./routes/orderRoutes");
+const userRouter = require("./routes/userRoutes");
+dotenv.config();
+const PORT = 3334; 
 
-const PORT = 3334
+require("./authentication/auth")
 
-const app = express()
-
+const app = express();
+// app.use(
+//   session({
+//     secret: process.env.SESSION_SECRET,
+    
+//   })
+// );
+app.use(morgan("dev"));
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  return res.json({ status: true });
+});
 
-app.get('/', (req, res) => {
-    return res.json({ status: true })
-})
+app.use("/orders",passport.authenticate('jwt', { session: false }), orderRouter);
+app.use("/users", userRouter);
 
-
-app.post('/order', async (req, res) => {
-    const body = req.body;
-
-    const total_price = body.items.reduce((prev, curr) => {
-        prev += curr.price
-        return prev
-    }, 0);
-
-    const order = await orderModel.create({ 
-        items: body.items,
-        created_at: moment().toDate(),
-        total_price
-    })
-    
-    return res.json({ status: true, order })
-})
-
-app.get('/order/:orderId', async (req, res) => {
-    const { orderId } = req.params;
-    const order = await orderModel.findById(orderId)
-
-    if (!order) {
-        return res.status(404).json({ status: false, order: null })
-    }
-
-    return res.json({ status: true, order })
-})
-
-app.get('/orders', async (req, res) => {
-    const orders = await orderModel.find()
-
-    return res.json({ status: true, orders })
-})
-
-app.patch('/order/:id', async (req, res) => {
-    const { id } = req.params;
-    const { state } = req.body;
-
-    const order = await orderModel.findById(id)
-
-    if (!order) {
-        return res.status(404).json({ status: false, order: null })
-    }
-
-    if (state < order.state) {
-        return res.status(422).json({ status: false, order: null, message: 'Invalid operation' })
-    }
-
-    order.state = state;
-
-    await order.save()
-
-    return res.json({ status: true, order })
-})
-
-app.delete('/order/:id', async (req, res) => {
-    const { id } = req.params;
-
-    const order = await orderModel.deleteOne({ _id: id})
-
-    return res.json({ status: true, order })
-})
-
-
-mongoose.connect('mongodb://localhost:27017')
+mongoose.connect("mongodb://127.0.0.1:27017");
 
 mongoose.connection.on("connected", () => {
-	console.log("Connected to MongoDB Successfully");
+  console.log("Connected to MongoDB Successfully");
 });
 
 mongoose.connection.on("error", (err) => {
-	console.log("An error occurred while connecting to MongoDB");
-	console.log(err);
+  console.log("An error occurred while connecting to MongoDB");
+  console.log(err);
 });
 
 app.listen(PORT, () => {
-    console.log('Listening on port, ', PORT)
-})
+  console.log("Listening on port, ", PORT);
+});
