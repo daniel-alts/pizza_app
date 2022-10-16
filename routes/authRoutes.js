@@ -1,15 +1,16 @@
 const { Router } = require('express');
-const authController = require('../controller/authController')
+const userController = require('../controller/userController')
+const orderController = require('../controller/orderController')
 
 const router = Router();
 
-router.get('/users', authController.getUsers);
-router.post('/users', authController.addUser);
-router.post('/users/login', authController.userLogin);
-router.post('/order', authController.createOrder);
-router.get('/order/:orderId', authController.getOrderById);
-router.get('/orders', authController.getAllOrders); 
-router.patch('/order/:id', authController.updateOrder); 
-router.delete('/order/:id', authController.deleteOrder); 
+router.get('/users', userController.getUsers);
+router.post('/users', userController.addUser);
+router.post('/users/login', userController.userLogin);
+router.post('/order', orderController.createOrder);
+router.get('/order/:orderId', orderController.getOrderById);
+router.get('/orders', orderController.getAllOrders); 
+router.patch('/order/:id', orderController.updateOrder); 
+router.delete('/order/:id', orderController.deleteOrder); 
 
 module.exports = router;
