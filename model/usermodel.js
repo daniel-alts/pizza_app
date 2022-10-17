@@ -28,10 +28,8 @@ userschema.methods.comparePassword = async(candidatePassword, userPassword) =>{
     return await bcrypt.compare(candidatePassword, userPassword)
   }
 
-userschema.methods.isValidpassword = async function (password){
-    const user = this;
-    const compare = await bcrypt.compare(password, user.password);
-    return compare;
-}
+userschema.methods.isValidPassword = async function (password) {
+    return await bcrypt.compare(password, this.password)
+  }
 
 module.exports = mongoose.model('User',userschema);
