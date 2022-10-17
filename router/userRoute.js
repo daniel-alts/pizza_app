@@ -1,27 +1,49 @@
-const express = require('express')
-const userModel = require('../models/userModel')
+const passport = require('passport')
+const jwt = require('jsonwebtoken')
+require('dotenv').config()
+const userRouter = require('express').Router()
+// const userController = require('../controller/user')
 
-const userRouter = express.Router()
 
 
-userRouter.get('/', async (req,res) => {
-    
-    const allUsers = await userModel.find({})
-    res.status(200).json({
-        message: 'Here are the users',
-        data: allUsers
-    })
-})
+userRouter.post(
+  '/signup',
+  passport.authenticate('signup', { session: false }), 
+  async (req, res, next) => {
+      res.json({
+          status: 'successful',
+          message: 'Signup successful',
+          user: req.user
+      });
+  }
+);
 
-userRouter.post('/', async (req,res) => {
-    const body = req.body
-    const user = await userModel.create(body)
-    res.status(201).json(user)
-})
+userRouter.post(
+  '/login', 
+  async (req, res, next) => {
+    passport.authenticate('login', async (err, user, info) => {
+      try{
+        if(err){
+          return next(err)
+        }
+        req.login(user, {session: false},
+          async (err) => {
+            if(err) return next(err)
 
-userRouter.patch('/:id', async (req,res) => {
+            const body = { _id: user.id}
+            const token = jwt.sign({user:body}, process.env.JWT_SECRET)
+            return res.json({token})
+          }
+        )
+      }catch(err){
+        return next(err)
+      }
+    })(req,res,next)
+  }
+  
+)
 
-})
+
 
 
 module.exports = userRouter

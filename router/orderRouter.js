@@ -1,20 +1,20 @@
 const express = require('express');
 // const moment = require('moment')
-const { authenticateUser } = require('../middleware/authenticate');
+// const { authenticateUser } = require('../middleware/authenticate');
 // const orderModel = require('../models/orderModel');
 const orderController = require('../controller/orderController')
 
 const orderRouter = express.Router()
 
-orderRouter.post('/',authenticateUser, orderController.createNewOrder)
+orderRouter.post('/', orderController.createNewOrder)
 
-orderRouter.get('/:orderId',authenticateUser, orderController.getOrderById)
+orderRouter.get('/:orderId', orderController.getOrderById)
 
-orderRouter.get('/', authenticateUser, orderController.getAllOrders)
+orderRouter.get('/',  orderController.getAllOrders)
 
-orderRouter.patch('/:id', authenticateUser, orderController.updateOrder)
+orderRouter.patch('/:id',  orderController.updateOrder)
 
-orderRouter.delete('/:id', authenticateUser, orderController.deleteOrder)
+orderRouter.delete('/:id', orderController.deleteOrder)
     
 
 module.exports = orderRouter
