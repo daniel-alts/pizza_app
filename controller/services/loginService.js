@@ -18,7 +18,7 @@ async function loginHandler(req, res, next) {
     return res
       .status(401)
       .send(
-        `Sorry, you don't have an account with us. But you can sign up "here".`
+        `Sorry, you don't have an account with us. \nBut you can sign up "here".`
       );
   }
 

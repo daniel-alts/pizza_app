@@ -1,14 +1,6 @@
 const moment = require('moment');
 const { Order } = require('../../model/Models/orderModel');
 
-//
-//
-
-//
-//
-//
-//
-
 // POST LOGIC
 async function postLogic(req, res) {
   const body = req.body;
@@ -42,26 +34,10 @@ async function getByIdLogic(req, res) {
 // GET-ALL LOGIC
 
 async function getAllLogic(req, res) {
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-
-  const orders = await Order.find();
-  console.log({ status: true, orders });
+  const { p = 1, lim = 2 } = req.query; // I have limited it to 2 per page
+  const orders = await Order.find()
+    .limit(lim)
+    .skip((p - 1) * lim);
 
   return res.status(200).json({ status: true, orders });
 }
@@ -71,7 +47,11 @@ async function patchLogic(req, res) {
   const { id } = req.params;
   const { state } = req.body;
 
+  console.log([id, state]);
+
   const order = await Order.findById(id);
+
+  console.log(order);
 
   if (!order) {
     return res.status(404).json({ status: false, order: null });
@@ -87,7 +67,8 @@ async function patchLogic(req, res) {
 
   await order.save();
 
-  return res.json({ status: true, order });
+  return res.send(order);
+  // return res.json({ status: true, order });
 }
 
 // DELETE LOGIC
