@@ -1,9 +1,10 @@
-const express = require('express');
+const dotenv = require('dotenv');
+dotenv.config();
 const passport = require('passport');
 const localStrategy = require('passport-local').Strategy;
 const User = require('../model/usermodel');
-const dotenv = require('dotenv');
-dotenv.config();
+
+
 
 
 const JWTstrategy = require('passport-jwt').Strategy;
@@ -14,7 +15,7 @@ const ExtractJwt = require('passport-jwt').ExtractJwt;
 passport.use(
   new JWTstrategy(
     {
-      secretorkey: process.env.JWT_SECRET,
+      secretOrKey: process.env.JWT_SECRET,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     },
     async (token, done) => {
