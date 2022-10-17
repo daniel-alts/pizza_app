@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const UserModel = require("../UserModel")
+const UserModel = require("../models/UserModel")
 const auth = require("basic-auth")
 
 router.get("/", (req,res)=>{

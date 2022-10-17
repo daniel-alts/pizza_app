@@ -1,7 +1,7 @@
 const express= require('express')
 const mongoose = require("mongoose")
 const router = express.Router()
-const orderModel = require("../orderModel")
+const orderModel = require("../models/orderModel")
 
 router.post('/order', async (req, res) => {
     const body = req.body;
