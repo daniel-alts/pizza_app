@@ -1,10 +1,13 @@
 const express = require('express');
 
 const userRouter = express.Router();
+const passport = require('passport');
 
-const { createUser } = require('../controller/usercontroller');
 
-userRouter.route('/create').post(createUser);
+const { signup,login } = require('../controller/usercontroller');
 
-module.exports = createUser;
+userRouter.route('/register').post(passport.authenticate('signup',{session: false}), signup);
+userRouter.route('/login').get(login);
+
+module.exports = userRouter;
 
