@@ -1,12 +1,36 @@
 const User = require('../models/userModel');
+require('dotenv').config();
+const jwt = require('jsonwebtoken');
+const passport = require('passport');
+const JWT_STRING = process.env.JWT_SECRET;
 
 const registerUser = async (req, res) => {
-  const data = req.body;
-  data.user_type = 'user';
-  const user = await User.create(data);
-  res
-    .status(200)
-    .json({ msg: 'Endeavour successful! You have just registered...', user });
+  res.status(200).json({
+    msg: 'Endeavour successful! You have just registered...',
+    data: req.user,
+  });
+};
+
+const loginUser = (req, res, next) => {
+  passport.authenticate('login', async (err, user, info) => {
+    try {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        const err = new Error('Username or password is incorrect');
+        return next(err);
+      }
+      req.login(user, { session: false }, async (err) => {
+        if (err) return next(err);
+        const body = { id: user._id, email: user.email };
+        const token = jwt.sign({ user: body }, JWT_STRING);
+        return res.json({ token });
+      });
+    } catch (err) {
+      return next(err);
+    }
+  })(req, res, next);
 };
 
 const seedUsers = async () => {
@@ -23,4 +47,4 @@ const seedUsers = async () => {
   }
 };
 
-module.exports = { registerUser, seedUsers };
+module.exports = { registerUser, seedUsers, loginUser };

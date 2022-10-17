@@ -14,6 +14,11 @@ app.get('/', (req, res) => {
 });
 app.use('/api', require('./routes/routes'));
 
+app.use((err, req, res, next) => {
+  res
+    .status(400)
+    .json({ status: 'error', msg: 'An error happened somehow...' });
+});
 connectToDatabase();
 
 module.exports = app.listen(PORT, () => {
