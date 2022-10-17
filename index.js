@@ -1,51 +1,32 @@
 const express = require('express');
 const moment = require('moment');
+const passport = require('passport');
+const bodyParser = require('body-parser');
+
 const mongoose = require('mongoose');
-const orderModel = require('./orderModel');
-const UserRoute = require("./Routes/UserRoutes")
-const authenticate = require("./authenticate")
-const OrderRoute = require("./Routes/OrderRoutes")
+const orderModel = require('./Models/orderModel');
+require('dotenv').config();
+require("./Authentication/authentication");
+
+const OrderRoute = require("./Routes/OrderRoutes");
+
+const AuthRoute = require("./Routes/AuthRoute")
 
 const PORT = 3334
 
 const app = express()
 
-app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// app.use(express.json());
 
 
-app.use("/user", UserRoute);
-app.use("/order", OrderRoute);
+app.use("/", AuthRoute);
+app.use("/order", passport.authenticate('jwt', { session: false }), OrderRoute);
 
 
 app.get('/', (req, res) => {
-    authenticate(req,res)
-        .then(() => {
-            return res.json({ status: true })
-        }).catch((err) => {
-            return res.json({ status: false, message: err })
-        })
-})
-
-
-app.get('/orders', (req, res) => {
-    authenticate(req,res)
-        .then(async() => {
-            const {total_price, order, created_at} = req.query;
-            let totNum;
-            let orderNum;
-            let creNum;
-            let page = 1;
-            let maxi = 2;
-            total_price === "asc" ? totNum = 1 : totNum = -1;
-            order === "asc" ? orderNum = 1 : orderNum = -1;
-            created_at === "asc" ? creNum = 1 : creNum = -1;
-
-            const orders = await orderModel.find().sort({total_price: totNum, order: orderNum, created_at: creNum }).skip((page - 1) * maxi).limit(maxi)
-
-            return res.json({ status: true, orders })
-        }).catch((err) => {
-            return res.json({ status: false, message: err })
-        })
+    res.send("Login or signup to make an order")
 })
 
 
@@ -59,6 +40,13 @@ mongoose.connection.on("error", (err) => {
 	console.log("An error occurred while connecting to MongoDB");
 	console.log(err);
 });
+
+app.use(function (err, req, res, next) {
+    console.log(err);
+    res.status(err.status || 500);
+    res.json({ error: err.message });
+});
+
 
 app.listen(PORT, () => {
     console.log('Listening on port, ', PORT)
