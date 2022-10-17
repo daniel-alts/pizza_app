@@ -42,7 +42,7 @@ passport.use(
       try {
 
         const username = req.body.username;
-        const user = await UserModel.create({ username, email, password });
+        const user = await User.create({ username, email, password });
 
         return done(null, user);
       } catch (error) {
