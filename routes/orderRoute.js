@@ -1,21 +1,13 @@
 const express = require('express');
 const moment = require('moment');
 const orderModel = require('../models/orderModel');
-const userModel =require('../models/userModel')
-const { authenticateUser } = require('../authenticate/authentication')
-
-require("dotenv").config()
-const PORT = process.env.PORT
-
 const orderRouter = express.Router()
-
 
 const app = express()
 app.use(express.json());
 
 
 orderRouter.get('/', async (req, res, ) => {
-    authenticateUser(req, res)
    
     const {price, orderDate, orderStatus} = req.query
     try{
@@ -63,8 +55,8 @@ orderRouter.get('/', async (req, res, ) => {
 })
     
 
-    orderRouter.get('/:orderId', async (req, res, next) => {
-    authenticateUser(req, res)
+orderRouter.get('/:orderId', async (req, res, next) => {
+  
     const { orderId } = req.params.orderId;
 
     try{
@@ -88,7 +80,7 @@ orderRouter.get('/', async (req, res, ) => {
 
 
 orderRouter.post('/', async (req, res) => {
-    authenticateUser(req, res)
+   
     const body = req.body;
     try{
          const total_price = body.items.reduce((prev, curr) => {
@@ -113,7 +105,7 @@ orderRouter.post('/', async (req, res) => {
 
 
 orderRouter.patch('/:id', async (req, res) => {
-    authenticateUser(req, res)
+ 
     const { id } = req.params.id;
     const { state } = req.body;
     try{
@@ -141,7 +133,7 @@ orderRouter.patch('/:id', async (req, res) => {
 })
 
 orderRouter.delete('/:id', async (req, res) => {
-    authenticateUser(req, res)
+
     const { id } = req.params;
     try {
     const order = await orderModel.deleteOne({ _id: id})

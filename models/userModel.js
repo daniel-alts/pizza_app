@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
+
 
 const UserSchema = new Schema({
  id : ObjectId,
@@ -31,8 +31,10 @@ const UserSchema = new Schema({
             "admin",
             "user"
         ]
-    }
-});
+}
+})
+
+
 
 module.exports = mongoose.model('User', UserSchema);
 
