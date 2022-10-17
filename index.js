@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
 	return res.json({ status: true });
 });
 
-app.post("/order", async (req, res) => {
+app.post("/orders", async (req, res) => {
 	const body = req.body;
 
 	const total_price = body.items.reduce((prev, curr) => {
@@ -37,7 +37,7 @@ app.post("/order", async (req, res) => {
 	return res.json({ status: true, order });
 });
 
-app.get("/order/:orderId", async (req, res) => {
+app.get("/orders/:orderId", async (req, res) => {
 	const { orderId } = req.params;
 	const order = await orderModel.findById(orderId);
 
@@ -54,11 +54,11 @@ app.get("/orders", async (req, res) => {
 	return res.json({ status: true, orders });
 });
 
-app.patch("/order/:id", async (req, res) => {
+app.put("/orders/:id", async (req, res) => {
 	const { id } = req.params;
-	const { state } = req.body;
+	const { state, items } = req.body;
 
-	const order = await orderModel.findById(id);
+	let order = await orderModel.findById(id);
 
 	if (!order) {
 		return res.status(404).json({ status: false, order: null });
@@ -68,6 +68,7 @@ app.patch("/order/:id", async (req, res) => {
 		return res.status(422).json({ status: false, order: null, message: "Invalid operation" });
 	}
 
+	order.items = items;
 	order.state = state;
 
 	await order.save();
@@ -83,7 +84,7 @@ app.delete("/order/:id", async (req, res) => {
 	return res.json({ status: true, order });
 });
 
-// mongoose.connect("MONGODB_CONNECTION_STRING");
+// mongoose.connect(MONGODB_CONNECTION_STRING);
 
 // mongoose.connection.on("connected", () => {
 // 	console.log("Connected to MongoDB Successfully");
