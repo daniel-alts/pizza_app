@@ -2,6 +2,7 @@ const moment = require("moment");
 const orderModel = require("../models/orderModel");
 const { authenticateUser } = require("../middlewares/authentication");
 
+// GET all orders.
 async function getAllOrders(req, res) {
 	authenticateUser(req, res)
 		.then(async () => {
@@ -13,7 +14,7 @@ async function getAllOrders(req, res) {
 		});
 }
 
-// Find a single order by Id.
+// GET a single order by Id.
 async function getOrder(req, res) {
 	authenticateUser(req, res)
 		.then(async () => {
@@ -31,6 +32,7 @@ async function getOrder(req, res) {
 		});
 }
 
+// POST an order.
 async function postOrder(req, res) {
 	authenticateUser(req, res)
 		.then(async () => {
@@ -54,6 +56,7 @@ async function postOrder(req, res) {
 		});
 }
 
+// UPDATE an order.
 async function updateOrder(req, res) {
 	authenticateUser(req, res)
 		.then(async () => {

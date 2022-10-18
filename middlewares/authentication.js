@@ -3,7 +3,7 @@ const userModel = require("../models/userModel");
 
 const authenticateUser = (req, res, next) => {
 	return new Promise(async (resolve, reject) => {
-		const { username, password } = req.body;
+		const { username, password } = req.body.user_credentials;
 		const user = await userModel.findOne({ username });
 		if (!user) {
 			reject("You must provide a username and password.");
