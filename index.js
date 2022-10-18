@@ -1,11 +1,11 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const moment = require("moment");
-const logger = require("morgan");
 require("dotenv").config();
-const orderModel = require("./models/orderModel");
-const UserModel = require("./models/userModel");
+const express = require("express");
+const logger = require("morgan");
 const { connectToMongoDB } = require("./DBConnection.js");
+const orderModel = require("./models/orderModel");
+const UsersModel = require("./models/userModel");
+const ordersRouter = require("./routes/ordersRoute");
+// const usersRouter = require("./routes/userRoute");
 
 const app = express();
 const PORT = process.env.PORT;
@@ -17,82 +17,40 @@ app.use(express.json());
 app.use(logger("dev"));
 
 app.get("/", (req, res) => {
-	return res.json({ status: true });
+	res.json({ status: true, message: "Welcome to pizza_app." });
 });
 
-app.post("/orders", async (req, res) => {
-	const body = req.body;
+app.use("/orders", ordersRouter);
+// app.use("/users", usersRouter);
 
-	const total_price = body.items.reduce((prev, curr) => {
-		prev += curr.price;
-		return prev;
-	}, 0);
+// app.patch("/orders/:id", async (req, res) => {
+// 	const { id } = req.params;
+// 	const { state, items } = req.body;
 
-	const order = await orderModel.create({
-		items: body.items,
-		created_at: moment().toDate(),
-		total_price,
-	});
+// 	let order = await orderModel.findById(id);
 
-	return res.json({ status: true, order });
-});
+// 	if (!order) {
+// 		res.status(404).json({ status: false, order: null });
+// 	}
 
-app.get("/orders/:orderId", async (req, res) => {
-	const { orderId } = req.params;
-	const order = await orderModel.findById(orderId);
+// 	if (state < order.state) {
+// 		res.status(422).json({ status: false, order: null, message: "Invalid operation" });
+// 	}
 
-	if (!order) {
-		return res.status(404).json({ status: false, order: null });
-	}
+// 	order.items = items;
+// 	order.state = state;
 
-	return res.json({ status: true, order });
-});
+// 	await order.save();
 
-app.get("/orders", async (req, res) => {
-	const orders = await orderModel.find();
-
-	return res.json({ status: true, orders });
-});
-
-app.put("/orders/:id", async (req, res) => {
-	const { id } = req.params;
-	const { state, items } = req.body;
-
-	let order = await orderModel.findById(id);
-
-	if (!order) {
-		return res.status(404).json({ status: false, order: null });
-	}
-
-	if (state < order.state) {
-		return res.status(422).json({ status: false, order: null, message: "Invalid operation" });
-	}
-
-	order.items = items;
-	order.state = state;
-
-	await order.save();
-
-	return res.json({ status: true, order });
-});
-
-app.delete("/order/:id", async (req, res) => {
-	const { id } = req.params;
-
-	const order = await orderModel.deleteOne({ _id: id });
-
-	return res.json({ status: true, order });
-});
-
-// mongoose.connect(MONGODB_CONNECTION_STRING);
-
-// mongoose.connection.on("connected", () => {
-// 	console.log("Connected to MongoDB Successfully");
+// 	res.json({ status: true, order });
 // });
 
-// mongoose.connection.on("error", (err) => {
-// 	console.log("An error occurred while connecting to MongoDB");
-// 	console.log(err);
+// app.delete("/orders/:id", async (req, res) => {
+// 	const { id } = req.params;
+
+// 	const order = await orderModel.deleteOne({ _id: id });
+
+// 	res.json({ status: true, order });
 // });
 
 app.listen(PORT, () => {
