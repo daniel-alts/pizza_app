@@ -77,8 +77,11 @@ else {
 //get orders by certain query params like date created, highest to lowest price and state
 app.get('/', async (req, res)=>{
     const { price, date, state } = req.query
+    let type = ['asc', 'dsc']
+    let sorting = [1, -1]
     if (price == 'asc'){
-        const order = await orderModel.find({}).sort({total_price: 1})
+        
+        const order = await orderModel.find({}).sort({total_price: price == 'asc' ? 1 : price == 'dsc' ? -1 : 'Not a valid price type' })
         res.send({order})
     }if (price == 'dsc') {
         const order = await orderModel.find({}).sort({total_price: -1})
