@@ -24,18 +24,19 @@ const Schema = mongoose.Schema;
 			type: String,
 			required: true,
 		},
-		
-		userType: {
-			type: String,
-			default: 'user',
-            enum: ('admin', 'user'),
-			required: true,
-		},
+	});
+	 	// userType: {
+		// type: String,
+	 	// 	default: 'user',
+        //      enum: ('admin', 'user'),
+	 	// 	required: true,
+	
     
-	}, { timestamps: true })
-
-
-	UserSchema.pre(
+		// } [ timestamps: 'true' ],
+	
+	
+	
+	 UserSchema.pre(
 		'save',
 		async function (next) {
 			const user = this;

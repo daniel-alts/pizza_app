@@ -8,6 +8,7 @@ passport.use(
     new JWTstrategy(
         {
             secretOrKey: process.env.JWT_SECRET,
+            //jwtFromRequest: ExtractJWT.fromUrlQueryParameter('secret_token') 
             jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken() 
         },
         async (token, done) => {
@@ -26,8 +27,10 @@ passport.use(
     new localStrategy(
         {
             usernameField: 'email',
-            passwordField: 'password'
+            passwordField: 'password',
+            passReqToCallback: true
         },
+        
         async (email, password, done) => {
             try {
                 const user = await UserModel.create({ email, password });
@@ -52,13 +55,13 @@ passport.use(
             try {
                 const user = await UserModel.findOne({ email });
 
-                if (!user) {
+                if (!user){
                     return done(null, false, { message: 'User not found' });
                 }
 
                 const validate = await user.isValidPassword(password);
 
-                if (!validate) {
+                if (!validate){
                     return done(null, false, { message: 'Wrong Password' });
                 }
 
