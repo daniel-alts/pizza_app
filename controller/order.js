@@ -1,19 +1,12 @@
+
 const orderModel = require('../models/orderModel');
-const authenticator =require('../middleware/authenticate')
+const authenticator = require('../authentication/authenticate')
 const moment = require('moment');
 
 //Read/Get all the orders
 
 const getAllOrders = async (req, res, next) => {
     try {
-
-        const authenticatedUser = req.authenticatedUser
-        
-        if (!authenticatedUser) {
-            return res.status(403).send({ message: 'Forbidden' })
-        }
-
-
         const {total_price, created_At, state} = req.query
         
         const queryObject = {}
@@ -49,17 +42,6 @@ const getAllOrders = async (req, res, next) => {
 const createOrder = async (req, res, next) => {
     try {
 
-
-        const authenticatedUser = req.authenticatedUser
-        
-        if (!authenticatedUser) {
-            return res.status(403).send({ message: 'Forbidden' })
-        }
-
-        if (authenticatedUser.user_type !== 'admin') {
-        return res.status(401).send({ message: "Unauthorised Access" })
-        }
-
         const body = req.body;
 
         const total_price = body.items.reduce((prev, curr) => {
@@ -88,17 +70,6 @@ const createOrder = async (req, res, next) => {
 const getAnOrder = async (req, res, next) => {
     try {
 
-        const authenticatedUser = req.authenticatedUser
-        
-        if (!authenticatedUser) {
-            return res.status(403).send({ message: 'Forbidden' })
-        }
-
-        if (authenticatedUser.user_type !== 'admin') {
-        return res.status(401).send({ message: "Unauthorised Access" })
-        }
-
-
         const { orderId } = req.params;
         const order = await orderModel.findById(orderId)
 
@@ -122,16 +93,6 @@ const getAnOrder = async (req, res, next) => {
 
 const updateOrder = async (req, res, next) => {
     try {
-        const authenticatedUser = req.authenticatedUser
-        
-        if (!authenticatedUser) {
-            return res.status(403).send({ message: 'Forbidden' })
-        }
-
-        if (authenticatedUser.user_type !== 'admin') {
-        return res.status(401).send({ message: "Unauthorised Access" })
-        }
-
 
         const { orderId } = req.params;
         const { state } = req.body;
@@ -163,14 +124,6 @@ const updateOrder = async (req, res, next) => {
 
 const deleteOrder = async (req, res, next) => {
     try {
-        if (authenticatedUser.role !== 'admin') {
-            return res.status(401).send({ message: 'Unauthorised Access' })
-          }
-
-        if (authenticatedUser.user_type !== 'admin') {
-        return res.status(401).send({ message: "You're unauthorised" })
-        }
-
         const { orderId } = req.params;
         const order = await orderModel.findByIdAndRemove({_id: orderId})
 
@@ -180,7 +133,6 @@ const deleteOrder = async (req, res, next) => {
 
         return res.status(200).json({ status: true, mss: `delected successfully` })
 
-        // return res.json({mssg: order})
 
         
     } catch (error) {

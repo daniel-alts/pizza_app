@@ -1,36 +1,42 @@
 const express = require('express');
-require('dotenv').config()
+const passport = require('passport');
+const bodyParser = require("body-parser");
+require('dotenv').config();
 
-const userRouter = require('./routes/user')
+//routes
+const userAuth_Router = require('./routes/userAuth');
 const orderRouter = require('./routes/order');
-const connectDB  = require('./db/connect')
-const authenticateUser = require('./middleware/authenticate')
-const app = express()
 
-app.use(express.json());
+//db
+const connectDB  = require('./db/connect');
+//authentication route
+require('./authentication/authenticate');
+
+const app = express();
+
+app.use(bodyParser.urlencoded({extended : true}))
+app.use(bodyParser.json())
 
 
+// User Registration & login middleware
+app.use('/', userAuth_Router )
 
-// const {connectDB}
-//.env
-const PORT = process.env.PORT || 3334;
-const MONGO_DB_URI = process.env.MONGO_DB_URI
-
+//home page
 app.get('/', (req, res) => {
-    res.json({ status: true })
+    res.json({ status: true, message: 'HomePage' })
 })
 
 
-
-
-//User router
-app.use('/user', userRouter)
 //order router
-app.use('/order', authenticateUser, orderRouter );
+app.use('/order', passport.authenticate('jwt', { session : false }), orderRouter );
 
-app.all('/', (req, res) => {
-    return res.json({ status: true })
-  })
+
+
+
+// All Invalid route 
+app.all('*', (req, res)=>{
+    res.status(400).send('Invalid Route')
+})
 
 // error handler
 app.use((error,req,res, next ) =>{
@@ -41,21 +47,25 @@ app.use((error,req,res, next ) =>{
 })
 
 
+//.env
+const PORT = process.env.PORT || 3335;
+const MONGO_DB_URI = process.env.MONGO_DB_URI
+
+
 //server & database connection
 const start = async() =>{
     try {
         //connect to DB
        await connectDB(MONGO_DB_URI)
-       console.log("Connected to MongoDB Successfully");
-
-       //connect to server
-
+    //    console.log("Connected to MongoDB Successfully");
+    
+    //connect to server
      app.listen(PORT, () => {
         console.log(`Listening on port ${PORT}`)
     })
 
     } catch (error) {
-        console.log('Unable to initial connect,' + error)
+        console.log(`Unable to initial connection: Error info: ${error}`)
     }
 }
 

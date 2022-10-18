@@ -1,13 +1,11 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt')
 
-const Schema = mongoose.Schema;
-
-const userSchema = new Schema({
+const userSchema = new mongoose.Schema({
    username : {
       type : String,
       required : [true, "Username must be provided"],
-      unique : true,
-      trim : true,
+      unique: [true, `Username Already taken`],
       maxlength : 30,
       minlength : 3
    },
@@ -22,14 +20,13 @@ const userSchema = new Schema({
          values: ['admin', 'user'],
          message: '{VALUE} is not supported'
       },
-      default : 'user',
-   },
-   createdAt : {
-      type: Date,
-      default: Date.now()
+      default : 'user'
    }
 
 })
-const User = mongoose.model('User', userSchema);
 
-module.exports = User;
+
+
+const UserModel = mongoose.model('user', userSchema);
+
+module.exports = UserModel;
