@@ -6,8 +6,14 @@ const { authenticateUser } = require("../middlewares/authentication");
 async function getAllOrders(req, res) {
 	authenticateUser(req, res)
 		.then(async () => {
-			const orders = await orderModel.find({});
-			res.json({ status: true, orders });
+			const { state } = req.query;
+			if (state) {
+				const orders = await orderModel.find({ state }).sort({ created_at: -1 });
+				res.json({ status: true, orders });
+			} else {
+				const orders = await orderModel.find({});
+				res.json({ status: true, orders });
+			}
 		})
 		.catch((error) => {
 			res.json({ status: false, error });
