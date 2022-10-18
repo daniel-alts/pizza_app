@@ -52,10 +52,11 @@ async function updateOrder(req, res) {
 }
 
 async function deleteOrder(req, res) {
-	const { id } = req.params;
+	const { orderId } = req.params;
 
-	const order = await orderModel.deleteOne({ _id: id });
-	res.json({ status: true, order });
+	await orderModel.findByIdAndDelete(orderId).then((order) => {
+		res.json({ status: true, orders: order });
+	});
 }
 
 module.exports = {
