@@ -9,14 +9,14 @@ const orderRoute = express.Router()
 
 
 
-orderRoute.post('/order', async (req, res) => {
+orderRoute.post('/', async (req, res) => {
     const body = req.body;
-
+console.log(body)
     const total_price = body.items.reduce((prev, curr) => {
-        prev += curr.price
+        prev += curr.price*curr.quantity;
         return prev
     }, 0);
-
+console.log(total_price)
     const order = await orderModel.create({ 
         items: body.items,
         created_at: moment().toDate(),
@@ -37,7 +37,7 @@ orderRoute.get('/order/:orderId', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-orderRoute.get('/orders', async (req, res) => {
+orderRoute.get('/', async (req, res) => {
     const orders = await orderModel.find()
 
     return res.json({ status: true, orders })

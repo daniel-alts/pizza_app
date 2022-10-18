@@ -18,8 +18,8 @@ authRouter.post(
 authRouter.post(
     '/login',
     async (req, res, next) => {
-        passport.authenticate('login', async (err, user, info) => {
-            try {
+        try {
+            passport.authenticate('login', async (err, user, info) => {
                 if (err) {
                     return next(err);
                 }
@@ -43,11 +43,13 @@ authRouter.post(
                         return res.json({ token });
                     }
                 );
-            } catch (error) {
-                return next(error);
             }
+            ) (req, res, next);
         }
-        )(req, res, next);
+        
+        catch (error) {
+            return next(error);
+        }
     }
 );
 

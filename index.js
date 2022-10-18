@@ -17,10 +17,10 @@ app.get('/', (req, res) => {
 })
 
 app.use('/', userRoute);
-app.use('/orders', passport.authenticate('jwt', { session: false }), orderRoute);
+app.use('/order', passport.authenticate('jwt', { session: false }), orderRoute);
 
 
-mongoose.connect('mongodb://localhost:27017')
+mongoose.connect('mongodb://localhost:27017/pizza_app')
 
 mongoose.connection.on("connected", () => {
 	console.log("Connected to MongoDB Successfully");
