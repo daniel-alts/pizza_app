@@ -1,27 +1,35 @@
 const express = require('express');
 const moment = require('moment');
 const mongoose = require('mongoose');
-const orderModel = require('./order/orderModel');
-const orderRoute = require('./order/orderRoute')
-const userModel = require("./user/userModel")
-const userRoute = require("./user/userRoute")
-const {authenticate} = require("./authentication")
+const bodyParser = require("body-parser")
+const passport = require("passport")
+const orderModel = require('./models/orderModel');
+const orderRoute = require('./routes/orderRoute')
+const userModel = require("./models/userModel")
+const userRoute = require("./routes/userRoute")
+const authRouter = require("./routes/authRoute")
 
 const PORT = 3334
-
+require("./authentication/auth")
 const app = express()
 
-app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use("/order", authenticate, orderRoute)
-app.use("/user", userRoute)
+app.use('/', authRouter);
+app.use("/order", passport.authenticate('jwt', { session: false }), orderRoute)
 
 
+//render homepage
 app.get('/', (req, res) => {
-    return res.json({ status: true })
+    return res.json({ status: true, message:"Welcome to our Pizza App" })
 })
 
-
+// Handle errors.
+app.use(function (err, req, res, next) {
+    console.log(err);
+    res.status(err.status || 500);
+    res.json({ error: err.message });
+});
 
 mongoose.connect('mongodb://localhost:27017')
 

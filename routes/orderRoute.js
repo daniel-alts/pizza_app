@@ -1,5 +1,5 @@
 const express = require("express")
-const orderModel = require("./orderModel")
+const orderModel = require("../models/orderModel")
 const moment = require("moment")
 
 const orderRoute = express.Router();
