@@ -8,8 +8,8 @@ passport.use(
     new JWTstrategy(
         {
             secretOrKey: process.env.JWT_SECRET,
-            //jwtFromRequest: ExtractJWT.fromUrlQueryParameter('secret_token') 
-            jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken() 
+            jwtFromRequest: ExtractJWT.fromUrlQueryParameter('secret_token') 
+            
         },
         async (token, done) => {
             try {
@@ -28,7 +28,7 @@ passport.use(
         {
             usernameField: 'email',
             passwordField: 'password',
-            passReqToCallback: true
+            //passReqToCallback: true
         },
         
         async (email, password, done) => {
