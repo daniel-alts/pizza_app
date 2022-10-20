@@ -1,32 +1,30 @@
 const express = require('express');
-const BasicAuth = require('./middleware/basicAuth');
-const OrderRouter = require('./routes/OrderRoutes');
-const Database = require('./database');
+const moment = require('moment');
+const mongoose = require('mongoose');
+// const orderModel = require('./model/order');
+require('dotenv').config()
+const PORT = process.env.PORT
 
-const PORT = 3334
+const { connectToMongoDB } = require('./db')
+const orderRoute = require('./route/order')
+const userRoute = require('./route/user')
+const userController = require('./Controllers/userController')
 
 const app = express()
 
-// connect to database
-Database.connect();
+//connecting to db
+connectToMongoDB()
 
-// middleware
 app.use(express.json());
-app.use(BasicAuth)
+app.use("/api/auth", userController)
+app.use("/api/users", userRoute)
+app.use("/api/orders", orderRoute)
 
-// routes
-app.use('/', OrderRouter)
 
-// home route
-app.get('/', (req, res) => {
-    return res.json({ status: true })
+app.get("/", (req, res)=>{
+    res.send("Welcome Home!")
 })
 
-// 404 route
-app.use('*', (req, res) => {
-    return res.status(404).json({ message: 'route not found' })
-})
-
-app.listen(PORT, () => {
+app.listen(PORT || 5252, () => {
     console.log('Listening on port, ', PORT)
 })
