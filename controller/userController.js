@@ -32,18 +32,27 @@ const addUser = async (req, res) => {
 }
 
 const userLogin = async (req, res) => {
-    const users = await userModel.find({});
-    const user = users.find((user) => user.username = req.body.username);
+    const user = await userModel.findOne({ username: req.body.username})
     if(user == null){
         return res.status(400).send('cannot find user');
     }
     
     try{
-        if(await bcrypt.compare(req.body.password, user.password)){
-            res.send('Access Granted');
-        } else {
-            res.send('Access Denied');
-        };
+        bcrypt.compare(req.body.password, user.password, (err, ismatch) => {
+            if(err) return res.send(err);
+
+            if(ismatch){
+                res.send('Access Granted');
+            } else {
+                res.send('Access Denied');
+            }
+            
+        })
+        // if(await bcrypt.compare(req.body.password, user.password)){
+        //     res.send('Access Granted');
+        // } else {
+        //     res.send('Access Denied');
+        // };
     } catch {
         res.status(500).send();
     };
