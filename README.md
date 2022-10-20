@@ -19,7 +19,7 @@
   - sort the date created from asc to desc
   - query by a state
 
-- [ ] add pagination to the GET /orders route
+- [x] add pagination to the GET /orders route
 
 **Bonus**
 
