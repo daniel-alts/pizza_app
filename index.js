@@ -1,15 +1,14 @@
 const express = require('express');
-const moment = require('moment');
 require('dotenv').config()
-const mongoose = require('mongoose');
-// const orderModel = require('./orderModel');
 const orderRouter = require('./routes/ordersRoutes')
 const usersRouter = require('./routes/usersRoutes')
-const connectToDB = require('./connectMongoDB')
+const connectToDB = require('./connectMongoDB');
+const passport = require('passport');
 
 const PORT = process.env.PORT
 
 const app = express()
+require('./authentication/authJWT')
 
 //Connect to Database
 connectToDB()
@@ -17,11 +16,12 @@ connectToDB()
 
 //Middlewares
 app.use(express.json());
-app.use('/orders', orderRouter)
+app.use('/orders',passport.authenticate('jwt', {session:false}), orderRouter)
 app.use('/users', usersRouter)
 
 
-app.get('/', (req, res) => {
+app.get('/secured', passport.authenticate('jwt', {session: false}), (req, res) => {
+
     return res.json({ status: true })
 })
 

@@ -1,62 +1,52 @@
 const express = require('express')
-const mongoose = require('mongoose')
-const moment = require('moment');
+const passport = require('passport');
 const orderRouter = express.Router()
-const orderModel = require('../schemas/ordersModel')
-const userAuthenticator = require('../authentication/authenticationForOrders')
 const { getAllOrders, getOrderById, postAnOrder, updateOrderState, deleteOrderById } = require('../utils')
+require('../authentication/authJWT')
 
-
-
-orderRouter.post('/', async (req, res) => {
-    
-    userAuthenticator(req, res)
-        .then(() => {
-            postAnOrder(req, res)
+orderRouter.get('/', (req, res) => {
+    getAllOrders(req, res)
+        .then((orders) => {
+            res.status(200).json(orders)
         }).catch((err) => {
             res.status(401).end(err)
         })
 })
 
 orderRouter.get('/:orderId', async (req, res) => {
-    userAuthenticator(req, res)
-        .then(() => {
-            getOrderById(req, res)
+    getOrderById(req, res)
+        .then((order) => {
+            res.status(200).json({ status: true, order })
         }).catch((err) => {
-            res.status(401).end(err)
+            res.status(401).end(err.message)
         })
-
 })
 
-
-
-
-orderRouter.get('/', async (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-
-    userAuthenticator(req, res)
-        .then(() => {
-            getAllOrders(req, res)
+orderRouter.post('/', async (req, res) => {
+    postAnOrder(req, res)
+        .then((newOrder) => {
+            res.status(200).json({ status: true, newOrder })
         }).catch((err) => {
-            res.status(401).end(err)
+            res.status(401).end(err.message)
         })
-
 })
+
 
 orderRouter.patch('/:id', async (req, res) => {
-    userAuthenticator(req, res)
-        .then(() => {
-            updateOrderState(req, res)
+    updateOrderState(req, res)
+        .then((order) => {
+            res.status(200).json({ status: true, order })
         }).catch((err) => {
-            res.status(401).end(err)
+            res.status(401).end(err.message)
         })
-
 })
 
+
+
 orderRouter.delete('/:id', async (req, res) => {
-    userAuthenticator(req, res)
-        .then(() => {
-            deleteOrderById(req, res)
+    deleteOrderById(req, res)
+        .then((order) => {
+            res.status(200).json({ status: true, order })
         }).catch((err) => {
             res.status(401).end(err)
         })

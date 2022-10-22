@@ -10,5 +10,4 @@ describe('app', () => {
         expect(response.headers["content-type"]).toBe("application/json")
         expect(response.status).toBe(200)
     })
-
 })

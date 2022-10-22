@@ -3,8 +3,7 @@ require('dotenv').config()
 const connnectonUrl = process.env.MONGODB_CONNECTION_URL
 
 function connectToDB() {
-    mongoose.connect('mongodb://localhost:27017')
-    // mongoose.connect(connnectonUrl)
+    mongoose.connect(connnectonUrl)
 
     mongoose.connection.on("connected", () => {
         console.log("Connected to MongoDB Successfully!");

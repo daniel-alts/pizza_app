@@ -1,12 +1,15 @@
 const orderModel = require('./schemas/ordersModel')
 const moment = require("moment")
 const mongoosePaginate = require('mongoose-paginate')
+const jwt = require('jsonwebtoken')
+const usersModel = require('./schemas/usersModel')
 
 
 
+// Get all Orders
 const getAllOrders = async (req, res) => {
     let orders = await orderModel.find()
-    let sorting = req.query.sortByTotalPrice
+    let sorting = req.query.sorting
     let state = req.query.state
     let sortByDate = req.query.sortByDate
 
@@ -16,15 +19,11 @@ const getAllOrders = async (req, res) => {
             offset: 0,
             limit: 5
         };
-
         orders = await orderModel.paginate(query, options)
         orders = orders.docs
-        console.log(orders.docs);
     }
 
-    
-
-    if (sorting != undefined) {
+    if (sorting) {
         sorting = sorting.toUpperCase()
 
         if (sorting === 'DESC') {
@@ -52,31 +51,33 @@ const getAllOrders = async (req, res) => {
         }
     }
 
-    return res.json({ status: true, orders })
+    return orders
 }
 
+// Get order by id
 const getOrderById = async (req, res) => {
     const { orderId } = req.params;
     const order = await orderModel.findById(orderId)
 
     if (!order) {
-        return res.status(404).json({ status: false, order: null })
+        throw new Error(`Order with ID ${orderId} not found!`)
     }
 
-    return res.json({ status: true, order })
+    return order
 }
 
+// Post an order
 const postAnOrder = async (req, res) => {
     const { user_type, ...body } = req.body;
 
     body.total_price = body.items.price * body.items.quantity
     body.created_at = moment().toDate()
+    const newOrder = await orderModel.create(body)
 
-    const order = await orderModel.create(body)
-
-    return res.json({ status: true, order })
+    return newOrder;
 }
 
+// Update an order's state
 const updateOrderState = async (req, res) => {
     const { id } = req.params;
     const { state } = req.body;
@@ -84,37 +85,50 @@ const updateOrderState = async (req, res) => {
     const order = await orderModel.findById(id)
 
     if (!order) {
-        return res.status(404).json({ status: false, order: null })
+        throw new Error(`Order with ID ${id} not found!`)
     }
-
     if (state < order.state) {
-        return res.status(422).json({ status: false, order: null, message: 'Invalid operation' })
+        throw new Error(`Invalid Operation!`)
     }
 
     order.state = state;
 
     await order.save()
-
-    return res.json({ status: true, order })
+    return order
 }
 
-
+// Delete order by id
 const deleteOrderById = async (req, res) => {
     const { id } = req.params;
-
     const order = await orderModel.deleteOne({ _id: id })
-
-    return res.json({ status: true, order })
+    return order
 }
 
+// Query Order by state
 const queryOrderByState = async (req, res) => {
     var query = { state: req.query.state };
     var options = {
         offset: 3,
         limit: 3
     };
-
     const order = await OrderSchema.paginate(query, options)
+}
+
+// Generate Jwt
+const generateJWT = async function (username, password) {
+
+    const user = await usersModel.findOne({ username })
+    if (!user) {
+        throw new Error('Incorrect username!')
+    }
+    if (user.password !== password) {
+        throw new Error('Username or password incorrect!')
+    }
+
+    const payload = { _id: user._id, username: user.username }
+    const JWtoken = jwt.sign(payload, process.env.SECRET_KEY)
+
+    return (JWtoken);
 }
 
 
@@ -124,5 +138,6 @@ module.exports = {
     updateOrderState,
     deleteOrderById,
     postAnOrder,
-    queryOrderByState
+    queryOrderByState,
+    generateJWT
 }
