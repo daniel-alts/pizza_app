@@ -6,7 +6,6 @@ const BasicAuth = (req, res, next) => {
         return res.status(401).json({ message: 'You are not authenticated!' });
     }
  
-    // console.log({ authheader })
     const auth = new Buffer.from(authheader.split(' ')[1],
     'base64').toString().split(':');
 
