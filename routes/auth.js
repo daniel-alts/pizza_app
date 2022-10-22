@@ -2,6 +2,7 @@ const authRoute = require("express").Router()
 const bcrypt = require("bcryptjs")
 require("dotenv").config()
 const jwt = require("jsonwebtoken")
+const passport = require("passport")
 
 const userModel = require("../modal/userModel")
 
@@ -40,6 +41,22 @@ authRoute.post("/signup", async (req, res)=>{
     }catch(err){
         console.log(err)
     }
+})
+
+authRoute.post("/signupPassport", async (req, res) =>{
+    const body = req.body
+
+    userModel.register(new userModel(body), body.password, (err, user)=>{
+        if(err){
+            console.log(err)
+            res.status(500).send(" and error occured while you where trying to sign up")
+        }else{
+            passport.authenticate('local')(req, res, ()=>{
+                console.log({user})
+                res.status(200).send({user})
+            })
+        }
+    })
 })
 
 

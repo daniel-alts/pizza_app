@@ -1,5 +1,7 @@
 const mongoose = require("mongoose")
 const moment = require("moment")
+const passportLocalMongoose = require('passport-local-mongoose');
+
 
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
@@ -15,6 +17,8 @@ const UserSchema = new Schema({
 
 })
 
-const User = mongoose.model("User", UserSchema);
+UserSchema.plugin(passportLocalMongoose)
+
+const User = mongoose.model("userPassport", UserSchema);
 
 module.exports = User
