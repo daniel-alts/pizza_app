@@ -4,12 +4,10 @@ const orderModel = require('../model/orderModel')
 const createOrder = async (req,res,next)=>{
     const body = req.body;
 
-    if(body.items){
     const total_price = body.items.reduce((prev,curr)=>{
         prev += curr.price
         return prev
     },0)
- }
 try {
     
     const order = await orderModel.create({ 
