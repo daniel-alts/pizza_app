@@ -5,7 +5,7 @@ const orderRoute = express.Router()
 const orderModel = require("../model/orderModel")
 const userModel = require("../model/userModel")
 
-orderRoute.use(async(req,res,next)=>{
+/*orderRoute.use(async(req,res,next)=>{
     
     const password = req.query.password
     console.log("password", password)
@@ -16,23 +16,28 @@ orderRoute.use(async(req,res,next)=>{
     }else{
         res.status(401).send({message: "unauthorized", data:"please register as a user"})
     }
-})
+})*/
 
 orderRoute.post('/', async (req, res) => {
-    const body = req.body;
-
-    const total_price = body.items.reduce((prev, curr) => {
+    try {
+        const body = req.body;
+          console.log(body)
+       const total_price = body.items.reduce((prev, curr) => {
         prev += curr.price
         return prev
-    }, 0);
+        }, 0);
 
-    const order = await orderModel.create({ 
+       const order = await orderModel.create({ 
         items: body.items,
         created_at: moment().toDate(),
         total_price
-    })
+        })
     
-    return res.json({ status: true, order })
+   return res.json({ status: true, order })
+    } catch (err) {
+        console.log(err,"erorrrrrrrrrrr hereeeeeeee")
+        res.status(500).send(err)
+    }
 })
 
 orderRoute.get('/:orderId', async (req, res) => {
