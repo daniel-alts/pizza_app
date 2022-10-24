@@ -20,14 +20,14 @@ describe("Users CRUD Operations", () => {
 
   it("GET /api/users/:userId: Responds with json", async () => {
     const response = await supertest(app).get(
-      "/api/users/633d52319cd31214d3023517"
+      "/api/users/6357022d63129bc91587ff79"
     );
     expect(response.statusCode).toBe(200);
     expect(Object.keys(response.body).length).toBe(8);
   });
   it("PATCH /api/users/:userId Responds with json", async () => {
     const response = await supertest(app)
-      .patch("/api/users/633d52319cd31214d3023517")
+      .patch("/api/users/6357022d63129bc91587ff79")
       .send({
         username: "walemust",
       });
@@ -35,7 +35,7 @@ describe("Users CRUD Operations", () => {
   });
   it("DELETE /api/users/:userId - Deletes a user and responds with json", async () => {
     const response = await supertest(app).delete(
-      "/api/users/633d52319cd31214d3023517"
+      "/api/users/6357022d63129bc91587ff79"
     );
     expect(response.statusCode).toBe(200);
   });
