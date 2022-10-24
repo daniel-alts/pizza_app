@@ -11,7 +11,7 @@ describe("Users CRUD Operations", () => {
     const response = await supertest(app).post("/api/users").send({
       username: "Wale",
       password: "Wale",
-      fullname: "Olawale Mustapha",
+      email: "walemust@gmail.com",
       user_type: "admin",
     });
     expect(response.statusCode).toBe(201);

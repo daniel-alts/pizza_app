@@ -3,22 +3,31 @@ const express = require("express");
 const moment = require("moment");
 const mongoose = require("mongoose");
 const orderModel = require("./model/orderModel");
+const passport = require('passport');
 
-// const PORT = 3334;
+const passportConfig = require('./passport');
 const userRoutes = require("./routes/userRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const authRoutes = require('./routes/authRoutes');
 
-const app = express();
 const PORT = process.env.PORT || 3334;
 const MONGO_URL = process.env.MONGO_URL;
 
-// const app = express();
+const app = express();
+
+passportConfig();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/orders", orderRoutes());
+app.use(
+  '/api/orders',
+  passport.authenticate('jwt', { session: false }),
+  orderRoutes()
+);
 app.use("/api/users", userRoutes());
+app.use('/api/auth', authRoutes());
 
 app.get("/", (req, res) => {
   return res.json({ status: true });

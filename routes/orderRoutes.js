@@ -4,6 +4,7 @@ const moment = require("moment");
 const orderModel = require("../model/orderModel");
 
 const { confirmUser, pagination } = require("../middlewares/middlewares");
+const { pagination } = require("../middlewares/middlewares");
 
 function orderRoutes() {
   const orderRoutes = Router();
