@@ -1,18 +1,25 @@
 const express = require('express');
-// const moment = require('moment');
+const morgan = require("morgan");
+const passport = require("passport");
+const connectEnsureLogin = require("connect-ensure-login");
+const session = require("express-session");
 const mongoose = require('mongoose');
 const orderRouter = require('./Routes/orderRoutes');
-const userRouter = require('./Routes/userRoutes')
+const userRouter = require('./Routes/userRoutes');
+const dotenv = require("dotenv");
+dotenv.config();
 
-require("dotenv").config();
 const PORT = 3334 || process.env.PORT;
+
+require("./middleware/auth")
 
 const app = express()
 
+app.use(morgan("dev"));
 app.use(express.json());
 
-app.use('/orders', orderRouter);
-app.use('/users', userRouter)
+app.use('/orders', passport.authenticate('jwt', { session: false }), orderRouter);
+app.use('/users', userRouter);
 
 
 

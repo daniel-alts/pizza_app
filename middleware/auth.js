@@ -1,40 +1,70 @@
-const express = require('express');
-const userModel = require('../Models/userModel');
-const app = express();
-app.use(express.json());
+const passport = require('passport');
+const localStrategy = require('passport-local').Strategy;
+const UserModel = require('../models/userModel');
 
+const JWTstrategy = require('passport-jwt').Strategy;
+const ExtractJWT = require('passport-jwt').ExtractJwt;
 
-const authenticateUser = async (req, res, next) => {
-   const userLogin = req.headers.authorization
- 
-   if (!userLogin){ 
-      const err = res.status(401).json({message: "User not provided"})
-      
-      return (err)
-  
-   }
-  const authSplit = new Buffer.from(userLogin.split(' ')[1], 'base64').toString('ascii').split(':');
-   const user = authSplit[0]
-   const pass = authSplit[1]
-   
-const userAuth = await userModel.find({username: user})
+passport.use(
+    new JWTstrategy(
+        {
+            secretOrKey: process.env.JWT_SECRET,
+            jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken() 
+        },
+        async (token, done) => {
+            try {
+                return done(null, token.user);
+            } catch (error) {
+                done(error);
+            }
+        }
+    )
+);
 
-   if(user == userAuth.username && pass == userAuth.password){
-      return 
+passport.use(
+    'signup',
+    new localStrategy(
+        {
+            usernameField: 'email',
+            passwordField: 'password'
+        },
+        async (email, password, done) => {
+            try {
+                const user = await UserModel.create({ email, password });
 
-   }
-   else{
-      const err = res.status(401).json({message: "Invalid user, enter valid username or password" })
-     return (err)
-   }
-   
-   
-   
-}
+                return done(null, user);
+            } catch (error) {
+                done(error);
+            }
+        }
+    )
+);
 
+passport.use(
+    'login',
+    new localStrategy(
+        {
+            usernameField: 'email',
+            passwordField: 'password'
+        },
+        async (email, password, done) => {
+            try {
+                const user = await UserModel.findOne({ email });
 
+                if (!user) {
+                    return done(null, false, { message: 'User not found' });
+                }
 
+                const validate = await user.correctPassword(password);
 
-module.exports = {
-   authenticateUser
-}
+                if (!validate) {
+                    return done(null, false, { message: 'Wrong Password' });
+                }
+
+                return done(null, user, { message: 'Logged in Successfully' });
+            } catch (error) {
+                return done(error);
+            }
+        }
+    )
+);
