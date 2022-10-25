@@ -20,7 +20,7 @@ authRouter.post(
 authRouter.post(
     '/login',
     async(req,res,next)=>{
-        console.log("At login route")
+        
         passport.authenticate('login', async(err,user, info)=>{
             try{
                 if(err){
@@ -30,7 +30,6 @@ authRouter.post(
                 if(!user){
                     const error  = new Error('Username or password is incorrect')  
                     return next(error)       
-                
                 }
 
                 req.login(user,{session: false},
@@ -39,7 +38,7 @@ authRouter.post(
                         const body = {_id: user.id, username: user.username}
 
                         const token = jwt.sign({user:body}, process.env.JWT_SECRET)
-                       
+                
                         return res.json({body,token})
                     }
                 )
