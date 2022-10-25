@@ -2,9 +2,10 @@ const express = require("express")
 const orderModel = require('./../models/orderModel');
 
 const orderRouter = express.Router()
+const authenticate = require("../auth/authenticate")
 
 
-
+orderRouter.use(authenticate.verifyUser)
 orderRouter.post('/', async (req, res) => {
     const body = req.body;
 

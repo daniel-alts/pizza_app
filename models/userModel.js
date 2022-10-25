@@ -1,21 +1,23 @@
 const mongoose = require("mongoose")
 
-const ObjectId = mongoose.Schema.ObjectId
 const userSchema = mongoose.Schema({
-    id: ObjectId,
     username: {
         type: String,
         unique: true
     },
-    password: String,
-    created_at: {
-        type: Date
+    password: {
+        type: String,
+        required: true
     },
     user_type: {
         type: String,
         enum: ["admin", "user"],
         default: "user"
     },
-})
+},
+    { timestamps: true }
+)
 
-module.exports = mongoose.model("users", userSchema)
+const User = mongoose.model("User", userSchema)
+
+module.exports = User
