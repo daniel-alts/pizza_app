@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const orderRouter = require("./Route/orderRoute")
-//const basicAuth = require("./middleware/basicAuth").default
+const authRoute = require("./Route/authRoute")
 
 
 const dotEnv = require('dotenv')
@@ -13,9 +13,8 @@ const app = express();
 
 app.use(express.json());
 
-//app.use(basicAuth)
-
 app.use("/Api" , orderRouter)
+app.use("/Api", authRoute )
 
 mongoose.connect(process.env.DATABASE)
 

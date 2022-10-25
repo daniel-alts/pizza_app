@@ -1,21 +1,20 @@
 const express = require ("express")
-const basicAuth = require ("../middleware/basicAuth")
+
 
 const orderRouter = express.Router()
 
-orderRouter.use(basicAuth)
 
 const { createOrder, getOrder, getOrders, updateOrder, deleteOrder } = require ("../controller/orderControler")
 
-orderRouter.post("/order", basicAuth, createOrder)
+orderRouter.post("/order", createOrder)
 
-orderRouter.get("/order/:orderId", basicAuth, getOrder)
+orderRouter.get("/order/:orderId", getOrder)
 
-orderRouter.get("/orders", basicAuth, getOrders)
+orderRouter.get("/orders", getOrders)
 
-orderRouter.patch("/order/:id", basicAuth, updateOrder)
+orderRouter.patch("/order/:id", updateOrder)
 
-orderRouter.delete("/order/:id", basicAuth, deleteOrder)
+orderRouter.delete("/order/:id", deleteOrder)
 
 
 module.exports = orderRouter
