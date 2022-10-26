@@ -1,6 +1,7 @@
 // 21:39 thu sep22 wk38 2022
 
 const { Schema, model } = require('mongoose');
+const { genSalt, hash } = require('bcrypt');
 
 function validateEmail(email) {
   const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -74,6 +75,12 @@ const userSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+});
+
+userSchema.pre('save', async function (next) {
+  const salt = await genSalt(); // generate a random salt
+  this.password = await hash(this.password, salt); // concantenate and hash the password and salt
+  next();
 });
 
 const User = model('User', userSchema);

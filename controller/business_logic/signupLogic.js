@@ -20,12 +20,16 @@ async function signupLogic(req, res) {
       date: req.body.date,
     });
 
+    console.log(newUser);
+
     await newUser.save();
+
     res
       .status(201)
       .send(
         `<h4>Congratulations, your account has been created successfully! :) </h4>`
       );
+
     console.log(newUser);
   } catch (err) {
     res.status(400).send(err.message);
