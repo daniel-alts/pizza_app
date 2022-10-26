@@ -1,11 +1,23 @@
 const jwt = require('jsonwebtoken');
+const UserModel = require('../models/userModel');
 
 require('dotenv').config();
 
-exports.signup = (req, res) => {
-    res.json({
+exports.signup = async (req, res) => {
+
+    const user = await UserModel.findOne({ username: req.user.username})
+
+    user.firstname = req.body.firstName
+    user.lastname = req.body.lastName
+    user.email = req.body.email
+
+    await user.save()
+
+    delete user.password
+
+    res.status(201).json({
         message: 'Signup successful',
-        user: req.user
+        user: user
     });
 }
 

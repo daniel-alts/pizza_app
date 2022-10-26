@@ -3,15 +3,15 @@ const OrderController = require('../controllers/orderController');
 
 const orderRouter = express.Router();
 
-orderRouter.post('/order', OrderController.createOrder)
+orderRouter.post('/', OrderController.createOrder)
 
-orderRouter.get('/order/:orderId', OrderController.getOrder)
+orderRouter.get('/:orderId', OrderController.getOrder)
 
-orderRouter.get('/orders', OrderController.getOrders)
+orderRouter.get('/', OrderController.getOrders)
 
-orderRouter.patch('/order/:id', OrderController.updateOrder)
+orderRouter.patch('/:id', OrderController.updateOrder)
 
-orderRouter.delete('/order/:id', OrderController.deleteOrder)
+orderRouter.delete('/:id', OrderController.deleteOrder)
 
 
 module.exports = orderRouter;

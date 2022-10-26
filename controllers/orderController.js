@@ -75,7 +75,7 @@ exports.getOrders  = async (req, res) => {
     .skip(page)
     .limit(per_page)
 
-    return res.json({ status: true, orders })
+    return res.status(200).json({ status: true, orders })
 }
 
 exports.updateOrder = async (req, res) => {
