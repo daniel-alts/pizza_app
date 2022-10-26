@@ -1,7 +1,9 @@
+require("dotenv").config();
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-// const ObjectId = Schema.ObjectId;
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const UserSchema = new Schema({
 	user_id: Schema.Types.ObjectId,
@@ -25,10 +27,10 @@ const UserSchema = new Schema({
 	updated_at: Date,
 });
 
-UserSchema.pre("save", async () => {
-	const user = this;
-	const hash = await
-});
+UserSchema.methods.isValidPassword = async function (password) {
+	return await bcrypt.compare(password, user.password);
+};
+
 const UserModel = mongoose.model("Users", UserSchema);
 
 module.exports = UserModel;
