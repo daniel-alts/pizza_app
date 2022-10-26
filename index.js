@@ -3,8 +3,6 @@ const passport = require('passport');
 const OrderRouter = require('./routes/OrderRoutes');
 const AuthRouter = require('./routes/AuthRoutes');
 
-const PORT = 3334
-
 const app = express()
 
 // register passport
