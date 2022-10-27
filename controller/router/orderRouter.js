@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { loginHandler } = require('../services/loginService');
+const { loginHandler, authVerification } = require('../services/loginService');
 const {
   postLogic,
   getByIdLogic,
@@ -10,7 +10,8 @@ const {
 
 const router = Router();
 
-router.use('/', loginHandler);
+router.use('/', authVerification);
+// router.use('/', loginHandler);
 
 router.route('/').post(postLogic).get(getAllLogic);
 

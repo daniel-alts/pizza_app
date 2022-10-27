@@ -1,5 +1,6 @@
 const express = require('express');
 const { config } = require('dotenv');
+const cookieParser = require('cookie-parser');
 const { connectMongoDB } = require('./model/db_settings/connection');
 const { router: orderRouter } = require('./controller/router/orderRouter');
 const { router: signupRouter } = require('./controller/router/signupRouter');
@@ -16,6 +17,7 @@ connectMongoDB();
 
 // Middlewares
 app.use(express.json());
+app.use(cookieParser());
 app.use('/order', orderRouter);
 app.use('/signup', signupRouter);
 // app.use('/login', loginRouter);
