@@ -57,12 +57,14 @@ const postOrder = async (req, res) => {
 		items: body.items,
 		created_at: new Date(),
 	});
-
+	if (!order) {
+		return res.json({ status: false, order });
+	}
 	return res.json({ status: true, order });
 };
 
 const getOrder = async (req, res) => {
-	const { orderId } = req.params;
+	const orderId = req.params.id;
 
 	const order = await orderModel.findById(
 		orderId
@@ -101,7 +103,6 @@ const updateOrder = async (req, res) => {
 		}
 
 		order.state = state;
-		order.items[0].price = price;
 
 		await order.save();
 
@@ -123,9 +124,11 @@ const deleteOrder = async (req, res) => {
 			_id: id,
 		});
 
-		res.status(201);
-		res.json({ status: true, order });
-		return;
+		if (order) {
+			res.status(201);
+			res.json({ status: true, order });
+			return;
+		}
 	} else {
 		res.json("Unauthorized user");
 		res.status(404);

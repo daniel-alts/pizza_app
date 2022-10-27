@@ -1,4 +1,3 @@
-const express = require("express");
 const mongoose = require("mongoose");
 const orderModel = require("../models/orderModel");
 const orderController = require("../controllers/orderController");
@@ -9,8 +8,6 @@ beforeEach(async () => {
 		await mongoose.connect(
 			"mongodb://0.0.0.0:27017/tests"
 		);
-
-		await mongoose.connection.db.dropDatabase();
 	} catch {
 		console.log("Couldn't connect to MongoDB");
 	}
@@ -211,7 +208,7 @@ describe("UPDATE ORDERS", () => {
 });
 
 describe("DELETE ORDERS", () => {
-	it("LET'S USERS WITH RIGHT ACCESS TO DELETE ORDERS ", async () => {
+	it("LET'S ADMIN DELETE ORDERS ", async () => {
 		const orders = await orderModel.create({
 			items: [
 				{
@@ -246,7 +243,7 @@ describe("DELETE ORDERS", () => {
 		};
 		await orderController.deleteOrder(req, res);
 	});
-	it("LET'S USERS WITH RIGHT ACCESS TO DELETE ORDERS ", async () => {
+	it("CHECKS IF USERS HAS ACCESS TO DELETE", async () => {
 		const orders = await orderModel.create({
 			items: [
 				{
@@ -307,36 +304,6 @@ describe("GETS ALL ORDERS ", () => {
 		};
 
 		await orderController.getOrders(req, res);
-	});
-
-	it("MAKES A REQ TO GET A USER WITH ID", async () => {
-		const orders = await orderModel.create({
-			items: [
-				{
-					name: "chicken soup",
-					price: 2500,
-					size: "m",
-					quantity: 2,
-				},
-			],
-		});
-		const params = {
-			orderId: orders._id,
-		};
-
-		req = {
-			params,
-		};
-		res = {
-			status(status) {
-				expect(status).toBe(200);
-			},
-			json(data) {
-				expect(data.order).toBeDefined();
-			},
-		};
-
-		await orderController.getOrder(req, res);
 	});
 	it("MAKES A REQ TO GET A USER WITH WRONG ID", async () => {
 		const orders = await orderModel.create({

@@ -1,14 +1,12 @@
 const express = require("express");
-const mongoose = require("mongoose");
+require("./db/connection");
 const orderRouter = require("./routes/orders.js");
 const userRouter = require("./routes/user.js");
-const dotenv = require("dotenv");
-
-dotenv.config();
-
+const morgan = require("morgan");
 const app = express();
 
 app.use(express.json());
+app.use(morgan("dev"));
 app.use("/orders", orderRouter);
 app.use("/users", userRouter);
 
@@ -16,26 +14,10 @@ app.all("/", (req, res) => {
 	res.status(200).send("Welcome");
 });
 
-mongoose.connect(process.env.MONGODB_URI);
+// const PORT = process.env.PORT || 3000;
 
-mongoose.connection.on("connected", () => {
-	console.log(
-		"Connected to MongoDB Successfully"
-	);
-});
-
-mongoose.connection.on("error", (err) => {
-	console.log(
-		"An error occurred while connecting to MongoDB"
-	);
-	console.log(err);
-});
-
-app.listen(process.env.PORT, () => {
-	console.log(
-		"Listening on port, ",
-		process.env.PORT
-	);
-});
+// app.listen(PORT, () => {
+// 	console.log("Listening on port, ", PORT);
+// });
 
 module.exports = app;

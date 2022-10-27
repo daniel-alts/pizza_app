@@ -17,6 +17,18 @@ const UserSchema = new Schema({
 	},
 });
 
+// Hash the plain text password before saving
+// UserSchema.pre("save", async function (next) {
+// 	const user = this;
+// 	if (user.isDirectModified("password")) {
+// 		user.password = await bcrypt.hash(
+// 			user.passWord,
+// 			8
+// 		);
+// 	}
+// 	next();
+// });
+
 const User = mongoose.model("User", UserSchema);
 
 module.exports = User;
