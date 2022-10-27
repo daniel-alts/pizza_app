@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const dbConnection = () => {
     
-    mongoose.connect('mongodb://localhost/pizzza_app');
+    mongoose.connect('mongodb://localhost:27017');
     
     mongoose.connection.on("connected", () => {
         console.log("Connected to MongoDB Successfully");
