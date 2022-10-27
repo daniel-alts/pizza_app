@@ -1,35 +1,46 @@
 const { OrderModel } = require('../models')
 const moment = require('moment');
 
-exports.createOrder = async (req, res) => {
+async function createOrder (req, res){
     const body = req.body;
 
     const total_price = body.items.reduce((prev, curr) => {
         prev += curr.price
         return prev
     }, 0);
-
-    const order = await OrderModel.create({ 
-        items: body.items,
-        created_at: moment().toDate(),
-        total_price
-    })
+   
     
-    return res.json({ status: true, order })
+ const order = await OrderModel.create({ 
+            items: body.items,
+            created_at: moment().toDate(),
+            total_price
+        })
+ .then((order)=>{
+    res.status(200).json({
+        message: "order successfully added!",
+        data: order
+       })
+ }) .catch ((error) => {
+        console.log(error)
+        res.status(500).send(error)
+    })
 }
 
-exports.getOrder = async (req, res) => {
-    const { orderId } = req.params;
+async function getOrder (req, res) {
+    const orderId  = req.params.id;
+
     const order = await OrderModel.findById(orderId)
-
-    if (!order) {
-        return res.status(404).json({ status: false, order: null })
-    }
-
-    return res.json({ status: true, order })
+    .then((order)=>{
+        res.status(200).json({
+            message: "Order Found",
+            data: order})
+        }) .catch ((error)=> {
+        console.log(error)
+        res.status(500).send("An error occured while fecthing your order")
+    })
 }
 
-exports.getOrders  = async (req, res) => {
+async function getOrders (req, res) {
     const { query } = req;
 
     const { 
@@ -78,31 +89,49 @@ exports.getOrders  = async (req, res) => {
     return res.json({ status: true, orders })
 }
 
-exports.updateOrder = async (req, res) => {
-    const { id } = req.params;
-    const { state } = req.body;
 
-    const order = await OrderModel.findById(id)
 
-    if (!order) {
-        return res.status(404).json({ status: false, order: null })
-    }
+async function updateOrder (req, res) { 
+    const { id } = req.params;  
+    const { state } = req.body; 
+    const body = req.body
+   
+    const order = await OrderModel.findByIdAndUpdate(id, {"state": body.state, "items" : body.items},{new : true})
 
-    if (state < order.state) {
-        return res.status(422).json({ status: false, order: null, message: 'Invalid operation' })
-    }
+    .then((order)=>{
+        res.status(200).send(order)
+    }) 
+    .catch ((error) => {
+        console.log(error)
+        res.status(500).send(error) 
+    })
 
-    order.state = state;
 
-    await order.save()
-
-    return res.json({ status: true, order })
 }
 
-exports.deleteOrder = async (req, res) => {
-    const { id } = req.params;
+ 
 
-    const order = await OrderModel.deleteOne({ _id: id})
+async function deleteOrder (req, res){
+    const id  = req.params.id;
 
-    return res.json({ status: true, order })
+    await OrderModel.deleteOne({ _id: id})
+        .then(()=>{
+            res.status(200).send("Order deleted!")
+        })
+         .catch ((error) => {
+        console.log(error)
+        res.status(500).send("An error occured while fecthing your order")
+    })
+
 }
+
+
+
+
+
+module.exports = {createOrder,
+                    getOrder,
+                    getOrders,
+                    updateOrder,
+                    deleteOrder
+                }

@@ -1,37 +1,38 @@
 const express = require('express');
 const BasicAuth = require('./middleware/basicAuth');
+require('dotenv').config()
 const OrderRouter = require('./routes/OrderRoutes');
-const AuthRouter = require('./routes/AuthRoutes');
-const Database = require('./database');
+const UserRouter = require('./routes/UserRoutes')
+const db = require('./database');
+const userRouter = require('./routes/UserRoutes');
 
-const PORT = 3334
+const PORT = process.env.PORT|| 3334
 
 const app = express()
 
 // connect to database
-Database.connect();
+db.connectToMongoDB() 
 
-// register passport
-require("./passport") 
 
-// middleware
+// middlewares
 app.use(express.json());
-// app.use(BasicAuth)
+app.use(BasicAuth);
 
 // routes
-app.use('/', OrderRouter)
-app.use('/', AuthRouter)
+app.use('/order', OrderRouter)
+app.use('/user', userRouter) 
+
 
 // home route
 app.get('/', (req, res) => {
-    return res.json({ status: true })
+res.send("Welcome to our pizza-app") 
 })
 
-// 404 route
+// catch all errors
 app.use('*', (req, res) => {
-    return res.status(404).json({ message: 'route not found' })
+    res.status(404).send('route not found')
 })
 
 app.listen(PORT, () => {
-    console.log('Listening on port, ', PORT)
+    console.log(`Server started, listening on ${PORT}`)
 })

@@ -10,12 +10,10 @@ const OrderSchema = new Schema({
   total_price: Number,
   items: [{
     name: String,
-    price: Number,
+    price: Number, 
     size: { type: String, enum: ['m', 's', 'l']},
     quantity: Number,
   }]
 });
 
-const Order = mongoose.model('Order', OrderSchema);
-
-module.exports = Order;
+module.exports = mongoose.model('Order', OrderSchema);
