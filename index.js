@@ -1,4 +1,5 @@
 const express = require('express');
+
 const {connectToMongo} = require('./database')
 const UserRouter = require('./Routes/UserRoute')
 const OrderRouter = require('./Routes/OrderRoute')
@@ -10,14 +11,18 @@ require('dotenv').config();
 require('./Authentication/authentication')
 const app = express();
 
+
 app.use(bodyParser.urlencoded({ extended: false }));
+
 
 
 app.use(express.json());
 
+// home route
 app.get('/', (req, res) => {
     return res.json({ status: true })
 })
+
 
 app.use("/order", passport.authenticate('jwt', { session: false }), OrderRouter);
 app.use("/", UserRouter);
