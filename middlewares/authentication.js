@@ -1,20 +1,21 @@
-const orderModel = require("../models/orderModel");
-const userModel = require("../models/userModel");
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
 
-const authenticateUser = (req, res, next) => {
-	return new Promise(async (resolve, reject) => {
-		const { username, password } = req.body.user_credentials;
-		const user = await userModel.findOne({ username });
-		if (!user) {
-			reject("You must provide a username and password.");
-		} else {
-			if (username === user.username && password === user.password) {
-				resolve("Authenticated successfully.");
-			} else {
-				reject("Incorrect username or password.");
-			}
-		}
-	});
+const JWT_SECRET = process.env.JWT_SECRET;
+
+const auth = (req, res, next) => {
+	const token = req.header("x-auth-token");
+	if (!token) {
+		return next({ status: 400, message: "Token is required." });
+	}
+	try {
+		const decodedUser = jwt.verify(token, JWT_SECRET);
+		req.user = decodedUser;
+		console.log(req.user);
+		next();
+	} catch (err) {
+		next({ status: 401, message: "Unauthorized." });
+	}
 };
 
-module.exports = { authenticateUser };
+module.exports = { auth };

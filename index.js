@@ -7,6 +7,7 @@ const { connectToMongoDB } = require("./DBConnection.js");
 const ordersRouter = require("./routes/ordersRoute");
 const usersRouter = require("./routes/usersRoute");
 const UserModel = require("./models/userModel");
+const { auth } = require("./middlewares/authentication");
 
 const app = express();
 const PORT = process.env.PORT;
@@ -17,7 +18,6 @@ try {
 	connectToMongoDB();
 } catch (err) {
 	console.log("error: ", err);
-	next();
 }
 
 app.use(express.json());
@@ -27,7 +27,7 @@ app.get("/", (req, res) => {
 	res.json({ status: true, message: "Welcome to pizza_app." });
 });
 
-app.post("/signup", async (req, res) => {
+app.post("/signup", async (req, res, next) => {
 	const salt = await bcrypt.genSalt(10);
 	const body = req.body;
 	const hash = await bcrypt.hash(body.password, salt);
@@ -42,7 +42,9 @@ app.post("/signup", async (req, res) => {
 
 		// console.log("user", user);
 		const token = jwt.sign({ _id: user._id, username: user.username, user_type: user.user_type }, JWT_SECRET, { expiresIn: "1h" });
-		res.status(200).json({ status: true, token });
+		res.header("x-auth-token", token)
+			.status(200)
+			.json({ status: true, _id: user._id, username: user.username, user_type: user.user_type, token });
 	} catch (err) {
 		console.log("error: ", err);
 		res.status(400).send({ status: false, message: "An error ocurred" });
@@ -65,13 +67,15 @@ app.post("/login", async (req, res, next) => {
 			throw { status: 400, message: "Incorrect username or password." };
 		}
 		const token = jwt.sign({ _id: user._id, username: user.username, user_type: user.user_type }, JWT_SECRET, { expiresIn: "1h" });
-		res.status(200).json({ status: true, token });
+		res.header("x-auth-token", token)
+			.status(200)
+			.json({ status: true, _id: user._id, username: user.username, user_type: user.user_type, token });
 	} catch (err) {
 		next(err);
 	}
 });
 
-app.use("/orders", ordersRouter);
+app.use("/orders", auth, ordersRouter);
 app.use("/users", usersRouter);
 
 // Handle errors.
