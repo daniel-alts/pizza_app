@@ -14,27 +14,9 @@ const OrderSchema = new Schema({
     size: { type: String, enum: ['m', 's', 'l']},
     quantity: Number,
   }],
-  user: [
-    {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-    }
-  ],
 });
 
 
-OrderSchema.set('toJSON', {
-  transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    delete returnedObject.__v
-    returnedObject.items.forEach((item) => {
-      item.item_id = item._id.toString()
-      delete item.id
-    })
-
-  }
-})
 
 const Order = mongoose.model('Order', OrderSchema);
 

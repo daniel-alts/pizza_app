@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 
-const schema = mongoose.Schema
+const Schema = mongoose.Schema
 
 const UserSchema = new Schema ({
     username: {
@@ -13,8 +13,18 @@ const UserSchema = new Schema ({
         type: String,
         required: true,
     },
+    firstname: {
+        type: String
+    },
+    lastname: {
+        type: String
+    },
+    email: {
+        type: String
+    },
     user_type: {
         type: String,
+        required: true,
         default: 'user',
         enum: ['user', 'admin']
     },
@@ -27,25 +37,26 @@ const UserSchema = new Schema ({
 
 })
 
-UserSchema.pre('save', async function (next) {
-    this.password = await bcrypt.hash(this.password, 10)
-    next()
+UserSchema.pre(
+    'save', 
+    async function (next) {
+        const user = this;
+        const hash = await bcrypt.hash(this.password, 10)
+        
+        this.password = hash;
+        next()
 })
 
 UserSchema.methods.isValidPassword = async function (password) {
-    return await bcrypt.compare(password, this.password)
+    const user = this;    
+    const compare = await bcrypt.compare(password, this.password)
+
+    return compare;
 }
 
-UserSchema.set('toJSON', {
-    transform: (document, returnedObject) => {
-        returnedObject.id = returnedObject._id.toString()
-        delete returnedObject.id
-        delete returnedObject.__v
-        delete returnedObject.password
-    }
-})
 
 
-const User = mongoose.model('User', UserSchema)
 
-module.exports = User;
+const UserModel = mongoose.model('User', UserSchema)
+
+module.exports = UserModel;

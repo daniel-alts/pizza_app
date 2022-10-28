@@ -1,17 +1,17 @@
-const moogoose = require('mongoose');
+const mongoose = require('mongoose');
 require('dotenv').config();
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URL = process.env.MONGODB_URL;
 
 // connect to mongodb
 function connectToMongoDB() {
-    moogoose.connect(MONGODB_URI);
+    mongoose.connect(MONGODB_URL);
 
-    moogoose.connection.on('connected', () => {
+    mongoose.connection.on("connected", () => {
         console.log('Connected to MongoDB successfully');
     });
 
-    moogoose.connection.on('error', (err) => {
+    mongoose.connection.on("error", (err) => {
         console.log('Error connecting to MongoDB', err);
     })
 }
