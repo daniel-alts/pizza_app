@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const generateJWT = require('../middleware/generateJWT')
 
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
@@ -20,6 +21,10 @@ const UserSchema = new Schema({
         required: true,
         enum: ['user', 'admin'],
         default: 'user'
+    },
+    accessToken: {
+        type: String,
+        default: null 
     }
 });
 

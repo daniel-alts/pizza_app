@@ -3,6 +3,7 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 
 const AuthController = require('../controller/authController');
+const validateToken = require('../middleware/validate');
 
 const authRouter = express.Router();
 
@@ -11,11 +12,6 @@ authRouter.post('/signup', passport.authenticate('signup', { session: false }), 
 authRouter.post('/login2', async (req, res, next) => passport.authenticate('login', (err, user, info) => {
     AuthController.login(req, res, { err, user, info })
 })(req, res, next))
-// authRouter.post('/login2', async (req, res, next) => {
-//     passport.authenticate('login', (err, user, info) => {
-//         AuthController.login(req, res, {err, user, info})
-//     })(req, res, next)
-// });
 
 authRouter.post('/login', async (req, res, next) => {
     console.log("auth routes")
@@ -48,5 +44,6 @@ authRouter.post('/login', async (req, res, next) => {
     )(req, res, next);
 });
 
+authRouter.post('/logout', validateToken, AuthController.logout);
 
 module.exports = authRouter;
