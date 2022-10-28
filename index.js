@@ -1,10 +1,12 @@
 const express = require('express');
-const BasicAuth = require('./middleware/basicAuth');
+const authRouter = require('./routes/authRoutes');
 require('dotenv').config()
 const OrderRouter = require('./routes/OrderRoutes');
 const UserRouter = require('./routes/UserRoutes')
 const db = require('./database');
 const userRouter = require('./routes/UserRoutes');
+
+
 
 const PORT = process.env.PORT|| 3334
 
@@ -16,7 +18,10 @@ db.connectToMongoDB()
 
 // middlewares
 app.use(express.json());
-app.use(BasicAuth);
+require('./passport')
+
+
+
 
 // routes
 app.use('/order', OrderRouter)
@@ -29,7 +34,7 @@ res.send("Welcome to our pizza-app")
 })
 
 // catch all errors
-app.use('*', (req, res) => {
+app.use('*', (req, res) => {clea
     res.status(404).send('route not found')
 })
 
