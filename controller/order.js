@@ -35,7 +35,7 @@ const getAllOrders = async (req, res, next) => {
         }
 
 
-        //pagination
+        //dynamic pagination
         const page = req.query.page;
         const limit = req.query.limit;
         const skip = (page - 1) * limit;
