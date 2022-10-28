@@ -1,176 +1,106 @@
-const orderModel = require('../models/orderModel')
+const OrderModel = require('../model/orderModel')
+const moment = require('moment');
 
-//info on all orders
-const OrderInfo = async (req, res, next) => {
-    try {
-        // check if user role is authenticated
-        if (req.authenticatedUser.role !== 'Admin') {
-            return res.status(401).send({ message: 'Access Denied' })
-        }
+//create an order
+exports.createOrder = async (req, res) => {
+    const body = req.body;
 
-        const orders = await orderModel.find({})
-        const resObj = {}
-        resObj.numberOfOrders = orders.length
-        resObj.states = orders.reduce((obj, x) => {
-            if (!obj[x.state]) obj[x.state] = 0
-            obj[x.state]++
-            return obj
-        }, {})
-        return res.json({ status: true, data: resObj })
-    } catch (err) {
-        next(err)
-    }
+    const total_price = body.items.reduce((prev, curr) => {
+        prev += curr.price
+        return prev
+    }, 0);
+
+    const order = await OrderModel.create({
+        items: body.items,
+        created_at: moment().toDate(),
+        total_price
+    })
+
+    return res.json({ status: true, order })
 }
 
-//all orders
-const AllOrders = async (req, res, next) => {
-    try {
-        let orders, returnObject = {}
+// Get order by Id
+exports.getOrderById = async (req, res) => {
+    const { orderId } = req.params;
+    const order = await OrderModel.findById(orderId)
 
-        // Pagination
-        let limitFromQuery = parseInt(req.query.limit)
-        let pageFromQuery = parseInt(req.query.page)
-
-        let limit = 5, page = 1 // default values
-        if (!isNaN(limitFromQuery) && limitFromQuery > 0) limit = limitFromQuery
-
-        const numberOfOrders = await orderModel.find({}).countDocuments().exec()
-        const totalPages = Math.ceil(numberOfOrders / limit)
-        if (!isNaN(pageFromQuery) && pageFromQuery <= totalPages) page = pageFromQuery
-
-        const start = (page - 1) * limit
-        const end = page * limit
-
-        // Sort by total_price/createdAt
-        const { price, date } = req.query
-
-        if (price) {
-            const value = price === 'asc' ? 1 : price === 'desc' ? -1 : false
-            if (value) orders = await orderModel.find({}).sort({ total_price: value }).limit(limit).skip(start)
-        } else if (date) {
-            const value = date === 'asc' ? 1 : date === 'desc' ? -1 : false
-            if (value) orders = await orderModel.find({}).sort({ created_at: value }).limit(limit).skip(start)
-        }
-        if (!orders) orders = await orderModel.find({}).limit(limit).skip(start)
-
-        // prepare response data
-        if (start > 0) {
-            returnObject.previousPage = {
-                page: page - 1,
-                limit: limit,
-            }
-        }
-        returnObject.currentPage = page
-        if (end < numberOfOrders) {
-            returnObject.nextPage = {
-                page: page + 1,
-                limit: limit,
-            }
-        }
-        returnObject.totalPages = totalPages
-        returnObject.orders = orders
-
-        return res.json({ status: true, data: returnObject })
-    } catch (err) {
-        next(err)
+    if (!order) {
+        return res.status(404).json({ status: false, order: null })
     }
+
+    return res.json({ status: true, order })
 }
 
-//order by id
-const getOrderById = async (req, res, next) => {
-    try {
-        const { orderId } = req.params
-        const order = await orderModel.findById(orderId)
-        if (!order) {
-            return res.status(404).json({ status: false, data: null })
+// get all orders
+exports.getAllOrders = async (req, res) => {
+    const { query } = req;
+
+    const {created_at, state, order = 'asc', order_by = 'created_at', page = 1, per_page = 10} = query;
+
+    const findQuery = {};
+
+    if (created_at) {
+        findQuery.created_at = {
+            $gt: moment(created_at).startOf('day').toDate(),
+            $lt: moment(created_at).endOf('day').toDate(),
         }
-        return res.json({ status: true, data: order })
-    } catch (err) {
-        next(err)
     }
+
+    if (state) {
+        findQuery.state = state;
+    }
+
+    const sortQuery = {};
+
+    const sortAttributes = order_by.split(',')
+
+    for (const attribute of sortAttributes) {
+        if (order === 'asc' && order_by) {
+            sortQuery[attribute] = 1
+        }
+
+        if (order === 'desc' && order_by) {
+            sortQuery[attribute] = -1
+        }
+    }
+
+
+    const orders = await OrderModel
+        .find(findQuery)
+        .sort(sortQuery)
+        .skip(page)
+        .limit(per_page)
+
+    return res.status(200).json({ status: true, orders })
 }
 
-//new order
-const addNewOrder = async (req, res, next) => {
-    try {
-        const body = req.body
+// Update order by id
+exports.updateOrderById = async (req, res) => {
+    const { id } = req.params;
+    const { state } = req.body;
 
-        const total_price = body.items.reduce((prev, curr) => {
-            return (prev += curr.quantity * curr.price)
-        }, 0)
+    const order = await OrderModel.findById(id)
 
-        const orderObject = {
-            items: body.items,
-            created_at: new Date(),
-            total_price,
-        }
-
-        const order = new orderModel(orderObject)
-        order
-            .save()
-            .then((result) => {
-                return res.status(201).json({ status: true, data: result })
-            })
-            .catch((err) => {
-                res.status(500)
-                console.log('Error creating order', err.message)
-                return res.json({ error: 'Error creating order' })
-            })
-    } catch (err) {
-        next(err)
+    if (!order) {
+        return res.status(404).json({ status: false, order: null })
     }
+
+    if (state < order.state) {
+        return res.status(422).json({ status: false, order: null, message: 'Invalid operation' })
+    }
+
+    order.state = state;
+
+    await order.save()
+
+    return res.json({ status: true, order })
 }
 
-//update order state
-const updateOrderById = async (req, res, next) => {
-    try {
-        // check if user role is authenticated
-        if (req.authenticatedUser.role !== 'Admin') {
-            return res.status(401).send({ message: 'Access Denied' })
-        }
+// Delete order by id
+exports.deleteOrderById = async (req, res) => {
+    const { id } = req.params;
 
-        const { id } = req.params
-        const { state } = req.body
+    const order = await OrderModel.deleteOne({ _id: id })
 
-        const order = await orderModel.findById(id)
-
-        if (!order) {
-            return res.status(404).json({ status: false, data: null })
-        }
-
-        if (state < order.state) {
-            return res.status(422).json({ status: false, data: null, message: 'Invalid operation' })
-        }
-
-        order.state = state
-
-        await order.save()
-
-        return res.json({ status: true, data: order })
-    } catch (err) {
-        console.log(err)
-        next(err)
-    }
+    return res.json({ status: true, order })
 }
-
-//delete order by id
-const deleteOrderById = async (req, res, next) => {
-    try {
-        // check if user role is authenticated
-        if (req.authenticatedUser.role !== 'Admin') {
-            return res.status(401).send({ message: 'Access Denied' })
-        }
-
-        const { id } = req.params
-
-        const order = await orderModel.findOne({ _id: id })
-        const deleted = await order.remove()
-        if (deleted) {
-            return res.status(204).json({ status: true })
-        }
-    } catch (err) {
-        next(err)
-    }
-}
-
-module.exports = { OrderInfo, AllOrders, getOrderById, addNewOrder, updateOrderById, deleteOrderById }
