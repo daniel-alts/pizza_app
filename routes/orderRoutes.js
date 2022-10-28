@@ -1,4 +1,5 @@
 const express =require("express")
+const auth = require("../middleware/authentication")
 
 const orderRouter = express.Router()
 const  {
@@ -10,7 +11,7 @@ const  {
                     } = require("../controllers/orderController")
 
 //CRUD router for users
-orderRouter.get('/', getAllOrders)
+orderRouter.get('/',auth, getAllOrders)
 orderRouter.post("/", createOrder)
 orderRouter.get("/:orderId", getOrderByID)
 orderRouter.patch("/:orderId", updateOrder)

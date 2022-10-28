@@ -1,8 +1,7 @@
 const User = require("../models/userModel");
 const {StatusCodes} = require("http-status-codes");
 const CustomError = require("../errors");
-const {createTokenUser} = require("../utils");
-
+const {createTokenUser, createJWT} = require("../utils");
 
 
 //REGISTRATION
@@ -22,9 +21,10 @@ const register = async(req, res ) => {
   
   const user = await User.create({email, username, password, user_type});
 
-  const tokenUser = createTokenUser(user);
+  await user.save()
+  const token = await user.generateAuthToken();
 
-  res.status(StatusCodes.CREATED).json({user: tokenUser});
+  res.status(StatusCodes.CREATED).json({user, token});
 };
 
 
@@ -44,9 +44,10 @@ const login = async(req, res) =>{
   if(!isPasswordCorrect) {
     throw new CustomError.UnauthenticatedError("Invalid login");
   }
-  const tokenUser = createTokenUser(user);
 
-  res.status(StatusCodes.OK).json({ user: tokenUser });
+  const token = await user.generateAuthToken();
+
+  res.status(StatusCodes.OK).json({ user, token });
 };
 
 
