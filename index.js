@@ -33,9 +33,9 @@ app.use('/order', passport.authenticate('jwt', { session : false }), orderRouter
 
 
 
-// All Invalid route 
+// All Invalid (404) route 
 app.all('*', (req, res)=>{
-    res.status(400).send('Invalid Route')
+    res.status(404).send('Invalid Route')
 })
 
 // error handler

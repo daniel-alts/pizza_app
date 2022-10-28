@@ -32,20 +32,6 @@ const accessControl =(permission)=>{
             }
         }
 
-        // return (req, res, next) => {
-    // //    const user = UserModel.findOne({user: user.username});
-    // const {username} = req.body
-
-    //    if(permission.includes(username)){
-    //     next()
-    //    }else{
-    //     return res.status(401).send({
-    //         success: false,
-    //         message: `You don't have permission`
-    //     })
-    //    }
-       
-
 
     }
 

@@ -7,25 +7,43 @@ const moment = require('moment');
 
 const getAllOrders = async (req, res, next) => {
     try {
-        const {total_price, created_At, state} = req.query
+        const {total_price, created_At, order = 'asc', state} = req.query
         
-        const queryObject = {}
+        const searchObject = {}
         
         //filter by state
         if(state){
-            queryObject.state = state
+            searchObject.state = state
         }
 
-        let result = orderModel.find()
+            //filter by date-time created
+        if (created_at) {
+            findQuery.created_at = {
+                $gt: moment(created_at).startOf('day').toDate(), 
+                $lt: moment(created_at).endOf('day').toDate(),
+            }
+        } 
 
-        //sort (i) total_price & (ii) date in asc order
-        result = result.sort('total_price created_At')
+        const sortQuery = {}
+
+            
+        if (order === 'asc') {
+            sortQuery.order = 1
+        }
+        if (order === 'desc' && order_by) {
+            sortQuery.order = -1
+        }
+
 
         //pagination
         const page = req.query.page;
         const limit = req.query.limit;
         const skip = (page - 1) * limit;
 
+
+        let result = orderModel.find()
+        //sort (i) total_price & (ii) date in asc order
+        result = result.sort('total_price created_At')
         result = result.limit(limit).skip(skip);
 
         
