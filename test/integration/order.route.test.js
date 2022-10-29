@@ -15,7 +15,8 @@ describe('Order Route', () => {
         mongoose.connect('mongodb://localhost:27017')
     });
 
-//********************TEST FOR ENDPOINTS IN ORDERS ROUTES***************/
+//********************TEST FOR ENDPOINTS IN ORDERS ROUTES***************//
+
 test(" /orders", async() => {
 
     // ************* POST REQUEST *****************/

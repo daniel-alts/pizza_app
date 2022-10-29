@@ -38,7 +38,7 @@ async function getAllOrders(req, res){
 // *************RETURN ALL ORDERS *************//
 
         const orders = await query;
-        res.status(200).json({ status: true, orders })
+        res.status(200).json({ status: true, message: 'Welcome, ' + req.user.username + '!', orders })
         
 // **********CATCH ERROR IF ANY ***************//
     }catch(err){
