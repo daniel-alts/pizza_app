@@ -66,7 +66,7 @@ orderRouter.get("/", async (req, res) =>{
 } )
 
 
-orderRouter.put("/", async (req, res) => {
+orderRouter.put("/:id", async (req, res) => {
     const { id } = req.params;
     const { state } = req.body;
 
@@ -87,7 +87,7 @@ orderRouter.put("/", async (req, res) => {
     return res.json({ status: true, order })
 })
 
-orderRouter.delete("/", async (req, res) => {
+orderRouter.delete("/:id", async (req, res) => {
     const { id } = req.params;
 
     const order = await orderModel.deleteOne({ _id: id })
