@@ -24,6 +24,7 @@ orderRouter.post('/', async (req, res) => {
     }
 })
 
+
 // Get order by id
 orderRouter.get('/:orderId', async (req, res) => {
     const { orderId } = req.params;
@@ -36,8 +37,41 @@ orderRouter.get('/:orderId', async (req, res) => {
     return res.json({ status: true, order })
 })
 
-// Get all orders
-orderRouter.get('/', async (req, res) => {
+// Update order of specific id
+orderRouter.patch('/:id', async (req, res) => {
+    const { id } = req.params;
+    const { state } = req.body;
+
+    const order = await Order.findById(id)
+
+    if (!order) {
+        return res.status(404).json({ status: false, order: null })
+    }
+
+    if (state < order.state) {
+        return res.status(422).json({ status: false, order: null, message: 'Invalid operation' })
+    }
+
+    order.state = state;
+
+    await order.save()
+
+    return res.json({ status: true, order })
+})
+
+// Delete order
+orderRouter.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+
+    const order = await Order.deleteOne({ _id: id})
+
+    return res.json({ status: true, order })
+})
+
+
+
+// Get all orders middleware function
+const getAllOrders = async (req, res) => {
     const ORDER_PER_PAGE = 10
     const queryParams = req.query
 
@@ -52,10 +86,10 @@ orderRouter.get('/', async (req, res) => {
 
     if (sort) {
         // Handle sorts
-        sort.includes("date|asc") ? sortQuery["created_at"] = 1 : null
-        sort.includes("date|desc") ? sortQuery["created_at"] = -1 : null
-        sort.includes("price|asc") ? sortQuery["total_price"] = 1 : null
-        sort.includes("price|desc") ? sortQuery["total_price"] = -1 : null
+        sort.includes("asc") ? sortQuery["created_at"] = 1 : null
+        sort.includes("desc") ? sortQuery["created_at"] = -1 : null
+        sort.includes("asc") ? sortQuery["total_price"] = 1 : null
+        sort.includes("desc") ? sortQuery["total_price"] = -1 : null
         
     }
 
@@ -91,40 +125,9 @@ orderRouter.get('/', async (req, res) => {
             finished: true 
         })
     }
+}
 
-    // return res.json({ status: true, orders })
-})
-
-// Update order of specific id
-orderRouter.patch('/:id', async (req, res) => {
-    const { id } = req.params;
-    const { state } = req.body.order;
-
-    const order = await Order.findById(id)
-
-    if (!order) {
-        return res.status(404).json({ status: false, order: null })
-    }
-
-    if (state < order.state) {
-        return res.status(422).json({ status: false, order: null, message: 'Invalid operation' })
-    }
-
-    order.state = state;
-
-    await order.save()
-
-    return res.json({ status: true, order })
-})
-
-// Delete order
-orderRouter.delete('/:id', async (req, res) => {
-    const { id } = req.params;
-
-    const order = await Order.deleteOne({ _id: id})
-
-    return res.json({ status: true, order })
-})
-
-
-module.exports = orderRouter
+module.exports = {
+    orderRouter,
+    getAllOrders
+}

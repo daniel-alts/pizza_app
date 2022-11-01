@@ -4,8 +4,8 @@ const {isEmail} = require("validator").default;
 
 
 const userSchema = new Schema({
-    firstName: String,
-    lastName: String,
+    firstname: String,
+    lastname: String,
     username: { type: String, required: true },
     password: { type: String, required: true },
     email: {
@@ -24,7 +24,7 @@ const userSchema = new Schema({
     }
 });
 
-userSchema.virtual("fullName")
+userSchema.virtual("fullname")
     .get(function() {
         return this.firstName + " " + this.lastName
     })

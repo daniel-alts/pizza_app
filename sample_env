@@ -1,0 +1,2 @@
+MONGO_URI=mongodb+srv://<username>:<password>@<replica_set>mongodb.net/pizza_app
+JWT_SECRET=your_secret_here

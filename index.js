@@ -2,7 +2,7 @@ const express = require("express");
 const passport = require("passport")
 
 
-const orderRouter = require("./routes/order");
+const {orderRouter, getAllOrders} = require("./routes/order");
 const userRouter = require("./routes/user");
 
 const authenticate = require("./auth/basic");
@@ -34,7 +34,7 @@ app.get(
      * This route is best viewed on browser because I return html 
      * with some stylings and thunder client can't view that properly
      */
-    orderRouter
+    getAllOrders
 )
 app.use(
     "/order",
