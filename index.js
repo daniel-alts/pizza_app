@@ -1,29 +1,38 @@
 const express = require('express');
-const passport = require('passport');
-const OrderRouter = require('./routes/OrderRoutes');
-const AuthRouter = require('./routes/AuthRoutes');
 
-const app = express()
+const {connectToMongo} = require('./database')
+const UserRouter = require('./Routes/UserRoute')
+const OrderRouter = require('./Routes/OrderRoute')
+const bodyParser = require('body-parser');
+const passport = require('passport')
+const OrderPg = require('./Routes/OrderPg')
 
-// register passport
-require("./passport") 
+require('dotenv').config();
+require('./Authentication/authentication')
+const app = express();
 
-// middleware
+
+app.use(bodyParser.urlencoded({ extended: false }));
+
+
+
 app.use(express.json());
-// app.use(BasicAuth)
-
-// routes
-app.use('/orders', passport.authenticate('jwt', { session: false  }), OrderRouter)
-app.use('/',  AuthRouter)
 
 // home route
 app.get('/', (req, res) => {
     return res.json({ status: true })
 })
 
-// 404 route
-app.use('*', (req, res) => {
-    return res.status(404).json({ message: 'route not found' })
+
+app.use("/order", passport.authenticate('jwt', { session: false }), OrderRouter);
+app.use("/", UserRouter);
+app.use('/orders', OrderPg);
+
+
+app.use(function (err, req, res, next) {
+    console.log(err);
+    res.status(err.status || 500);
+    res.json({error: err.message});
 })
 
-module.exports = app;
+module.exports = app
