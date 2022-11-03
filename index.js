@@ -7,13 +7,21 @@ const PORT = 3334
 connectToMongodb();
 const app = express()
 
+// register passport
+require("./passport") 
+
+// middleware
 app.use(express.json());
 app.use(express.urlencoded())
 
 app.use('/', userRoute)
 app.use('/', orderRoute)
 
+// routes
+app.use('/orders', passport.authenticate('jwt', { session: false  }), OrderRouter)
+app.use('/',  AuthRouter)
 
+// home route
 app.get('/', (req, res) => {
     return res.json({ status: true })
 })
