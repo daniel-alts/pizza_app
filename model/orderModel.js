@@ -13,6 +13,7 @@ const OrderSchema = new Schema({
     price: Number,
     size: { type: String, enum: ['m', 's', 'l']},
     quantity: Number,
+    
   }]
 });
 
