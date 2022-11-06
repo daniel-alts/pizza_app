@@ -3,9 +3,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const orderRoute = require('./route/order_route');
-const userRoute = require('./route/user_route')
-
-
+const userRoute = require('./route/user_route');
+const basicAuth = require('./middleware/basicAuth');
 
 require('./db').connectToMongoDB() 
 require('dotenv').config()
@@ -15,8 +14,11 @@ require("./authentication/auth") //signup and login middlewear
 const PORT = 3334
 
 const app = express()
-
 app.use(express.json());
+//app.use('/user', userRoute)
+app.use(basicAuth)
+
+
 
 
 

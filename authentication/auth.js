@@ -26,19 +26,21 @@ passport.use(
     'signup',
     new localStrategy(
         {
-            usernameField: 'email',
+            usernameField: 'username',
             passwordField: 'password',
-            //passReqToCallback: true
+            
         },
         
-        async (email, password, done) => {
+        async (username, password, done) => {
             try {
-                const user = await UserModel.create({ email, password });
+                const user = await UserModel.create({ username, password });
 
-                return done(null, user);
+                return done(null, user, { message: 'User created successfully'}); 
             } catch (error) {
+                console.log(error) 
                 done(error);
             }
+    
         }
     )
 );
@@ -47,13 +49,16 @@ passport.use(
 passport.use(
     'login',
     new localStrategy(
+        
         {
-            usernameField: 'email',
-            passwordField: 'password'
+            usernameField: 'username',
+            passwordField: 'password',
+            passReqToCallback: true
         },
-        async (email, password, done) => {
+
+        async (req, username, password, done) => {
             try {
-                const user = await UserModel.findOne({ email });
+                const user = await UserModel.findOne({ username });
 
                 if (!user){
                     return done(null, false, { message: 'User not found' });
@@ -61,7 +66,7 @@ passport.use(
 
                 const validate = await user.isValidPassword(password);
 
-                if (!validate){
+                if (!validate) {
                     return done(null, false, { message: 'Wrong Password' });
                 }
 
