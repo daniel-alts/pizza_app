@@ -72,6 +72,7 @@ const updateOrders = async (req, res) => {
 }
 
 const deleteOrder = async (req, res) => {
+  
   await authenticateRoute(req, res)
   const { id } = req.params;
 
