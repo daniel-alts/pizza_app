@@ -1,6 +1,8 @@
 const express = require("express");
 const passport = require("passport");
 const bodyParser = require("body-parser");
+const helmet = require("helmet");
+const { logger, httpLogger } = require("./loggers");
 
 const authRoute = require("./routes/auth.routes");
 const orderRoute = require("./routes/order.routes");
@@ -11,6 +13,8 @@ require("dotenv").config();
 
 const app = express();
 
+app.use(httpLogger);
+app.use(helmet());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use("/", authRoute);
@@ -37,9 +41,8 @@ app.get("/", (req, res) => {
 
 // Handle errors.
 app.use(function (err, req, res, next) {
-	console.log(err);
-	res.status(err.status || 500);
-	res.json({ error: err.message });
+	logger.error(err.message);
+	res.status(err.status || 500).send("Oops, something failed");
 });
 
 module.exports = app;

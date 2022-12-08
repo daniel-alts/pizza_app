@@ -1,5 +1,6 @@
 const app = require("./app");
 const { connectToMongoDB } = require("./utils/db.utils");
+const { logger } = require("./loggers");
 
 const PORT = process.env.PORT || 3000;
 
@@ -7,5 +8,5 @@ const PORT = process.env.PORT || 3000;
 connectToMongoDB();
 
 app.listen(PORT, () => {
-	console.log("Listening on port, ", PORT);
+	logger.info("Listening on port, ", PORT);
 });
