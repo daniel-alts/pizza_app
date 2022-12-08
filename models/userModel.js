@@ -1,70 +1,70 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
-const validator = require("validator");
 const bcrypt = require("bcrypt");
+const { Sequelize, DataTypes } = require("sequelize");
 
-const userSchema = new Schema({
-  username: {
-    type: String,
-    required: [true, "Please tell us your name"],
-    unique: [true, "This username is already taken"],
-  },
-  email: {
-    type: String,
-    required: [true, "Please provide your email"],
-    unique: true,
-    lowercase: true,
-    validate: [validator.isEmail, "Please provide a valid email"],
-  },
-  password: {
-    type: String,
-    required: [true, "Please provide a password"],
-    minLength: [8, "Your password should not be less than 8 characters"],
-    select: false, // password will not show while fetching all users from db
-  },
-  passwordConfirm: {
-    type: String,
-    required: [true, "Please confirm your password"],
-    validate: {
-      validator: function (el) {
-        return el === this.password;
+// defining the number of rounds for the salt to be generated to hash the password
+const saltRounds = 10;
+
+const User = (sequelize) => {
+  const user = sequelize.define(
+    "User",
+    {
+      // Model attributes
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
       },
-      message: "Passwords are not the same",
+      username: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        validate: {
+          isEmail: true,
+        },
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      passwordConfirm: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      user_type: {
+        type: DataTypes.ENUM("admin", "user"),
+        defaultValue: "user",
+      },
     },
-  },
-  user_type: {
-    type: String,
-    enum: ["admin", "user"],
-    default: "user",
-  },
-  created_at: {
-    type: Date,
-    default: Date.now(),
-  },
-});
+    { tableName: "users" }
+  );
 
-// middleware for encrypting or hashing the password on the userSchema using bcrypt
-userSchema.pre("save", async function (next) {
-  // we can only hash passwords if passwords are newly created or modified
-  if (!this.isModified("password")) return next();
+  // Defining a custom method to check if the password is correct
+  function checkPassword(password) {
+    return bcrypt.compare(password, this.password);
+  }
+  user.prototype.checkPassword = checkPassword;
 
-  // hash the password with cost of 10 which is the default. it can be higher depending on CPU power
-  this.password = await bcrypt.hash(this.password, 10);
-  // delete the passwordConfirm field from the database
-  this.passwordConfirm = undefined;
-  next();
-});
+  // Defining a hook to automatically hash the password before saving it to the database
+  user.beforeCreate(async (user) => {
+    const hashedPassword = await bcrypt.hash(user.password, saltRounds);
+    user.password = hashedPassword;
+    user.passwordConfirm = undefined;
+  });
 
-// To check that he user trying to log have the correct credentials
-userSchema.methods.isCorrectPassword = async function (
-  candidatePassword,
-  userPassowrd
-) {
-  const comparePassword = await bcrypt.compare(candidatePassword, userPassowrd);
-  return comparePassword;
+  user.beforeUpdate(async (user) => {
+    if (user.changed("password")) {
+      const hashedPassword = await bcrypt.hash(user.password, saltRounds);
+      user.password = hashedPassword;
+      user.passwordConfirm = undefined;
+    }
+  });
+
+  return user;
 };
-
-const User = mongoose.model("User", userSchema);
 
 module.exports = User;
