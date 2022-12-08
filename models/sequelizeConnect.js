@@ -44,7 +44,7 @@ db.orders.belongsTo(db.users, { foreignKey: "user_id" });
 // Syncing all the models at once
 // force: false will not drop the table if it already exists
 db.sequelize
-  .sync({ force: true })
+  .sync({ force: false })
   .then(() => {
     console.log("Database and tables synced");
   })
