@@ -31,10 +31,6 @@ const User = (sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      passwordConfirm: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
       user_type: {
         type: DataTypes.ENUM("admin", "user"),
         defaultValue: "user",
@@ -53,7 +49,7 @@ const User = (sequelize) => {
   user.beforeCreate(async (user) => {
     const hashedPassword = await bcrypt.hash(user.password, saltRounds);
     user.password = hashedPassword;
-    user.passwordConfirm = undefined;
+    // user.passwordConfirm = undefined;
   });
 
   user.beforeUpdate(async (user) => {
