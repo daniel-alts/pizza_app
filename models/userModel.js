@@ -36,6 +36,7 @@ const User = (sequelize) => {
         defaultValue: "user",
       },
     },
+    { timestamps: true },
     { tableName: "users" }
   );
 
