@@ -11,6 +11,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@sentry/node": "^7.24.2",
+    "@sentry/tracing": "^7.24.2",
+    "@serverless/cloud": "^2.11.6",
     "bcrypt": "^5.1.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.1",
