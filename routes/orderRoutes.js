@@ -1,17 +1,21 @@
 const express = require("express");
-// const orderModel = require("../models/orderModel");
+const orderValidatorMiddleware = require("../validators/order.validator");
 const router = express.Router();
 const orderController = require("../controllers/orderController");
+const authController = require("../controllers/authController");
 
 router
   .route("/")
-  .get(orderController.getAllOrders)
-  .post(orderController.createOrder);
+  .get(authController.restrictTo("admin"), orderController.getAllOrders)
+  .post(orderValidatorMiddleware, orderController.createOrder);
+
+router.route("/myorders").get(orderController.getAllMyOrders);
+router.route("/myorders/:id").get(orderController.getMyOrder);
 
 router
   .route("/:id")
-  .get(orderController.getOrder)
-  .patch(orderController.updateOrderState)
-  .delete(orderController.deleteOrder);
+  .get(authController.restrictTo("admin"), orderController.getOrder)
+  .patch(authController.restrictTo("admin"), orderController.updateOrderState)
+  .delete(authController.restrictTo("admin"), orderController.deleteOrder);
 
 module.exports = router;

@@ -14,6 +14,8 @@ const signToken = (id) => {
   return jwt.sign({ id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN }); // {id: id} === { id }
 };
 
+//---------------------------------------------------------------SIGNUP----------------------------------------------------------------------------------//
+
 /**
  * @desc    Sign up a user
  * @route   POST /api/v1/users/signup
@@ -21,11 +23,11 @@ const signToken = (id) => {
  */
 exports.signup = catchAsyncError(async (req, res, next) => {
   const newUser = await userModel.create({
-    // i didnt include user_type here as defined in my userModel blc i want to be in charge of giving user admin access by adding it to the db manually
     username: req.body.username,
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
+    role: req.body.role,
   });
   // Creating a token and sending it to the client
   const token = signToken(newUser.id);
@@ -38,6 +40,8 @@ exports.signup = catchAsyncError(async (req, res, next) => {
   });
 });
 
+//---------------------------------------------------------------LOGIN----------------------------------------------------------------------------------//
+
 /**
  * @desc    Login a user
  * @route   POST /api/v1/users/login
@@ -45,14 +49,20 @@ exports.signup = catchAsyncError(async (req, res, next) => {
  */
 exports.login = catchAsyncError(async (req, res, next) => {
   const { email, password } = req.body;
+
   // Checking if email & password exist
   if (!email || !password) {
     return next(new AppError(`Please provide email and password`, 400));
   }
 
   // Checking if user exists & password is correct
-  const user = await userModel.findOne({ email });
-  if (!user) {
+  const user = await userModel.findOne({
+    where: {
+      email: email,
+    },
+  });
+
+  if (user === null) {
     return next(new AppError(`User not found`, 401));
   }
   const validatePassword = await user.checkPassword(password, user.password);
@@ -68,6 +78,8 @@ exports.login = catchAsyncError(async (req, res, next) => {
   });
 });
 
+//---------------------------------------------------------------PROTECTING ROUTES----------------------------------------------------------------------//
+
 /**
  * @desc   Protecting routes middleware
  * @route  All order routes
@@ -76,6 +88,7 @@ exports.login = catchAsyncError(async (req, res, next) => {
 exports.protectRoute = catchAsyncError(async (req, res, next) => {
   // Getting token and checking if it exists
   let token;
+
   // Checking if the authorization header is present
   if (
     req.headers.authorization &&
@@ -88,6 +101,7 @@ exports.protectRoute = catchAsyncError(async (req, res, next) => {
     return next(new AppError(`You are not logged in. Please login`, 401));
   }
   const verifiedToken = await promisify(jwt.verify)(token, JWT_SECRET);
+
   if (!verifiedToken) {
     return next(new AppError(`Invalid token. Please login again`, 401));
   }
@@ -105,3 +119,25 @@ exports.protectRoute = catchAsyncError(async (req, res, next) => {
 
   next();
 });
+
+//---------------------------------------------------------------RESTRICTING ROUTES TO SPECIFIC ROLES--------------------------------------------------//
+
+/**
+ * @desc   Granting access to specific roles ( admin )
+ * @route  some order routes
+ * @access Private
+ **/
+
+exports.restrictTo = (...roles) => {
+  // ...roles is an array of specified roles to be restricted to
+
+  return (req, res, next) => {
+    // roles is an array (['admin'] for now)
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError(`You do not have permission to perform this action`, 403)
+      );
+    }
+    next();
+  };
+};
