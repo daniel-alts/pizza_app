@@ -20,7 +20,7 @@ const userValidator = Joi.object({
     .required(),
   password: Joi.string().required().min(8),
   passwordConfirm: Joi.ref("password"),
-  user_type: Joi.string().valid("admin", "user").default("user"),
+  role: Joi.string().valid("user", "admin").default("user"),
   created_at: Joi.date().default(Date.now()),
 });
 

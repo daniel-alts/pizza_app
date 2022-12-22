@@ -13,7 +13,9 @@ const orderValidatorMiddleware = async (req, res, next) => {
 
 const orderValidator = Joi.object({
   created_at: Joi.date().default(Date.now()),
-  state: Joi.number().default(1),
+  state: Joi.string()
+    .valid("pending", "confirmed", "delivered", "cancelled")
+    .default("pending"),
   total_cost: Joi.number(),
   items: Joi.array().items(
     Joi.object({
