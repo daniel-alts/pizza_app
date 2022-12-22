@@ -1,4 +1,4 @@
-const { sequelize, DataTypes } = require("sequelize");
+const { Sequelize, DataTypes } = require("sequelize");
 
 const Order = (sequelize) => {
   const order = sequelize.define(
@@ -11,9 +11,9 @@ const Order = (sequelize) => {
         primaryKey: true,
       },
       state: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 1,
+        type: Sequelize.ENUM,
+        values: ["pending", "confirmed", "delivered", "cancelled"],
+        defaultValue: "pending",
       },
       total_cost: DataTypes.INTEGER,
       items: DataTypes.JSON,

@@ -13,15 +13,18 @@ const User = (sequelize) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
+        trim: true,
       },
       username: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
+        trim: true,
       },
       email: {
         type: DataTypes.STRING,
         allowNull: false,
+        trim: true,
         unique: true,
         validate: {
           isEmail: true,
@@ -31,13 +34,18 @@ const User = (sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      user_type: {
-        type: DataTypes.ENUM("admin", "user"),
+      role: {
+        type: Sequelize.ENUM,
+        values: ["user", "admin"],
         defaultValue: "user",
       },
     },
-    { timestamps: true },
-    { tableName: "users" }
+    {
+      timestamps: true,
+    },
+    {
+      tableName: "users",
+    }
   );
 
   // Defining a custom method to check if the password is correct
