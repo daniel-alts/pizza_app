@@ -9,7 +9,6 @@ require("dotenv").config();
 
 const app = express();
 
-// 1)  Middlewares
 // Development logging
 if (process.env.NODE_ENV === "development") {
   app.use(logger("dev"));
@@ -21,15 +20,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/api/v1/orders", authController.protectRoute, orderRoute);
 app.use("/api/v1/users", userRoute);
 
-// Catching all undefined route
-app.all("*", (req, res, next) => {
-  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
-});
-
-// Error handling middleware
-app.use(globalErrorHandler);
-
-// 2) Routes
 // Default route - Homepage
 app.get("/api/v1/", (req, res) => {
   return res.json({
@@ -37,5 +27,13 @@ app.get("/api/v1/", (req, res) => {
     message: "Welcome to my Pizza Homepage",
   });
 });
+
+// Catching all undefined route
+app.all("*", (req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
+
+// Error handling middleware
+app.use(globalErrorHandler);
 
 module.exports = app;
