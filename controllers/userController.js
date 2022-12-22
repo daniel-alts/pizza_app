@@ -1,6 +1,8 @@
-const userModel = require("../models/userModel");
+const db = require("../models/sequelizeConnect");
 const catchAsyncError = require("../utils/catchAsyncError");
 const AppError = require("../utils/appError");
+
+const userModel = db.users;
 
 exports.authenticateUser = catchAsyncError(async (req, res, next) => {
   // const authHeader = req.headers.authorization;
@@ -40,7 +42,11 @@ exports.authenticateUser = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getAllUsers = catchAsyncError(async (req, res, next) => {
-  const users = await userModel.find();
+  const users = await userModel.findAll({
+    attributes: {
+      exclude: ["password"],
+    },
+  });
   console.log("Users", users);
   res.status(200).json({
     status: "success",
@@ -51,60 +57,48 @@ exports.getAllUsers = catchAsyncError(async (req, res, next) => {
   });
 });
 
-exports.createUser = catchAsyncError(async (req, res, next) => {
-  const body = req.body;
-  const user = await userModel.create(body);
-  // console.log("User", user);
-  res.status(201).json({
-    status: "success",
-    users: {
-      user,
-    },
-  });
-});
+// exports.getUser = catchAsyncError(async (req, res, next) => {
+//   const id = req.params.id;
+//   const user = await userModel.findById(id);
+//   console.log("User", user);
+//   res.status(200).json({
+//     status: "success",
+//     users: {
+//       user,
+//     },
+//   });
+// });
 
-exports.getUser = catchAsyncError(async (req, res, next) => {
-  const id = req.params.id;
-  const user = await userModel.findById(id);
-  console.log("User", user);
-  res.status(200).json({
-    status: "success",
-    users: {
-      user,
-    },
-  });
-});
+// exports.updateUser = catchAsyncError(async (req, res, next) => {
+//   const id = req.params.id;
+//   const body = req.body;
 
-exports.updateUser = catchAsyncError(async (req, res, next) => {
-  const id = req.params.id;
-  const body = req.body;
+//   if (Object.keys(body).length === 0) {
+//     return next(new AppError(`Please provide a data to update `, 404));
+//   }
 
-  if (Object.keys(body).length === 0) {
-    return next(new AppError(`Please provide a data to update `, 404));
-  }
+//   const user = await userModel.findByIdAndUpdate(id, body, {
+//     new: true,
+//     runValidators: true,
+//   });
 
-  const user = await userModel.findByIdAndUpdate(id, body, {
-    new: true,
-    runValidators: true,
-  });
+//   if (!user) {
+//     return next(new AppError(`No user found with this specified ID `, 404));
+//   }
 
-  if (!user) {
-    return next(new AppError(`No user found with this specified ID `, 404));
-  }
+//   res.status(200).json({
+//     status: "success",
+//     users: {
+//       user,
+//     },
+//   });
+// });
 
-  res.status(200).json({
-    status: "success",
-    users: {
-      user,
-    },
-  });
-});
-
-exports.deleteUser = catchAsyncError(async (req, res, next) => {
-  const id = req.params.id;
-  const user = await userModel.findByIdAndRemove(id);
-  if (!user) {
-    return next(new AppError(`No user found with this specified ID `, 404));
-  }
-  res.status(201).json({ status: "success", users: user });
-});
+// exports.deleteUser = catchAsyncError(async (req, res, next) => {
+//   const id = req.params.id;
+//   const user = await userModel.findByIdAndRemove(id);
+//   if (!user) {
+//     return next(new AppError(`No user found with this specified ID `, 404));
+//   }
+//   res.status(201).json({ status: "success", users: user });
+// });
