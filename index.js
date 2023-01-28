@@ -3,6 +3,7 @@ const passport = require('passport');
 const OrderRouter = require('./routes/OrderRoutes');
 const AuthRouter = require('./routes/AuthRoutes');
 const Sentry = require('@sentry/node');
+const FileUploadRouter = require('./routes/FileUploadRoute');
 
 const app = express()
 
@@ -20,6 +21,7 @@ app.use(express.json());
 // routes
 app.use('/orders', passport.authenticate('jwt', { session: false  }), OrderRouter)
 app.use('/',  AuthRouter)
+app.use('/file',  FileUploadRouter)
 
 // home route
 app.get('/', (req, res) => {
