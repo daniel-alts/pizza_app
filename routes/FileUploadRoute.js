@@ -17,29 +17,30 @@ const upload = multer({ dest: 'uploads/' })
 const fileUploadRouter = express.Router();
 
 const FileUploadController = async (req, res) => {
-
-    const filepath = req.file.path;
-
-
+  const urls = [];
+  const files = req.files;
+  for (const file of files) {
+    const filepath = file.path;
     // upload to cloudinary
     const cloudinaryResponse = await cloudinary.uploader.upload(filepath);
-
+    urls.push(cloudinaryResponse.url);
 
     // delete file
     fs.unlink(filepath, (err) => {
-        if (err) return 
+        if (err) console.log(err);
     })
+  }
 
     return res.status(200).json({
-        message: 'File uploaded',
+        message: 'Files uploaded',
         status: true,
-        url: cloudinaryResponse.url,
+        urls: urls,
     })
 }
 
 fileUploadRouter.post(
     '/upload', 
-    upload.single('avatar'),
+    upload.array('avatars', 2),
     FileUploadController
 )
 
