@@ -6,8 +6,9 @@ const bodyParser = require('body-parser');
 
 
 
-const authRouter = require("./routes/auth")
-const orderRoute = require("./routes/order")
+const authRouter = require("./routes/auth");
+const orderRoute = require("./routes/order");
+const fileUploadRouter = require("./routes/mutipleFileUploade");
 
 require('dotenv').config();
 require('./authentication/auth');
@@ -23,6 +24,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use("/", authRouter)
 app.use("/orders", passport.authenticate('jwt', { session: false }), orderRoute)
+app.use('/', fileUploadRouter)
 
 app.get('/', (req, res) => {
     return res.json({ status: true })
