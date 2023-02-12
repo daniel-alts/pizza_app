@@ -68,9 +68,7 @@ orderRouter.get("/:orderId", async (req, res, next) => {
 // Make an Order
 orderRouter.post("/", async (req, res, next) => {
   
-  console.log(req);
   const body = req.body;
-  console.log(body);
 
   const total_price = body.items.reduce((prev, curr) => {
     const quantity = curr.quantity;

@@ -1,8 +1,10 @@
 const mongoose = require("mongoose");
 require("dotenv").config;
 
+const MONGODB_URI = process.env.MONGODB_URI
+
 function connectToMongoDB() {
-  mongoose.connect("mongodb://localhost:27017");
+  mongoose.connect(MONGODB_URI);
 
   mongoose.connection.on("connected", () => {
     console.log("Connected to MongoDB Successfully");

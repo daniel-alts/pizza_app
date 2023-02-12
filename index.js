@@ -12,8 +12,7 @@ require('./db').connectToMongoDB() // Connect to MongoDB
 
 require("./authentication/authenticate") 
 
-
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4000;
 
 const app = express();
 
@@ -26,7 +25,7 @@ app.use('/orders', passport.authenticate('jwt', { session: false }), ordersRoute
 
 app.get("/", (req, res) => {
   return res.status(200).send({
-    message: "Welcom to the Pizza Store",
+    message: "Welcome to the Pizza Store",
     status: true,
   });
 });
