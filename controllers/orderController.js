@@ -1,5 +1,6 @@
 const { OrderModel } = require('../models')
 const moment = require('moment');
+const Cache = require('../config/redis');
 
 exports.createOrder = async (req, res) => {
     const body = req.body;
@@ -14,19 +15,43 @@ exports.createOrder = async (req, res) => {
         created_at: moment().toDate(),
         total_price
     })
+
+    const cacheKey = `orders:${orderId}`;
+    Cache.redis.set(cacheKey, JSON.stringify(order));
     
     return res.json({ status: true, order })
 }
 
 exports.getOrder = async (req, res) => {
-    const { orderId } = req.params;
-    const order = await OrderModel.findById(orderId)
+    try {
+        const { orderId } = req.params;
 
-    if (!order) {
-        return res.status(404).json({ status: false, order: null })
+       
+
+        // const cachedOrder = await Cache.redis.get(cacheKey);
+
+        // if (cachedOrder) {
+        //     // Cache hit
+        //     return res.json({ status: true, order: JSON.parse(cachedOrder) })
+        // }
+    
+
+        // Cache miss
+        const order = await OrderModel.findById(orderId)
+
+        const cacheKey = `orders:${orderId}`;
+        Cache.redis.set(cacheKey, JSON.stringify(order));
+        
+    
+        if (!order) {
+            return res.status(404).json({ status: false, order: null })
+        }
+    
+        return res.json({ status: true, order })
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: false, order: null,  message: 'Server Error' })
     }
-
-    return res.json({ status: true, order })
 }
 
 exports.getOrders  = async (req, res) => {
@@ -40,6 +65,16 @@ exports.getOrders  = async (req, res) => {
         page = 1, 
         per_page = 10 
     } = query;
+
+    const cacheKey = `orders:${created_at}:${state}:${order}:${order_by}:${page}:${per_page}`;
+
+    const cachedOrder = await Cache.redis.get(cacheKey);
+
+    if (cachedOrder) {
+        // Cache hit
+        return res.json({ status: true, orders: JSON.parse(cachedOrder) })
+    }
+    
 
     const findQuery = {};
 
@@ -75,12 +110,15 @@ exports.getOrders  = async (req, res) => {
     .skip(page)
     .limit(per_page)
 
+    Cache.redis.setEx(cacheKey, 10, JSON.stringify(orders));
     return res.status(200).json({ status: true, orders })
 }
 
 exports.updateOrder = async (req, res) => {
     const { id } = req.params;
     const { state } = req.body;
+
+    const cacheKey = `orders:${id}`;
 
     const order = await OrderModel.findById(id)
 
@@ -96,13 +134,19 @@ exports.updateOrder = async (req, res) => {
 
     await order.save()
 
+    Cache.redis.set(cacheKey, JSON.stringify(order));
+
     return res.json({ status: true, order })
 }
 
 exports.deleteOrder = async (req, res) => {
     const { id } = req.params;
 
+    const cacheKey = `orders:${id}`;
+
     const order = await OrderModel.deleteOne({ _id: id})
+
+    Cache.redis.del(cacheKey);
 
     return res.json({ status: true, order })
 }
