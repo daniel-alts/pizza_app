@@ -2,7 +2,7 @@ const app = require('./index')
 const Database = require('./database');
 const Cache = require('./config/redis');
 
-const PORT = process.env.PORT || 3334
+const PORT = process.env.PORT || 3000
 
 // connect to database
 Database.connect();
