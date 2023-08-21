@@ -7,6 +7,7 @@ const REDIS_USERNAME = process.env.REDIS_USERNAME || 'default';
 const REDIS_PORT = process.env.REDIS_PORT || 6379;
 const REDIS_HOST = process.env.REDIS_HOST || '127.0.0.1';
 const REDIS_PASSWORD = process.env.REDIS_PASSWORD || null;
+const REDIS_URL = process.env.REDIS_URL || `redis://localhost:6379` ||  `redis://${REDIS_USERNAME}:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}`;
 
 class Cache {
     constructor() {
@@ -16,7 +17,7 @@ class Cache {
     async connect() {
         try {
             this.redis = await Redis.createClient({
-                url: `redis://${REDIS_USERNAME}:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}`
+                url: REDIS_URL
             });
 
             this.redis.connect()
