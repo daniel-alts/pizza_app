@@ -5,7 +5,7 @@ const Cache = require('./config/redis');
 const PORT = process.env.PORT || 3000
 
 // connect to database
-Database.connect();
+Database.connect(process.env.MONGODB_CONNECTION_URL);
 
 // connect to redis
 Cache.connect()
